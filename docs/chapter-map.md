@@ -9,7 +9,9 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
   - **AP U*n*** is a unit of the AP Chemistry course (2024 course description). The units are: 1 Atomic Structure and Properties, 2 Compound Structure and Properties, 3 Properties of Substances and Mixtures, 4 Chemical Reactions, 5 Kinetics, 6 Thermochemistry, 7 Equilibrium, 8 Acids and Bases, 9 Thermodynamics and Electrochemistry.
   - The book has no AP mapping, so the AP tags are ours, at unit level. Check them against the course description's topic list before writing AP-specific content.
 - **Ready? You need:** the sections listed before a section is opened. They always come earlier in this order, and the app's "Ready?" check links back to them.
+- **Tags follow prerequisites:** a section tagged Intro or 1A only lists prerequisites that carry the same tag, so no learner is sent to a section their course hides.
 - **Tro x.1:** each chapter's opening story is folded into that chapter's first section.
+- **The Chem 1A path** is Chapters 0–16, then **18.1–18.2** (the first look at equilibrium). It skips Chapter 17 (kinetics, 1B only): 18.1–18.2 need only 5.1. In the app, the 1A route goes from Chapter 16 straight to 18.1.
 - Titles and questions are ours. Never copy the book's wording.
 
 ## Where this order differs from Tro, and why
@@ -32,7 +34,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | 0.2 | Ratios, Rates and Percent | What does "2 for every 1" mean, and how do you scale it? | App. I | Intro 1A AP | none |
 | 0.3 | Rearranging a Formula | How do you get the letter you want on its own? | App. I | Intro 1A AP | none |
 | 0.4 | Units Travel With Numbers | Why do units multiply, divide and cancel like numbers? | 1.8 | Intro 1A AP | 0.2 |
-| 0.5 | Logarithms | What does log mean, and why does pH use it? | App. I | 1A 1B AP | 0.1 |
+| 0.5 | Logarithms | What does log mean, and why does pH use it? | App. I | Intro 1A 1B AP | 0.1 |
 | 0.6 | Solving a Quadratic | How do you solve x² + bx + c = 0 when you can't factor it? | App. I | 1B AP | 0.3 |
 | 0.7 | Straight-Line Graphs | What do the slope and intercept of a data line tell you? | 1.9 | 1A 1B AP | 0.3 |
 
@@ -119,7 +121,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | 7.4 | Molar Volume, Density and Molar Mass of a Gas | How heavy is a litre of gas? | 6.5 | Intro 1A AP U3 | 7.3, 4.1 |
 | 7.5 | Gas Mixtures and Partial Pressures | How much of the pressure is each gas? | 6.6 | 1A AP U3 | 7.3 |
 | 7.6 | Gases in Reactions | How many litres of gas does a reaction make? | 6.7 | Intro 1A AP U3 | 7.3, 5.2 |
-| 7.7 | Why Gases Behave This Way | What are the particles doing? | 6.8 | 1A AP U3 | 7.3 |
+| 7.7 | Why Gases Behave This Way | What are the particles doing? | 6.8 | Intro 1A AP U3 | 7.3 |
 | 7.8 | Diffusion and Effusion | Why does a smell spread, and which gas escapes faster? | 6.9 | 1A | 7.7 |
 | 7.9 | Real Gases | When does PV = nRT stop working? | 6.10 | 1A AP U3 | 7.7 |
 
@@ -135,7 +137,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | 8.5 | Enthalpy | What is ΔH, and why does its sign matter? | 7.6 | 1A AP U6 | 8.2 |
 | 8.6 | Working With ΔH | How do you add, reverse and scale reactions (Hess's law)? | 7.8 | 1A AP U6 | 8.5, 5.2 |
 | 8.7 | ΔH From Formation Enthalpies | How do you get ΔH from a table? | 7.9 | 1A AP U6 | 8.6 |
-| 8.8 | Energy and the Environment | What do fuels cost the climate? | 7.10 | Intro 1A | 8.5 |
+| 8.8 | Energy and the Environment | What do fuels cost the climate? | 7.10 | Intro 1A | 8.3 |
 
 ## Chapter 9 · Bonds and Shapes
 *Why is water bent and carbon dioxide straight?* · Intro · 1A · AP U2 · Tro 10.1–10.3, 10.5–10.9, 11.1–11.5 · Lab: Build a molecule · Viewer: molecule3d
@@ -174,6 +176,8 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 
 ## Chapter 12 · Why Bonds Form
 *What really holds atoms together, and how strongly?* · 1A · AP U2 · Tro 10.4, 10.10, 10.11, 11.6–11.8 · Viewer: molecule3d
+
+**Opens with a recall of Chapter 9.** Before 12.1, the chapter page asks the learner to redraw two shapes from Chapter 9 (water bent, methane tetrahedral) and name their electron groups, then promises: "now see *why* they take those shapes." This bridges the gap that Chapters 10–11 open between VSEPR (9.6) and hybridization (12.5), and it doubles as spaced review. Its "Ready? You need" lists 9.2, 9.6 and 10.5.
 
 | § | Title | Question | Tro 6e | Levels | Ready? You need |
 |---|---|---|---|---|---|
