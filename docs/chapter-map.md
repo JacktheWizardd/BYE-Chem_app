@@ -28,6 +28,8 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 ## Chapter 0 · Maths for Chemistry
 *Can you read 7 × 10<sup>21</sup> and work with it?* · Intro · 1A · AP · Tro Appendix I, parts of 1.8–1.9 · Tools: formula sheet
 
+**Focus:** 0.1–0.4 drill fast, calculator-free arithmetic (fractions, negatives, powers of ten, percent). That skill predicts general-chemistry grades (Williamson et al. 2020) more than harder algebra does.
+
 | § | Title | Question | Tro 6e | Levels | Ready? You need |
 |---|---|---|---|---|---|
 | 0.1 | Powers of Ten | How do you write and work with huge and tiny numbers? | App. I | Intro 1A AP | none |
@@ -121,7 +123,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | 7.4 | Molar Volume, Density and Molar Mass of a Gas | How heavy is a litre of gas? | 6.5 | Intro 1A AP U3 | 7.3, 4.1 |
 | 7.5 | Gas Mixtures and Partial Pressures | How much of the pressure is each gas? | 6.6 | 1A AP U3 | 7.3 |
 | 7.6 | Gases in Reactions | How many litres of gas does a reaction make? | 6.7 | Intro 1A AP U3 | 7.3, 5.2 |
-| 7.7 | Why Gases Behave This Way | What are the particles doing? | 6.8 | Intro 1A AP U3 | 7.3 |
+| 7.7 | Why Gases Behave This Way | What are the particles doing, and why do hotter ones carry more energy? | 6.8 | Intro 1A AP U3 | 7.3 |
 | 7.8 | Diffusion and Effusion | Why does a smell spread, and which gas escapes faster? | 6.9 | 1A | 7.7 |
 | 7.9 | Real Gases | When does PV = nRT stop working? | 6.10 | 1A AP U3 | 7.7 |
 
@@ -142,6 +144,10 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 ## Chapter 9 · Bonds and Shapes
 *Why is water bent and carbon dioxide straight?* · Intro · 1A · AP U2 · Tro 10.1–10.3, 10.5–10.9, 11.1–11.5 · Lab: Build a molecule · Viewer: molecule3d
 
+**Teaching rules for this chapter** (it comes before quantum, so it must not set up anything Chapter 10 has to undo):
+- Valence electrons come from the group number. Say "electron groups" and "lone pairs", never "orbits" or "shells drawn as rings".
+- Reach one property early, as CLUE does: 9.7 ends with why polar water boils at 100 °C while nonpolar CO<sub>2</sub> is a gas at room temperature (it sublimes at −78 °C). Chapter 13 explains the forces in full.
+
 | § | Title | Question | Tro 6e | Levels | Ready? You need |
 |---|---|---|---|---|---|
 | 9.1 | Valence Electrons and Lewis Dots | How many electrons does an atom bring to a bond? | 10.1, 10.2, 10.3 | Intro 1A AP U2 | 2.5, 3.1 |
@@ -150,7 +156,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | 9.4 | Resonance and Formal Charge | What if more than one drawing works? | 10.8 | 1A AP U2 | 9.2 |
 | 9.5 | Breaking the Octet Rule | When do atoms have fewer, or more, than eight? | 10.9 | 1A AP U2 | 9.2 |
 | 9.6 | Molecular Shapes (VSEPR) | How do electron groups push each other into a shape? | 11.1, 11.2, 11.3, 11.4 | Intro 1A AP U2 | 9.2 |
-| 9.7 | Shape and Polarity | Why is water polar but CO<sub>2</sub> not? | 11.5 | Intro 1A AP U2 | 9.6, 9.3 |
+| 9.7 | Shape and Polarity | Why is water polar but CO<sub>2</sub> not, and why does water boil so high? | 11.5 | Intro 1A AP U2 | 9.6, 9.3 |
 
 ## Chapter 10 · Light and the Electron
 *Why do fireworks glow in different colours?* · 1A · AP U1 · Tro ch. 8
@@ -216,6 +222,8 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 
 ## Chapter 15 · Solids and Materials
 *Why is diamond hard and graphite soft, when both are pure carbon?* · 1A · AP U3 · Tro ch. 13 · Viewer: molecule3d
+
+**Optional on the *Learn from zero* path** (the 1A chapter needed least); required on the Chem 1A path.
 
 | § | Title | Question | Tro 6e | Levels | Ready? You need |
 |---|---|---|---|---|---|
@@ -369,7 +377,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | Ch. 23 Biochemistry (23.1–23.7) | Not in PCC CHEM 001A/001B or the AP course. Add a Beyond chapter if students ask. |
 
 ## Class order (*I'm taking Chem 1A*)
-For students following the book, Home lists our chapters in Tro's order:
+For students following the book, Home lists our chapters in Tro's order. Tro chapters 10 and 11 map to parts of our Chapters 9 and 12, so this view shows them as one unit, **"Bonding (Tro 10–11)"**, with 9.1–9.7 then 12.1–12.6, rather than jumping between two chapters.
 
 | Tro chapter | Our chapter(s) |
 |---|---|

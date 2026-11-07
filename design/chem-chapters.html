@@ -131,6 +131,49 @@
   .recipe .cap { font-size: 17px; font-family: var(--chem); }
   .recipe .times { font-family: var(--chem); font-size: 16px; white-space: nowrap; }
 
+  /* Practice layer: answer first, then reveal (docs/practice-layer.md) */
+  .ask { display: flex; gap: 8px; margin-top: 8px; }
+  .ask input { flex: 1; min-width: 0; min-height: 44px; border: 1.5px solid var(--ink); border-radius: 12px; background: #fffdf8; padding: 6px 12px; font-family: var(--chem); font-size: 18px; color: var(--ink); }
+  .ask input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px #f3d9cf; }
+  .ask button, .mini { min-height: 44px; padding: 0 16px; border-radius: 22px; border: 0; background: var(--ink); color: var(--onInk); font: 500 15px var(--sans); cursor: pointer; flex: none; }
+  .mini.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
+  .fb { margin-top: 6px; font-size: 14px; line-height: 21px; }
+  .fb:empty { display: none; }
+  .fb.ok { color: var(--mol); } .fb.no { color: var(--shu); } .fb.part { color: var(--ink2); }
+  .showans { background: none; border: 0; padding: 0; min-height: 44px; font: 13px var(--sans); color: var(--ink2); text-decoration: underline; cursor: pointer; }
+  .qk { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink2); }
+  .qcard { margin-top: 10px; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px 12px; background: #fffdf8; }
+  .qcard .q { font-size: 15.5px; line-height: 23px; margin-top: 2px; }
+  /* At a glance: recall mode */
+  .testme { min-height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--line); background: var(--band); font: 13px var(--sans); color: var(--ink); cursor: pointer; }
+  .testme[aria-pressed="true"] { background: var(--ink); color: var(--onInk); border-color: var(--ink); }
+  .band.recall .glance:not(.shown) .eq { color: transparent; background: repeating-linear-gradient(135deg, #ece6da 0 6px, #f3eee4 6px 12px); border-radius: 8px; cursor: pointer; }
+  .band.recall .glance:not(.shown) .eq * { color: transparent; }
+  .band.recall .glance:not(.shown) .eq::after { content: 'Say it, then tap'; color: var(--ink2); font: 13px var(--sans); padding-left: 10px; }
+  /* Write one line */
+  .oneline { width: 100%; min-height: 64px; margin-top: 8px; border: 1.5px solid var(--line); border-radius: 12px; background: #fffdf8; padding: 8px 12px; font: 15px/22px var(--sans); color: var(--ink); resize: vertical; }
+  .oneline:focus { outline: none; border-color: var(--coral); }
+  /* Three views, linked */
+  .lk { all: unset; cursor: pointer; border-bottom: 1.5px dotted var(--axis); line-height: 1.3; }
+  .lk:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+  .lk.hl { color: var(--shu); border-bottom: 2px solid var(--shu); }
+  .linkcap { margin-top: 8px; font-size: 13.5px; line-height: 20px; color: var(--ink2); min-height: 40px; }
+  /* Fading */
+  .fade { display: flex; gap: 4px; margin-top: 12px; }
+  .fade span { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .fade span.done { background: var(--ink2); } .fade span.now { background: var(--coral); }
+  .fadek { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink2); margin-top: 5px; }
+  .st { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .st > div { min-width: 0; }
+  .ask input { width: 100%; }
+  .st .n { width: 22px; flex: none; font-family: var(--serif); font-size: 17px; color: var(--ink2); }
+  .st .w { font-family: var(--chem); font-size: 17px; line-height: 25px; }
+  .st .why2 { font-size: 13px; color: var(--ink2); margin-top: 2px; }
+  .st.you { background: var(--band); margin: 0 -26px; padding: 11px 26px; border-left: 3px solid var(--coral); }
+  .reviewrow { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; align-items: baseline; }
+  .reviewrow .from { width: 34px; flex: none; font-family: var(--serif); color: var(--ink2); }
+  .reviewrow.done { color: var(--muted); }
+
   /* Mole map picture */
   .frames { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: var(--ink2); }
   .dots { display: flex; gap: 6px; } .dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line); } .dots i.on { background: var(--ink); }
@@ -145,7 +188,7 @@
   .idea .t { font-weight: 500; font-size: 15.5px; }
   .idea .d { font-size: 14px; line-height: 21px; color: var(--ink2); margin-top: 2px; }
   .views { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-  .views div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; text-align: center; background: #fffdf8; }
+  .views > div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; text-align: center; background: #fffdf8; }
   .views .k { font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink2); }
   .views .v { font-family: var(--chem); font-size: 15.5px; margin-top: 6px; line-height: 20px; }
 
@@ -250,6 +293,7 @@
   .src { margin-top: 12px; font-size: 13px; color: var(--ink2); line-height: 1.7; }
   @media (prefers-reduced-motion: no-preference) { .chip, .el { transition: border-color .15s, background .15s; } }
   /* Narrow phones (323 px): stack the three views and the reaction steppers instead of clipping them */
+  @media (max-width: 420px) { .views { grid-template-columns: 1fr; } .views .v br { display: none; } .views .v { display: flex; gap: 8px; justify-content: center; align-items: baseline; flex-wrap: wrap; } }
   @media (max-width: 360px) {
     .views, .steppers { grid-template-columns: 1fr; }
     .boards { padding-left: 12px; padding-right: 12px; }
@@ -283,9 +327,10 @@
       <p class="sub">From zero to Chem 1A, 1B and AP. Every word is explained the first time it shows up.</p>
 
       <div class="head"><span class="eyebrow">Start here</span></div>
-      <div class="start"><span class="ic">◎</span><div><div class="t">Find your gaps</div><div class="s">10 quick questions, about 5 minutes. See which chapters to review and skip the rest.</div></div></div>
+      <div class="start"><span class="ic">◎</span><div><div class="t">Find your gaps</div><div class="s">About 15 questions that adapt as you go. It names the skills to brush up, and checks them again later so you never skip something you need.</div></div></div>
       <div class="start"><span class="ic">→</span><div><div class="t">Learn from zero</div><div class="s">Never studied chemistry, or it’s been years? Start at Chapter 0 and go in order.</div></div></div>
       <div class="start"><span class="ic">1A</span><div><div class="t">I’m taking Chem 1A</div><div class="s">The same chapters in your book’s order (Tro), with your course’s tags.</div></div></div>
+      <div class="start"><span class="ic">↻</span><div><div class="t">Today’s review</div><div class="s">5 mixed questions from chapters you’ve done · about 4 minutes</div></div></div>
 
       <div class="head"><span class="eyebrow">Chapters</span><span class="meta">our order · Tro 6e refs</span></div>
       <div class="chrow"><span class="num">0</span><div class="body"><div class="t">Maths for Chemistry</div><div class="s">The few maths moves chemistry uses, refreshed</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro App. I</span></div></div><span class="chev"></span></div>
@@ -327,13 +372,23 @@
 
       <div class="band">
         <div class="eyebrow">Ready? Three quick ones</div>
-        <div class="ready"><div class="q">Write 0.000 15 in scientific notation.</div><div class="a">1.5 × 10<sup>−4</sup>. Move the point 4 places right, so the power is −4.</div></div>
-        <div class="ready"><div class="q">Solve d = m ÷ V for m.</div><div class="a">m = d × V. Multiply both sides by V.</div></div>
-        <div class="ready" style="border:0"><div class="q">What is 15% of 40 g?</div><div class="a">6 g. 0.15 × 40 = 6.</div></div>
+        <p class="small" style="margin:4px 0 0">Answer first. The working shows after you check.</p>
+        <div class="ready"><div class="q">Write 0.000 15 in scientific notation.</div>
+          <form class="ask" data-q="sci"><input aria-label="Your answer" placeholder="e.g. 2.3 × 10^-5" autocomplete="off"><button type="submit">Check</button></form>
+          <div class="fb" aria-live="polite"></div><button class="showans" type="button">Show the answer</button>
+          <div class="a" hidden>1.5 × 10<sup>−4</sup>. Move the point 4 places right, so the power is −4.</div></div>
+        <div class="ready"><div class="q">Solve d = m ÷ V for m.</div>
+          <form class="ask" data-q="rearr"><input aria-label="Your answer" placeholder="m = …" autocomplete="off"><button type="submit">Check</button></form>
+          <div class="fb" aria-live="polite"></div><button class="showans" type="button">Show the answer</button>
+          <div class="a" hidden>m = d × V. Multiply both sides by V.</div></div>
+        <div class="ready" style="border:0"><div class="q">What is 15% of 40 g?</div>
+          <form class="ask" data-q="pct"><input aria-label="Your answer" inputmode="decimal" placeholder="g" autocomplete="off"><button type="submit">Check</button></form>
+          <div class="fb" aria-live="polite"></div><button class="showans" type="button">Show the answer</button>
+          <div class="a" hidden>6 g. 0.15 × 40 = 6.</div></div>
       </div>
       <div class="btn"><span>Start Chapter 0</span></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>Maths before chemistry, kept short.</b> PCC’s courses require intermediate algebra, and arithmetic skill predicts general-chemistry success. Each section is the one move chemistry needs, with chemistry-flavoured numbers, so it doesn’t feel like a maths class. Logs, quadratics and graphs wait until a chapter’s “Ready?” check sends you there.</div>
+    <div class="notes"><span class="why">research</span><br><b>Maths before chemistry, kept short.</b> PCC’s courses require intermediate algebra, and arithmetic skill predicts general-chemistry success. Each section is the one move chemistry needs, with chemistry-flavoured numbers, so it doesn’t feel like a maths class. Logs, quadratics and graphs wait until a chapter’s “Ready?” check sends you there. Every check asks for your answer before showing the working: pre-questions help far more when you answer them.</div>
   </div>
 
   <div class="board">
@@ -357,6 +412,9 @@
       </div>
 
       <div class="group" style="margin-top:20px"><span class="eyebrow">Ready? You need</span></div>
+      <div class="qcard"><div class="qk">Quick recall · from 3.2</div><div class="q">How many O atoms are in <span class="f">Ca(NO<sub>3</sub>)<sub>2</sub></span>?</div>
+        <form class="ask" data-q="oatoms"><input aria-label="Your answer" inputmode="numeric" autocomplete="off"><button type="submit">Check</button></form>
+        <div class="fb" aria-live="polite"></div></div>
       <div class="stop done"><span class="dot">✓</span><div><div class="t" style="font-size:15px">Work with 6.022 × 10<sup>23</sup></div><div class="s">0.1 Powers of Ten</div></div></div>
       <div class="stop now"><span class="dot">!</span><div><div class="t" style="font-size:15px">Count the atoms in <span class="f">Ca(NO<sub>3</sub>)<sub>2</sub></span></div><div class="s">3.2 Writing Formulas and Models · 6 minutes</div></div><span class="tag">Review</span></div>
       <div class="stop"><span class="dot">?</span><div><div class="t" style="font-size:15px">Read an atomic mass off the table</div><div class="s">2.6 Atomic Mass</div></div></div>
@@ -376,11 +434,11 @@
       <div class="head" style="margin-top:4px"><span class="eyebrow">Play with it</span><span class="meta">Lab</span></div>
       <div class="labcard">
         <div class="labmini" aria-hidden="true"><span class="ball H">H</span><span class="ball O big">O</span><span class="ball H">H</span></div>
-        <div><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it.</div><div class="try">Try this: find the mass of water that gives exactly 1 mole.</div></div>
+        <div><div class="try" style="margin:0 0 4px">Try this: find the mass of water that gives exactly 1 mole.</div><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it.</div></div>
       </div>
 
-      <div class="band">
-        <div class="eyebrow">The chapter at a glance</div>
+      <div class="band" id="glanceBand">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow">The chapter at a glance</span><button class="testme" id="testMe" type="button" aria-pressed="false">Test me</button></div>
         <svg viewBox="0 0 338 150" width="100%" role="img" aria-label="The mole map: grams and particles both connect through moles. Divide grams by molar mass to get moles; multiply moles by 6.022 times 10 to the 23 to get particles." style="margin-top:6px">
           <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5a554d"/></marker></defs>
           <rect x="4" y="52" width="88" height="46" rx="12" fill="#fffdf8" stroke="#2f4b7c" stroke-width="1.5"/>
@@ -409,8 +467,12 @@
       <div class="use"><div class="where">A spoonful of sugar</div><div class="what">4 g of table sugar is about 7 × 10<sup>21</sup> molecules.</div><div class="eq">4.0 g ÷ 342.30 g/mol = 0.0117 mol</div></div>
       <div class="use"><div class="where">A vitamin C tablet</div><div class="what">500 mg of vitamin C (<span class="f">C<sub>6</sub>H<sub>8</sub>O<sub>6</sub></span>) is 2.84 millimoles.</div><div class="eq">0.500 g ÷ 176.12 g/mol = 0.00284 mol</div></div>
       <div class="use" style="border:0"><div class="where">Iron supplements</div><div class="what">Iron(II) sulfate, <span class="f">FeSO<sub>4</sub></span>, is 36.8% iron by mass.</div><div class="eq">55.85 ÷ 151.90 × 100 = 36.8%</div></div>
+      <div class="head"><span class="eyebrow">Your turn</span><span class="meta">optional</span></div>
+      <p class="p" style="margin-top:6px">Where could you use this? Write one line.</p>
+      <textarea class="oneline" aria-label="Where could you use this? Write one line." placeholder="e.g. checking how much sugar is in my drink"></textarea>
+      <p class="small" style="margin:4px 0 0">Saved only on your phone.</p>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>The longer parts sit below the lessons.</b> The Lab link, the chapter at a glance (also the chapter’s formula sheet in Tools) and real uses stay, under the topic page instead of above it. The mole map is the chapter’s one picture: every trip goes through moles, the bridge beginners most often miss.</div>
+    <div class="notes"><span class="why">research</span><br><b>The longer parts sit below the lessons, and ask you to do something.</b> “Test me” hides each formula until you’ve tried to recall it; the Lab card leads with its challenge; and one optional line asks where <i>you</i> would use this, since relevance works best when learners write it themselves. The Lab link, the chapter at a glance (also the chapter’s formula sheet in Tools) and real uses stay, under the topic page instead of above it. The mole map is the chapter’s one picture: every trip goes through moles, the bridge beginners most often miss.</div>
   </div>
 
   <div class="board">
@@ -433,26 +495,73 @@
       <div class="idea"><span class="n">3</span><div><div class="t">Molar mass</div><div class="d">The mass of one mole: same number as the formula mass, in grams. Water: 18.02 g/mol.</div></div></div>
       <div class="idea"><span class="n">4</span><div><div class="t">Count by weighing</div><div class="d">Divide grams by molar mass and you have moles, then particles.</div></div></div>
 
-      <div class="head"><span class="eyebrow">One mole of water, three ways</span></div>
-      <div class="views">
-        <div><div class="k">See it</div><div class="v">18 g<br><span style="font-family:var(--sans);font-size:12px;color:var(--ink2)">a bit more than a tablespoon</span></div></div>
-        <div><div class="k">Particles</div><div class="v">6.022 × 10<sup>23</sup><br><span style="font-family:var(--sans);font-size:12px;color:var(--ink2)">molecules</span></div></div>
-        <div><div class="k">Symbols</div><div class="v">1 mol <span class="f">H<sub>2</sub>O</span><br>= 18.02 g</div></div>
+      <div class="head"><span class="eyebrow">One mole of water, three ways</span><span class="meta">tap to link</span></div>
+      <div class="views" id="views3">
+        <div><div class="k">See it</div><div class="v"><button class="lk" data-l="amt" type="button">18 g</button><br><button class="lk" data-l="what" type="button" style="font-family:var(--sans);font-size:12px">of water</button></div></div>
+        <div><div class="k">Particles</div><div class="v"><button class="lk" data-l="amt" type="button">6.022 × 10<sup>23</sup></button><br><button class="lk" data-l="what" type="button" style="font-family:var(--sans);font-size:12px">water molecules</button></div></div>
+        <div><div class="k">Symbols</div><div class="v"><button class="lk" data-l="amt" type="button">1 mol</button> <button class="lk" data-l="what" type="button"><span class="f">H<sub>2</sub>O</span></button><br>= 18.02 g</div></div>
       </div>
+      <div class="linkcap" id="linkCap" aria-live="polite">Tap any part to see the same thing in all three views.</div>
 
       <div class="head"><span class="eyebrow">In the lab</span><span class="meta">2 minutes</span></div>
       <div class="labcard">
         <div class="labmini" aria-hidden="true"><span class="ball H">H</span><span class="ball O big">O</span><span class="ball H">H</span></div>
-        <div><div class="t">How many molecules is that?</div><div class="s">Weigh out water on the lab balance and watch the molecule counter climb.</div><div class="try">Try this: find the mass that gives exactly 1 mole.</div></div>
+        <div><div class="try" style="margin:0 0 4px">Try this: find the mass that gives exactly 1 mole.</div><div class="t">How many molecules is that?</div><div class="s">Weigh out water on the lab balance and watch the molecule counter climb.</div></div>
       </div>
+
+      <div class="head"><span class="eyebrow">Check yourself</span><span class="meta">2 questions</span></div>
+      <div class="qcard"><div class="qk">1 of 2</div><div class="q">How many moles are in 36.04 g of water? (Molar mass 18.02 g/mol.)</div>
+        <form class="ask" data-q="mol36"><input aria-label="Your answer with its unit" placeholder="number and unit" autocomplete="off"><button type="submit">Check</button></form>
+        <div class="fb" aria-live="polite"></div></div>
+      <div class="qcard"><div class="qk">2 of 2</div><div class="q">What is the molar mass of <span class="f">CO<sub>2</sub></span>? (C 12.011, O 15.999)</div>
+        <form class="ask" data-q="mmco2"><input aria-label="Your answer with its unit" placeholder="number and unit" autocomplete="off"><button type="submit">Check</button></form>
+        <div class="fb" aria-live="polite"></div></div>
 
       <div class="head"><span class="eyebrow">Where it shows up</span></div>
       <div class="maprow"><span class="num">5.2</span><div><div class="rowtitle" style="font-size:15px">Reaction Stoichiometry</div><div class="asks">Every recipe calculation goes through moles.</div></div></div>
       <div class="maprow"><span class="num">6.1</span><div><div class="rowtitle" style="font-size:15px">Molarity and Dilution</div><div class="asks">Moles per litre starts here.</div></div></div>
       <div class="maprow"><span class="num">7.3</span><div><div class="rowtitle" style="font-size:15px">The Ideal Gas Law</div><div class="asks">The n in PV = nRT is moles.</div></div></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>Same section page as BYE Math</b> (Learn, then Simple / Medium / Hard; the problems wait), with the matching Tro sections under the title. The Learn tab adds a chemistry-only part: one quantity shown three ways (what you see, the particles, the symbols), because beginners lose their place moving between those levels.</div>
+    <div class="notes"><span class="why">research</span><br><b>Same section page as BYE Math</b> (Learn, then Simple / Medium / Hard; the problems wait), with the matching Tro sections under the title. The three views are linked (tap “18 g” and the same amount lights up in all three), and the page ends with “Check yourself”: answers are checked with their units, and a wrong one names the likely slip. The Learn tab adds a chemistry-only part: one quantity shown three ways (what you see, the particles, the symbols), because beginners lose their place moving between those levels.</div>
   </div>
+  <div class="board">
+    <div class="label">Section · Simple tab · fading</div>
+    <div class="phone">
+      <div class="back">Chapter 4</div>
+      <div class="eyebrow">Chapter 4 · §4.1</div>
+      <div class="title" style="font-size:28px;line-height:36px">The Mole and Molar Mass</div>
+      <div class="levels"><span>Learn</span><span class="on">Simple</span><span>Medium</span><span>Hard</span></div>
+      <div class="fade" aria-hidden="true"><span class="done"></span><span class="done"></span><span class="now" id="fadeNow"></span><span id="fadeNext"></span><span></span></div>
+      <div class="fadek"><span>worked</span><span>last step yours</span><span>solo</span></div>
+      <p class="p" style="font-size:16.5px">Problem 3. How many moles of water are in 9.01 g?</p>
+      <div class="st"><span class="n">1</span><div><div class="w">Molar mass of <span class="f">H<sub>2</sub>O</span> = 2 × 1.008 + 16.00 = 18.02 g/mol</div><div class="why2">Add up every atom in the formula.</div></div></div>
+      <div class="st"><span class="n">2</span><div><div class="w"><span class="m">moles</span> = <span class="g">9.01 g</span> ÷ 18.02 g/mol</div><div class="why2">Grams ÷ grams per mole leaves moles.</div></div></div>
+      <div class="st you"><span class="n">3</span><div style="flex:1"><div class="w">= ? mol</div><div class="why2">Your step. Keep 3 significant figures, as in 9.01.</div>
+        <form class="ask" data-q="fade"><input aria-label="Step 3: moles of water" placeholder="number and unit" autocomplete="off"><button type="submit">Check</button></form>
+        <div class="fb" aria-live="polite"></div>
+        <div class="w" id="fadeWorked" hidden>= 0.500 mol</div></div></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>Fading follows the learner, not the tab.</b> Simple starts fully worked; each right answer hides one more step from the end, and a wrong one brings the worked step back. Worked examples mainly save time, so every step you do is checked with feedback that names the slip.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Home · today’s review (mixed)</div>
+    <div class="phone">
+      <div class="back">Learn</div>
+      <div class="title" style="font-size:30px;line-height:38px">Today’s review</div>
+      <p class="plain">5 questions from chapters you’ve done, mixed. About 4 minutes.</p>
+      <div class="qcard"><div class="qk">1 of 5 · from 4.1</div><div class="q">How many moles is 88.02 g of <span class="f">CO<sub>2</sub></span>? (Molar mass 44.01 g/mol.)</div>
+        <form class="ask" data-q="mol88"><input aria-label="Your answer with its unit" placeholder="number and unit" autocomplete="off"><button type="submit">Check</button></form>
+        <div class="fb" aria-live="polite"></div></div>
+      <div class="head"><span class="eyebrow">Coming up</span></div>
+      <div class="reviewrow"><span class="from">1.8</span><span>Change 2.5 km to metres.</span></div>
+      <div class="reviewrow"><span class="from">3.3</span><span>Name <span class="f">CaCl<sub>2</sub></span>.</span></div>
+      <div class="reviewrow"><span class="from">2.4</span><span>How many neutrons are in carbon-14?</span></div>
+      <div class="reviewrow" style="border:0"><span class="from">0.1</span><span>Write 0.0042 in scientific notation.</span></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>Recall, spaced and mixed.</b> Practice testing and spaced review are the two study habits rated “high utility” (Dunlosky et al. 2013), and mixing problem types helps further. Older and missed topics come back more often; each answer is checked with its unit.</div>
+  </div>
+
 </section>
 
 
@@ -479,7 +588,7 @@
       <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ion na">+</span><span class="ion cl">−</span><span class="ball O">O</span></div><div class="body"><div class="t">Dissolve it</div><div class="s">Drop salt in water and watch the ions pull apart</div><div class="tags"><span class="tag">Ch 6, 14</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
       <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="ball H">H</span><span class="ball C">C</span></div><div class="body"><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it</div><div class="tags"><span class="tag">Ch 4</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>Free play, with a nudge.</b> Simulations help, but studies of PhET-style sims found that play alone often isn’t enough: learners do better with a goal. So every sandbox opens in free play and offers short “Try this” challenges, and each one links to the chapter that explains what you just saw.</div>
+    <div class="notes"><span class="why">research</span><br><b>Free play, with a nudge.</b> Simulations help, but studies of PhET-style sims found that play alone often isn’t enough: learners do better with a goal. So every sandbox opens with its first “Try this” challenge on top (free play is always there), and each one links to the chapter that explains what you just saw.</div>
   </div>
 
   <div class="board">
@@ -492,6 +601,7 @@
         <button class="chip" type="button" data-rx="ammonia" role="radio" aria-checked="false">Ammonia</button>
         <button class="chip" type="button" data-rx="co2" role="radio" aria-checked="false">Carbon dioxide</button>
       </div>
+      <div id="rxChall"></div>
       <div class="recipeLine" id="rxEq"></div>
 
       <div class="steppers" id="rxSteps"></div>
@@ -508,7 +618,6 @@
         <tbody id="rxAtoms"></tbody>
       </table>
 
-      <div id="rxChall"></div>
     </div>
     <div class="notes"><b>Limiting reactant, before anyone says the words.</b> Add molecules, press React, and see what forms and what’s left over. The atom table proves nothing is made or lost. Challenges (“exactly 4 waters, nothing left over”) turn the play into the recipe ratio. Atoms carry their letters, so colour is never the only clue.</div>
   </div>
@@ -518,6 +627,7 @@
     <div class="phone">
       <div class="back">Lab</div>
       <div class="title" style="font-size:30px;line-height:38px">Gas in a box</div>
+      <div class="chall"><div class="ck">Try this</div><div>Double the pressure without adding any gas. (Two ways work.)</div></div>
       <div class="gaswrap"><canvas id="gas" width="338" height="210" aria-label="Gas particles bouncing in a box. Their speed follows the temperature."></canvas></div>
       <div class="gauge" aria-live="polite"><div><div class="gk">Pressure</div><div class="gv" id="gP">—</div></div><div><div class="gk">Wall hits / s</div><div class="gv" id="gHits">—</div></div></div>
       <label class="fl" for="gT">Temperature <b id="gTv"></b></label>
@@ -527,7 +637,6 @@
       <label class="fl" for="gN">Amount <b id="gNv"></b></label>
       <input type="range" id="gN" min="10" max="60" step="5" value="30" class="slider">
       <p class="small" style="margin-top:12px">Each dot stands for 0.002 mol; a real box holds about 10<sup>22</sup> molecules. Pressure uses PV = nRT, taught in <span class="g">§7.3</span>.</p>
-      <div class="chall"><div class="ck">Try this</div><div>Double the pressure without adding any gas. (Two ways work.)</div></div>
     </div>
     <div class="notes"><b>Pressure you can see.</b> Hotter particles move faster and hit the walls more often; a smaller box means more hits too. The wall-hit counter is the kid-friendly version of pressure, and the gauge is the real number from PV = nRT. With Reduce Motion on, the particles stand still and the numbers still update.</div>
   </div>
@@ -880,6 +989,113 @@
     }
     requestAnimationFrame(frame);
     if (reduce) [gT, gV, gN].forEach(el => el.addEventListener('input', () => requestAnimationFrame(frame)));
+  })();
+</script>
+<script>
+  // ───── Practice layer: answer first, checked with units, slips named (docs/practice-layer.md) ─────
+  (function () {
+    const norm = s => s.trim().replace(/−/g, '-').replace(/[×x·*]/g, '*').replace(/\s+/g, '').toLowerCase();
+    // Read "1.5 × 10^-4", "1.5e-4", "2.000 mol", "44.01 g/mol" into {v, unit, sig}
+    function readQty(raw) {
+      let s = raw.trim().replace(/−/g, '-').replace(/,/g, '');
+      const m = s.match(/^([-+]?\d*\.?\d+)\s*(?:(?:[×x*·]\s*10\s*\^?\s*([-+]?\d+))|(?:e([-+]?\d+)))?\s*(.*)$/i);
+      if (!m) return null;
+      const exp = m[2] ?? m[3];
+      const v = parseFloat(m[1]) * (exp !== undefined ? Math.pow(10, parseInt(exp, 10)) : 1);
+      const digits = m[1].replace(/^[-+]/, '');
+      const sig = digits.includes('.') ? digits.replace('.', '').replace(/^0+/, '').length : digits.replace(/^0+/, '').replace(/0+$/, '').length || 1;
+      return { v, unit: m[4].trim().toLowerCase(), sig, sci: exp !== undefined, mant: parseFloat(m[1]) };
+    }
+    const fmt = (x, n) => x.toFixed(Math.max(0, n - 1 - Math.floor(Math.log10(Math.abs(x)))));  // n significant figures
+    const near = (a, b, rel = 0.002) => Math.abs(a - b) <= Math.abs(b) * rel;
+
+    // A moles-from-grams question: target, grams, molar mass, sig figs.
+    function molesQ(g, M, sigNeed) {
+      const want = g / M;
+      return raw => {
+        const q = readQty(raw); if (!q) return ['no', 'Type a number, then its unit (mol).'];
+        if (near(q.v, g * M)) return ['no', 'You multiplied by the molar mass. Grams <b>÷</b> grams per mole leaves moles.'];
+        if (near(q.v, M / g)) return ['no', 'Upside down: it is grams ÷ molar mass, not molar mass ÷ grams.'];
+        if (near(q.v, want * 6.022e23, 0.01)) return ['no', 'That is the number of molecules. The question asks for moles.'];
+        if (!near(q.v, want, 0.003)) return ['no', `Not quite. Divide ${g} g by ${M} g/mol.`];
+        if (!/^mol/.test(q.unit)) return ['part', `Right number. Add the unit: ${fmt(want, sigNeed)} mol.`];
+        if (q.sig < sigNeed) return ['part', `Right. Keep ${sigNeed} significant figures, as in the data: ${fmt(want, sigNeed)} mol.`];
+        return ['ok', `Right: ${g} g ÷ ${M} g/mol = ${fmt(want, sigNeed)} mol.`];
+      };
+    }
+    const CHECKS = {
+      sci: raw => {
+        const q = readQty(raw); if (!q) return ['no', 'Write it as a number times a power of ten, like 2.3 × 10^-5.'];
+        if (near(q.v, 1.5e-4) && q.sci && q.mant >= 1 && q.mant < 10) return ['ok', 'Right. 1.5 × 10<sup>−4</sup>: the point moved 4 places right, so the power is −4.'];
+        if (near(q.v, 1.5e-4) && q.sci) return ['part', 'Right value. In scientific notation one digit comes before the point: 1.5 × 10<sup>−4</sup>.'];
+        if (near(q.v, 1.5e-4)) return ['part', 'Same value, but write it with a power of ten: 1.5 × 10<sup>−4</sup>.'];
+        if (near(q.v, 1.5e4)) return ['no', 'Check the sign: a number smaller than 1 has a negative power.'];
+        return ['no', 'Count how many places the point moves to get 1.5.'];
+      },
+      rearr: raw => {
+        const s = norm(raw).replace(/^m=/, '');
+        if (['dv', 'd*v', 'vd', 'v*d'].includes(s)) return ['ok', 'Right: m = d × V. Multiplying both sides by V cancels it on the right.'];
+        if (['d/v', 'v/d'].includes(s)) return ['no', 'Don’t divide. V is dividing m, so multiply both sides by V.'];
+        return ['no', 'Get m alone: what undoes “÷ V”?'];
+      },
+      pct: raw => {
+        const q = readQty(raw); if (!q) return ['no', 'Type a number of grams.'];
+        if (near(q.v, 6)) return ['ok', 'Right: 0.15 × 40 g = 6 g.'];
+        if (near(q.v, 600) || near(q.v, 0.06)) return ['no', '15% means 0.15 (15 ÷ 100), not 15.'];
+        if (near(q.v, 40 / 15, 0.01)) return ['no', '“15% of 40” means 0.15 × 40, not 40 ÷ 15.'];
+        return ['no', 'Change 15% to a decimal first, then multiply.'];
+      },
+      oatoms: raw => {
+        const n = parseInt(raw, 10);
+        if (n === 6) return ['ok', 'Right: each NO<sub>3</sub> has 3 O, and the 2 outside the bracket doubles it.'];
+        if (n === 3) return ['no', 'Count both NO<sub>3</sub> groups: the 2 outside the bracket doubles everything inside. Review 3.2.'];
+        return ['no', 'Count the O inside the bracket, then multiply by the number outside. Review 3.2.'];
+      },
+      mol36: molesQ(36.04, 18.02, 4),
+      mol88: molesQ(88.02, 44.01, 4),
+      fade: molesQ(9.01, 18.02, 3),
+      mmco2: raw => {
+        const q = readQty(raw); if (!q) return ['no', 'Type a number, then its unit (g/mol).'];
+        if (near(q.v, 28.010, 0.001)) return ['no', 'That is CO. CO<sub>2</sub> has two O atoms: add 15.999 twice.'];
+        if (near(q.v, 12.011 * 2 + 15.999, 0.001)) return ['no', 'The 2 belongs to O, not C: one C and two O.'];
+        if (!near(q.v, 44.009, 0.0006)) return ['no', 'Add 1 × 12.011 for C and 2 × 15.999 for O.'];
+        if (!/^g\s*\/\s*mol|^g\s*mol/.test(q.unit)) return ['part', 'Right number. Molar mass is grams per mole: 44.01 g/mol.'];
+        return ['ok', 'Right: 12.011 + 2 × 15.999 = 44.01 g/mol.'];
+      },
+    };
+    document.querySelectorAll('form.ask').forEach(f => {
+      const fb = f.parentElement.querySelector('.fb');
+      f.addEventListener('submit', e => {
+        e.preventDefault();
+        const [kind, msg] = CHECKS[f.dataset.q](f.querySelector('input').value);
+        fb.className = 'fb ' + kind; fb.innerHTML = msg;
+        const ready = f.closest('.ready'); if (ready && kind !== 'no') { const a = ready.querySelector('.a'); a.hidden = false; }
+        if (f.dataset.q === 'fade') {
+          document.getElementById('fadeWorked').hidden = kind !== 'no';
+          if (kind === 'ok') { document.getElementById('fadeNow').className = 'done'; document.getElementById('fadeNext').className = 'now'; fb.innerHTML += ' Next problem hides step 2 as well.'; }
+          if (kind === 'no') fb.innerHTML += ' The worked step is shown below; the next problem keeps it.';
+        }
+      });
+    });
+    document.querySelectorAll('.showans').forEach(b => b.addEventListener('click', () => { b.parentElement.querySelector('.a').hidden = false; b.hidden = true; }));
+
+    // Three views, linked: tapping a part highlights the same thing in every view.
+    const CAP = { amt: 'All three say <b>how much</b>: 18 g of water is 1 mol, which is 6.022 × 10<sup>23</sup> molecules.', what: 'All three say <b>what</b>: water, its molecules, and the formula H<sub>2</sub>O (2 H and 1 O).' };
+    const v3 = document.getElementById('views3');
+    if (v3) v3.addEventListener('click', e => {
+      const b = e.target.closest('.lk'); if (!b) return;
+      const on = !b.classList.contains('hl');
+      v3.querySelectorAll('.lk').forEach(x => { const hit = on && x.dataset.l === b.dataset.l; x.classList.toggle('hl', hit); x.setAttribute('aria-pressed', hit); });
+      document.getElementById('linkCap').innerHTML = on ? CAP[b.dataset.l] : 'Tap any part to see the same thing in all three views.';
+    });
+
+    // At a glance: "Test me" hides each formula until it is tapped.
+    const band = document.getElementById('glanceBand'), tm = document.getElementById('testMe');
+    if (band && tm) {
+      const rows = band.querySelectorAll('.glance');
+      rows.forEach(r => { r.tabIndex = 0; r.addEventListener('click', () => r.classList.add('shown')); r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); r.classList.add('shown'); } }); });
+      tm.addEventListener('click', () => { const on = tm.getAttribute('aria-pressed') !== 'true'; tm.setAttribute('aria-pressed', on); band.classList.toggle('recall', on); rows.forEach(r => r.classList.remove('shown')); tm.textContent = on ? 'Show all' : 'Test me'; });
+    }
   })();
 </script>
 </body>

@@ -5,13 +5,16 @@ A chemistry learning app and website for everyone, from complete beginners and r
 ## Status (keep this current)
 - **No app code yet.** This repo holds the research, design guide, mockups and rules. The Expo app gets scaffolded here only when the user says go.
 - **Content base (2026-11-07):** the friend's class book, Tro, *Chemistry: A Molecular Approach*, AP Edition, 6th ed., used for references only (see Content). BYE Chem follows **our own beginner order** in `docs/chapter-map.md`, with the matching Tro sections on every chapter and section. The user chose this order over Tro's.
-- **Waiting on the user:** they review `docs/chapter-map.md` and the updated `design/chem-chapters.html`. **Build no app code, and change nothing in BYE Chem Engine, until the user says go.**
+- **Structure research done (2026-11-07):** `reports/BYE Chem structure vs research.md` compares the order and the page layout with textbooks, frameworks and studies. The user reviewed it, and its fixes are applied in the chapter map, in `docs/practice-layer.md` and in the mockup.
+- **Waiting on the user:** they review the updated mockup (`design/chem-chapters.html`). **Build no app code, and change nothing in BYE Chem Engine, until the user says go.**
 - **Demo site:** live at https://bye-chem-preview.byelabs.workers.dev (own Worker `bye-chem-preview`). It is still built from BYE-Math_app's `chem-sample` worktree (`npm run build:chem-preview`, then `npm run deploy:chem-preview` only on the user's go), because `/lab-demo` runs inside the BYE Math app. It moves here once this app exists.
 - **Engine:** `../BYE-Chem_engine`. Piece 1 (the `molecule3d` viewer) is built; an independent review's fixes wait for the go. See its AGENTS.md.
 - **One piece at a time:** the user reviews each piece before the next starts.
 
 ## Where things are
 - `docs/chapter-map.md`: **the chapter map**, our order. Each chapter and section has its question, Tro sections, level tags (Intro / 1A / 1B / AP), "Ready? You need" prerequisites, and Lab links. It also has the class-order table for *I'm taking Chem 1A*. Edit the map first; the mockup's map table is generated from it.
+- `docs/practice-layer.md`: **how learners practise**, ten rules backed by the research: answer first, "Check yourself" with unit-aware feedback, fading that follows the learner, spaced mixed review, a skill-based gap check, recall mode, and linked views. Every new page follows it.
+- `reports/` and `research_notes/`: research reports and the sourced notes behind them.
 - `docs/research/M-tro-6e-contents.md`: Tro 6e's 26 chapters and 229 sections (titles and pages only).
 - `docs/research/`: sourced research. Start with `README.md` (summary in `summary.html`). `L-lessons-from-bye-math.md` explains why each rule below exists. `first-pass.md` is the earliest overview.
 - `docs/design-guide.md` and `design/chem-design-guide.html`: the look, notation and figure rules.
