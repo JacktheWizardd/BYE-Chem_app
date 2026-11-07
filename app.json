@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "BYE Chem",
+    "slug": "bye-chem",
+    "version": "0.1.0",
+    "scheme": "byechem",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": { "supportsTablet": true },
+    "web": { "output": "single", "bundler": "metro" },
+    "plugins": [
+      ["expo-router", { "asyncRoutes": { "web": false } }],
+      "expo-font",
+      ["expo-splash-screen", { "backgroundColor": "#f6f3ec", "imageWidth": 76 }]
+    ],
+    "experiments": { "typedRoutes": true }
+  }
+}

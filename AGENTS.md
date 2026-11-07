@@ -3,15 +3,25 @@
 A chemistry learning app and website for everyone, from complete beginners and returning adults up to community-college Chem 1A (PCC CHEM 001A). It has the same structure and look as BYE Math. It is an Expo / React Native app: prioritise mobile-first patterns, speed and cross-platform behaviour.
 
 ## Status (keep this current)
-- **No app code yet.** This repo holds the research, design guide, mockups and rules. The Expo app gets scaffolded here only when the user says go.
+- **Demo app (2026-11-07): the Chapter 4 slice is built** (Expo SDK 58, web + iOS). It has Home (Learn · Lab · Tools, plus the class-order view), every chapter page from the map, Chapter 0 §0.1–0.4, Chapter 4 with §4.1 (Learn, Check yourself, Simple with fading), Today's review, the 3D molecule viewer, and the molar-mass and periodic-table tools. Everything else shows as "coming soon". Not deployed yet. It goes to a **new Worker** (`bye-chem-demo`), only on the user's go.
 - **Content base (2026-11-07):** the friend's class book, Tro, *Chemistry: A Molecular Approach*, AP Edition, 6th ed., used for references only (see Content). BYE Chem follows **our own beginner order** in `docs/chapter-map.md`, with the matching Tro sections on every chapter and section. The user chose this order over Tro's.
 - **Structure research done (2026-11-07):** `reports/BYE Chem structure vs research.md` compares the order and the page layout with textbooks, frameworks and studies. The user reviewed it, and its fixes are applied in the chapter map, in `docs/practice-layer.md` and in the mockup.
-- **Waiting on the user:** they review the updated mockup (`design/chem-chapters.html`). **Build no app code, and change nothing in BYE Chem Engine, until the user says go.**
+- **Waiting on the user:** they review the demo and say go for the deploy. **Change nothing in BYE Chem Engine** (its hold still applies). The demo leaves SF<sub>6</sub> and PCl<sub>5</sub> out of the viewer until the engine's angle-mark fix is approved.
 - **Demo site:** live at https://bye-chem-preview.byelabs.workers.dev (own Worker `bye-chem-preview`). It is still built from BYE-Math_app's `chem-sample` worktree (`npm run build:chem-preview`, then `npm run deploy:chem-preview` only on the user's go), because `/lab-demo` runs inside the BYE Math app. It moves here once this app exists.
 - **Engine:** `../BYE-Chem_engine`. Piece 1 (the `molecule3d` viewer) is built; an independent review's fixes wait for the go. See its AGENTS.md.
 - **One piece at a time:** the user reviews each piece before the next starts.
 
 ## Where things are
+- **The app:**
+  - `src/app/`: routes (Expo Router).
+  - `src/content/`: content. `map.generated.ts` comes from `docs/chapter-map.md` via `npm run gen:map`; never hand-edit it. Built chapters register themselves as `chapters/chNN.ts`.
+  - `src/practice/`: the answer checker that names slips, quantity reading, and periodic-table logic.
+  - `src/components/`: `Rich` for real sub/superscripts, the practice components, and the UI pieces.
+  - `test/`: checker verdicts, and content numbers recomputed from the engine.
+- **Running it:**
+  - `npm start` (Metro on :8086), from a worktree under `.claude/worktrees/`.
+  - The engines resolve through the symlinks `.claude/worktrees/BYE-Chem_engine` and `BYE-Math_engine`.
+  - `npm run check` runs the map check, types, lint and tests. CI runs the same in `.github/workflows/check.yml`.
 - `docs/chapter-map.md`: **the chapter map**, our order. Each chapter and section has its question, Tro sections, level tags (Intro / 1A / 1B / AP), "Ready? You need" prerequisites, and Lab links. It also has the class-order table for *I'm taking Chem 1A*. Edit the map first; the mockup's map table is generated from it.
 - `docs/practice-layer.md`: **how learners practise**, ten rules backed by the research: answer first, "Check yourself" with unit-aware feedback, fading that follows the learner, spaced mixed review, a skill-based gap check, recall mode, and linked views. Every new page follows it.
 - `reports/` and `research_notes/`: research reports and the sourced notes behind them.

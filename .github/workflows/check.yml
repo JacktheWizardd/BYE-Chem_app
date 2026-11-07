@@ -1,0 +1,35 @@
+name: check
+
+# Runs `npm run check` (map up to date, types, lint, tests) with the two engines
+# checked out beside the app, the same layout as on a developer's machine.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: BYE-Chem_app
+      - uses: actions/checkout@v4
+        with:
+          repository: JacktheWizardd/BYE-Chem_engine
+          path: BYE-Chem_engine
+      - uses: actions/checkout@v4
+        with:
+          repository: JacktheWizardd/BYE-Math_engine
+          path: BYE-Math_engine
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: BYE-Chem_app/package-lock.json
+      - run: npm ci
+        working-directory: BYE-Chem_app
+      - run: npm run check
+        working-directory: BYE-Chem_app
+        env:
+          CI: '1'
