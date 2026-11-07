@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem render styles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&amp;family=STIX+Two+Text:ital@0;1&amp;family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+} }
+</script>
+<style>
+  /* BYE paper world, light only. Layout idea: three style columns; each draws the same two real three.js scenes. */
+  :root {
+    color-scheme: light;
+    --ground: #f6f3ec; --band: #fcfaf5; --line: #e3dccf; --ink: #1e1c19; --ink2: #5a554d; --muted: #6b655b;
+    --shu: #b5462a; --ai: #2f4b7c; --matsu: #2f6b4a; --coral: #d9846a; --canvas: #e7e1d5;
+    --sans: 'Zen Kaku Gothic New', system-ui, sans-serif;
+    --serif: 'Shippori Mincho', Georgia, serif;
+    --chem: 'STIX Two Text', 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .top { max-width: 1260px; margin: 0 auto; padding: 36px 24px 8px; }
+  .top h1 { font-family: var(--serif); font-weight: 400; font-size: 32px; margin: 0 0 10px; text-wrap: balance; }
+  .top p { margin: 0 0 10px; max-width: 74ch; color: var(--ink2); line-height: 1.65; font-size: 15px; }
+  .cols { max-width: 1260px; margin: 0 auto; padding: 16px 24px 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+  .col { background: var(--ground); border-radius: 26px; padding: 22px 22px 26px; box-shadow: 0 1px 0 var(--line), 0 18px 40px rgba(30,28,25,.08); }
+  .kanji { font-family: var(--serif); font-size: 44px; line-height: 1; }
+  .name { font-family: var(--serif); font-size: 24px; margin: 8px 0 4px; }
+  .one { font-size: 14.5px; line-height: 22px; color: var(--ink2); margin: 0; }
+  .eyebrow { font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); margin: 18px 0 8px; display: flex; justify-content: space-between; align-items: center; }
+  .view { position: relative; width: 100%; aspect-ratio: 32 / 21; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); touch-action: none; cursor: grab; }
+  .view canvas { display: block; width: 100% !important; height: 100% !important; }
+  .hint { position: absolute; right: 10px; bottom: 8px; font-size: 11.5px; color: var(--muted); background: rgba(246,243,236,.85); padding: 1px 8px; border-radius: 9px; pointer-events: none; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; padding: 2px; background: var(--band); letter-spacing: 0; text-transform: none; }
+  .seg button { border: 0; background: none; font: 500 12.5px var(--sans); color: var(--ink2); padding: 4px 12px; border-radius: 8px; cursor: pointer; min-height: 28px; }
+  .seg button.on { background: var(--ink); color: var(--ground); }
+  .sw { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .sw span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); }
+  .sw i { width: 18px; height: 18px; border-radius: 5px; display: inline-block; border: 1px solid rgba(30,28,25,.12); }
+  ul { margin: 6px 0 0; padding-left: 18px; font-size: 14px; line-height: 22px; color: var(--ink2); }
+  ul b { color: var(--ink); font-weight: 500; }
+  .from { margin-top: 14px; font-size: 12.5px; line-height: 19px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }
+  .from b { color: var(--ink); font-weight: 500; }
+  .from code { font-size: 12px; }
+  .foot { max-width: 1260px; margin: 0 auto 50px; padding: 0 24px; font-size: 14px; line-height: 1.7; color: var(--ink2); }
+  .foot b { color: var(--ink); font-weight: 500; }
+  .err { padding: 20px; font-size: 14px; color: var(--shu); }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>BYE Chem: three render styles, as real 3D</h1>
+  <p>Each column runs the same two three.js scenes (air in a box, and a methane molecule) with a different material. These are the actual materials the engine would use: three.js 0.187, the same library and version BYE Math Engine already draws 3D with on phones (through expo-gl). <b>Drag any view to turn it</b>, pinch or scroll to zoom, and flip the air box between 2D and 3D.</p>
+  <p>Moods came from Pinterest searches for Japanese science prints, risograph posters, Japanese editorial grids and matte 3D renders; nothing is copied from a pin. Molecule atoms carry their letters, so colour is never the only clue.</p>
+</header>
+
+<section class="cols">
+  <article class="col" data-style="sumi">
+    <div class="kanji">墨</div>
+    <div class="name">Sumi ink</div>
+    <p class="one">An old engraved science plate: ink outlines and shading made of tiny dots.</p>
+    <div class="eyebrow"><span>Air in a box · N<sub>2</sub> and O<sub>2</sub></span><span class="seg"><button type="button" data-dim="2">2D</button><button type="button" class="on" data-dim="3">3D</button></span></div>
+    <div class="view" data-scene="box" role="img" aria-label="Sumi ink style: nitrogen and oxygen molecules bouncing in a 3D box, stippled ink shading. Drag to turn."><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Methane, CH<sub>4</sub></span><span>tetrahedral, 109.5°</span></div>
+    <div class="view" data-scene="mol" role="img" aria-label="Sumi ink style: a methane molecule, carbon with four hydrogens, ink outlines and dotted shading. Drag to turn."><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Palette</span></div>
+    <div class="sw"><span><i style="background:#f6f3ec"></i>paper</span><span><i style="background:#1e1c19"></i>sumi</span><span><i style="background:#d9a597"></i>O wash</span><span><i style="background:#a9b6cc"></i>N wash</span></div>
+    <ul>
+      <li><b>Feels:</b> calm, bookish, grown-up; closest to BYE’s Mincho headings.</li>
+      <li><b>Good for:</b> Learn pages and chapter pictures.</li>
+      <li><b>Risk:</b> dots can look busy with hundreds of particles; keep counts low or dots light.</li>
+    </ul>
+    <div class="from"><b>In the engine:</b> one <code>ShaderMaterial</code>: Lambert light, then screen-space stipple (darker side, more dots), plus an inverted-hull ink outline. Works on <code>InstancedMesh</code>, so hundreds of atoms are two draw calls. The same shader draws the 2D view with an overhead camera.</div>
+  </article>
+
+  <article class="col" data-style="riso">
+    <div class="kanji">版</div>
+    <div class="name">Two-colour print</div>
+    <p class="one">A risograph poster or old printed label: flat vermilion and indigo, halftone shadows, slightly off-register.</p>
+    <div class="eyebrow"><span>Air in a box · N<sub>2</sub> and O<sub>2</sub></span><span class="seg"><button type="button" data-dim="2">2D</button><button type="button" class="on" data-dim="3">3D</button></span></div>
+    <div class="view" data-scene="box" role="img" aria-label="Two-colour print style: nitrogen and oxygen molecules in flat colours with halftone shadows, bouncing in a 3D box. Drag to turn."><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Methane, CH<sub>4</sub></span><span>tetrahedral, 109.5°</span></div>
+    <div class="view" data-scene="mol" role="img" aria-label="Two-colour print style: a methane molecule in flat colours with halftone dot shadows. Drag to turn."><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Palette</span></div>
+    <div class="sw"><span><i style="background:#f3eadb"></i>cream</span><span><i style="background:#2f4b7c"></i>ai ink</span><span><i style="background:#d2563a"></i>vermilion</span><span><i style="background:#e9dcc4"></i>H paper</span></div>
+    <ul>
+      <li><b>Feels:</b> playful, bold, a little nostalgic; the most kid-like.</li>
+      <li><b>Good for:</b> the Lab sandboxes; reads well small and fast.</li>
+      <li><b>Risk:</b> flat colour leans on the atom letters more than the others.</li>
+    </ul>
+    <div class="from"><b>In the engine:</b> a two-band toon <code>ShaderMaterial</code> with a screen-space halftone in the second ink, offset a couple of pixels for the off-register look. The cheapest of the three on a phone GPU.</div>
+  </article>
+
+  <article class="col" data-style="zu">
+    <div class="kanji">図</div>
+    <div class="name">Drafting table</div>
+    <p class="one">A designer’s construction grid: hairlines, matte ceramic atoms, soft light.</p>
+    <div class="eyebrow"><span>Air in a box · N<sub>2</sub> and O<sub>2</sub></span><span class="seg"><button type="button" data-dim="2">2D</button><button type="button" class="on" data-dim="3">3D</button></span></div>
+    <div class="view" data-scene="box" role="img" aria-label="Drafting table style: matte nitrogen and oxygen molecules bouncing in a 3D box over a hairline grid. Drag to turn."><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Methane, CH<sub>4</sub></span><span>tetrahedral, 109.5°</span></div>
+    <div class="view" data-scene="mol" role="img" aria-label="Drafting table style: a matte ceramic methane molecule over a hairline grid. Drag to turn."><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Palette</span></div>
+    <div class="sw"><span><i style="background:#f6f3ec"></i>paper</span><span><i style="background:#e3dccf"></i>hairline</span><span><i style="background:#cf7a62"></i>clay O</span><span><i style="background:#6f86ad"></i>slate N</span></div>
+    <ul>
+      <li><b>Feels:</b> precise and quiet; the closest match to BYE Math’s graphs.</li>
+      <li><b>Good for:</b> measuring things (pressure, angles, distances).</li>
+      <li><b>Risk:</b> the least distinctive alone; it leans on motion and light.</li>
+    </ul>
+    <div class="from"><b>In the engine:</b> stock <code>MeshStandardMaterial</code> (rough, not shiny) with hemisphere and key light, a hairline <code>GridHelper</code> floor. Nothing custom to maintain; it’s how BYE Math Engine already draws 3D.</div>
+  </article>
+</section>
+
+<p class="foot"><b>They can mix,</b> because a style is only a material and a background: <b>Sumi ink</b> for Learn pages and chapter pictures, <b>Two-colour print</b> for the Lab, and the <b>Drafting table</b> grid whenever something is measured. In the engine that’s one <code>theme</code> setting; the simulation underneath doesn’t change. 2D is the same scene seen straight on with depth locked, so every style works in both.</p>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LIGHT = new THREE.Vector3(-0.55, 0.65, 0.52).normalize();
+  const COL = {
+    sumi: { bg: 0xf6f3ec, H: 0xfbf8f1, C: 0x3a3733, O: 0xd9a597, N: 0xa9b6cc, ink: 0x1e1c19, line: 0x1e1c19 },
+    riso: { bg: 0xf3eadb, H: 0xe9dcc4, C: 0x2f4b7c, O: 0xd2563a, N: 0x2f4b7c, ink: 0x2f4b7c, line: 0x2f4b7c },
+    zu:   { bg: 0xf6f3ec, H: 0xfbf9f4, C: 0x4a4641, O: 0xcf7a62, N: 0x6f86ad, ink: 0x3a3733, line: 0xb9b1a3 },
+  };
+
+  // ── Materials: one function per style. Each works on plain meshes and on InstancedMesh. ──
+  const VERT = /* glsl */`
+    varying vec3 vN;
+    void main() {
+      vec4 p = vec4(position, 1.0);
+      vec3 n = normal;
+      #ifdef USE_INSTANCING
+        p = instanceMatrix * p;
+        n = mat3(instanceMatrix) * n;
+      #endif
+      vN = normalize(normalMatrix * n);
+      gl_Position = projectionMatrix * modelViewMatrix * p;
+    }`;
+  function stippleMat(color, ink) {
+    return new THREE.ShaderMaterial({
+      uniforms: { uColor: { value: new THREE.Color(color) }, uInk: { value: new THREE.Color(ink) }, uLight: { value: LIGHT }, uPx: { value: 1 } },
+      vertexShader: VERT,
+      fragmentShader: /* glsl */`
+        uniform vec3 uColor, uInk, uLight; uniform float uPx; varying vec3 vN;
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+        void main() {
+          float s = clamp(dot(normalize(vN), uLight) * 0.75 + 0.35, 0.0, 1.0);
+          vec2 cell = floor(gl_FragCoord.xy / (1.6 * uPx));
+          float dots = step(hash(cell), pow(1.0 - s, 1.7) * 0.7);
+          gl_FragColor = vec4(mix(uColor, uInk, dots * 0.9), 1.0);
+        }`,
+    });
+  }
+  function halftoneMat(color, ink) {
+    return new THREE.ShaderMaterial({
+      uniforms: { uColor: { value: new THREE.Color(color) }, uInk: { value: new THREE.Color(ink) }, uLight: { value: LIGHT }, uPx: { value: 1 } },
+      vertexShader: VERT,
+      fragmentShader: /* glsl */`
+        uniform vec3 uColor, uInk, uLight; uniform float uPx; varying vec3 vN;
+        void main() {
+          float s = dot(normalize(vN), uLight);
+          float shade = clamp(0.62 - s, 0.0, 1.0);                        // 0 lit, up to 1 in shadow
+          vec2 g = (gl_FragCoord.xy + vec2(2.0, 1.0) * uPx) / (5.0 * uPx); // halftone grid, off-register
+          vec2 f = fract(g) - 0.5;
+          float dotR = shade * 0.5;
+          float d = step(length(f), dotR);
+          vec3 base = s > 0.62 ? mix(uColor, vec3(1.0), 0.10) : uColor;      // two flat bands
+          gl_FragColor = vec4(mix(base, uInk, d * 0.75), 1.0);
+        }`,
+    });
+  }
+  function outlineMat(color, width) {
+    return new THREE.ShaderMaterial({
+      uniforms: { uColor: { value: new THREE.Color(color) }, uW: { value: width } },
+      side: THREE.BackSide,
+      vertexShader: /* glsl */`
+        uniform float uW;
+        void main() {
+          vec4 p = vec4(position + normal * uW, 1.0);
+          #ifdef USE_INSTANCING
+            p = instanceMatrix * p;
+          #endif
+          gl_Position = projectionMatrix * modelViewMatrix * p;
+        }`,
+      fragmentShader: `uniform vec3 uColor; void main() { gl_FragColor = vec4(uColor, 1.0); }`,
+    });
+  }
+  function atomMat(style, el) {
+    const c = COL[style];
+    if (style === 'sumi') return stippleMat(c[el], c.ink);
+    if (style === 'riso') return halftoneMat(c[el], el === 'O' ? 0x2f4b7c : 0x1e2f52);
+    return new THREE.MeshStandardMaterial({ color: c[el], roughness: 0.82, metalness: 0 });
+  }
+  // Outline width is a share of the atom's radius, so small gas molecules stay crisp.
+  const outlineFor = (style, rad) => style === 'sumi' ? outlineMat(0x1e1c19, rad * 0.11) : style === 'riso' ? outlineMat(0x2f4b7c, rad * 0.08) : null;
+
+  function letterSprite(el, style) {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128; const g = cv.getContext('2d');
+    const dark = (style !== 'zu' && (el === 'C' || (style === 'riso' && el !== 'H'))) || (style === 'zu' && el === 'C');
+    g.font = '84px "STIX Two Text", serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.lineWidth = 12; g.lineJoin = 'round'; g.strokeStyle = dark ? 'rgba(30,28,25,.85)' : 'rgba(246,243,236,.92)'; g.strokeText(el, 64, 70); // halo keeps the letter readable over shading
+    g.fillStyle = dark ? '#f6f3ec' : '#1e1c19'; g.fillText(el, 64, 70);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+    return s;
+  }
+
+  function setupView(host, style) {
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const px = Math.min(2, window.devicePixelRatio || 1);
+    renderer.setPixelRatio(px); renderer.setClearColor(COL[style].bg);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    host.prepend(renderer.domElement);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 32 / 21, 0.1, 100);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 4; controls.maxDistance = 16;
+    controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.8;
+    renderer.domElement.addEventListener('pointerdown', () => { controls.autoRotate = false; host.querySelector('.hint')?.remove(); });
+    if (style === 'zu') {
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xe7e1d5, 1.6));
+      const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-3, 4, 3); scene.add(key);
+    }
+    const resize = () => { const w = host.clientWidth, h = host.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+    new ResizeObserver(resize).observe(host); resize();
+    const setPx = (mat) => { if (mat.uniforms?.uPx) mat.uniforms.uPx.value = px; };
+    return { renderer, scene, camera, controls, setPx };
+  }
+
+  // ── Scene 1: air in a box, with a 2D/3D switch ──
+  function boxScene(host, style, segButtons) {
+    const v = setupView(host, style), c = COL[style];
+    const BX = 2.4, BY = 1.5, BZ = 1.5, r = 0.11, N = 26;
+    v.camera.position.set(3.2, 2.2, 5.2); v.controls.target.set(0, 0, 0);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(BX * 2, BY * 2, BZ * 2)), new THREE.LineBasicMaterial({ color: c.line }));
+    v.scene.add(edges);
+    if (style === 'zu') { const grid = new THREE.GridHelper(8, 32, 0xd9d1c2, 0xe8e2d6); grid.position.y = -BY - 0.001; v.scene.add(grid); }
+    const sphere = new THREE.SphereGeometry(r, 24, 16);
+    const rand = (() => { let a = 7; return () => { a = (a * 16807) % 2147483647; return a / 2147483647; }; })();
+    const mols = [];
+    for (let i = 0; i < N; i++) mols.push({
+      el: i % 5 === 0 ? 'O' : 'N',
+      p: new THREE.Vector3((rand() * 2 - 1) * (BX - .3), (rand() * 2 - 1) * (BY - .3), (rand() * 2 - 1) * (BZ - .3)),
+      v: new THREE.Vector3(rand() - .5, rand() - .5, rand() - .5).normalize().multiplyScalar(0.012 + rand() * 0.01),
+      q: new THREE.Quaternion().setFromEuler(new THREE.Euler(rand() * 6, rand() * 6, rand() * 6)),
+      spin: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(rand() - .5, rand() - .5, rand() - .5).normalize(), 0.02),
+    });
+    const groups = {};
+    for (const el of ['N', 'O']) {
+      const count = mols.filter(m => m.el === el).length * 2;
+      const mat = atomMat(style, el); v.setPx(mat);
+      const mesh = new THREE.InstancedMesh(sphere, mat, count); v.scene.add(mesh);
+      const om = outlineFor(style, r * 0.6); const ol = om ? new THREE.InstancedMesh(sphere, om, count) : null; if (ol) v.scene.add(ol);
+      groups[el] = { mesh, ol };
+    }
+    let flat = false;
+    const m4 = new THREE.Matrix4(), off = new THREE.Vector3(), tmp = new THREE.Vector3(), one = new THREE.Vector3(1, 1, 1);
+    function setDim(d) {
+      flat = d === 2; edges.scale.z = flat ? 1e-3 : 1;
+      segButtons.forEach(b => b.classList.toggle('on', +b.dataset.dim === d));
+      edges.scale.z = flat ? 1e-3 : 1;
+      if (flat) { for (const m of mols) { m.p.z = 0; m.v.z = 0; } v.camera.position.set(0, 0, 9); v.controls.enableRotate = false; v.controls.autoRotate = false; }
+      else { for (const m of mols) m.v.z = (rand() - .5) * 0.02; v.camera.position.set(3.2, 2.2, 5.2); v.controls.enableRotate = true; }
+      v.controls.target.set(0, 0, 0); v.controls.update();
+    }
+    segButtons.forEach(b => b.addEventListener('click', () => setDim(+b.dataset.dim)));
+    return () => {
+      const idx = { N: 0, O: 0 };
+      for (const m of mols) {
+        if (!reduce) {
+          m.p.add(m.v);
+          for (const [k, lim] of [['x', BX], ['y', BY], ['z', BZ]]) if (Math.abs(m.p[k]) > lim - 0.22) { m.v[k] *= -1; m.p[k] = Math.sign(m.p[k]) * (lim - 0.22); }
+          if (flat) { m.q.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.02)); } else m.q.multiply(m.spin);
+        }
+        off.set(r * 0.95, 0, 0).applyQuaternion(m.q); if (flat) off.z = 0;
+        for (const s of [1, -1]) {
+          tmp.copy(m.p).addScaledVector(off, s);
+          m4.compose(tmp, new THREE.Quaternion(), one);
+          const g = groups[m.el]; g.mesh.setMatrixAt(idx[m.el], m4); if (g.ol) g.ol.setMatrixAt(idx[m.el], m4); idx[m.el]++;
+        }
+      }
+      for (const el in groups) { groups[el].mesh.instanceMatrix.needsUpdate = true; if (groups[el].ol) groups[el].ol.instanceMatrix.needsUpdate = true; }
+      v.controls.update(); v.renderer.render(v.scene, v.camera);
+    };
+  }
+
+  // ── Scene 2: methane, a real tetrahedron you can turn ──
+  function molScene(host, style) {
+    const v = setupView(host, style), c = COL[style];
+    v.camera.position.set(0.6, 0.8, 6.2);
+    if (style === 'zu') { const grid = new THREE.GridHelper(8, 32, 0xd9d1c2, 0xe8e2d6); grid.position.y = -1.6; v.scene.add(grid); }
+    const k = 1 / Math.sqrt(3), L = 1.25;
+    const H = [[k, k, k], [k, -k, -k], [-k, k, -k], [-k, -k, k]].map(a => new THREE.Vector3(...a).multiplyScalar(L));
+    const mol = new THREE.Group(); v.scene.add(mol);
+    const addAtom = (el, pos, rad) => {
+      const geo = new THREE.SphereGeometry(rad, 48, 32), mat = atomMat(style, el); v.setPx(mat);
+      const m = new THREE.Mesh(geo, mat); m.position.copy(pos); mol.add(m);
+      const om = outlineFor(style, rad); if (om) { const o = new THREE.Mesh(geo, om); o.position.copy(pos); mol.add(o); }
+      const lab = letterSprite(el, style); lab.scale.setScalar(rad * 1.25); lab.userData = { pos: pos.clone(), rad }; mol.add(lab);
+      return lab;
+    };
+    const labels = [addAtom('C', new THREE.Vector3(), 0.42)];
+    const bondMat = style === 'zu' ? new THREE.MeshStandardMaterial({ color: c.line, roughness: 0.9 }) : new THREE.MeshBasicMaterial({ color: c.ink });
+    for (const h of H) {
+      labels.push(addAtom('H', h, 0.28));
+      const b = new THREE.Mesh(new THREE.CylinderGeometry(style === 'sumi' ? 0.035 : 0.07, style === 'sumi' ? 0.035 : 0.07, L, 16), bondMat);
+      b.position.copy(h).multiplyScalar(0.5); b.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), h.clone().normalize()); mol.add(b);
+    }
+    mol.rotation.set(0.3, 0.5, 0);
+    const camDir = new THREE.Vector3(), wp = new THREE.Vector3(), inv = new THREE.Matrix4();
+    return () => {
+      // keep each letter on the side of its atom that faces the camera
+      inv.copy(mol.matrixWorld).invert();
+      for (const lab of labels) {
+        wp.copy(lab.userData.pos).applyMatrix4(mol.matrixWorld);
+        camDir.copy(v.camera.position).sub(wp).normalize().transformDirection(inv);
+        lab.position.copy(lab.userData.pos).addScaledVector(camDir, lab.userData.rad * 1.02);
+      }
+      v.controls.update(); v.renderer.render(v.scene, v.camera);
+    };
+  }
+
+  try {
+    await document.fonts.ready;
+    const loops = [];
+    document.querySelectorAll('.col').forEach(col => {
+      const style = col.dataset.style;
+      loops.push(boxScene(col.querySelector('[data-scene="box"]'), style, [...col.querySelectorAll('.seg button')]));
+      loops.push(molScene(col.querySelector('[data-scene="mol"]'), style));
+    });
+    const tick = () => { loops.forEach(f => f()); requestAnimationFrame(tick); };
+    tick();
+  } catch (e) {
+    document.querySelectorAll('.view').forEach(v => v.innerHTML = '<div class="err">3D could not start here: ' + String(e.message || e) + '</div>');
+  }
+</script>
+</body>
+</html>

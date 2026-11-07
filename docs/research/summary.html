@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem research</title>
+<style>
+:root{--ink:#1d1b18;--ink2:#5c574f;--line:#e2ddd3;--bg:#f6f3ec;--acc:#c8553d}
+@media (prefers-color-scheme:dark){:root{--ink:#ece8e0;--ink2:#a8a297;--line:#3a3631;--bg:#1b1a17;--acc:#e07a5f}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+h1{font:600 2.1rem/1.2 Georgia,serif;margin:0 0 8px}
+h2{font:600 1.45rem/1.3 Georgia,serif;margin:44px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+h3{font-size:1.05rem;margin:28px 0 8px}
+p,li{color:var(--ink)} em{color:var(--ink2)}
+a{color:var(--acc)} code{font:0.88em ui-monospace,Menlo,monospace;background:color-mix(in srgb,var(--line) 55%,transparent);padding:1px 5px;border-radius:4px}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:0.9rem}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink2);white-space:nowrap}
+ul.sub{margin:4px 0}
+pre{overflow-x:auto;background:color-mix(in srgb,var(--line) 40%,transparent);padding:12px;border-radius:8px;font-size:0.82rem}
+pre code{background:none;padding:0}
+blockquote{margin:14px 0;padding:8px 14px;border-left:3px solid var(--acc);color:var(--ink2)}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem;margin:8px 0 24px}
+</style></head><body><main>
+<h1>BYE Chem research</h1>
+<p><em>2026-11-06. Five research tracks, each a full report in docs/research/, all spot-checked by the main session (see "How this was checked"). The audience is everyone: complete beginners, older and returning learners, and community-college Chem 1A students.</em></p>
+<div class="tw"><table><thead><tr><th>File</th><th>What it answers</th></tr></thead><tbody><tr><td><code>docs/research/A-course.md</code></td><td>What Chem 1A at PCC covers, the beginner course before it, and the verified OpenStax section list</td></tr><tr><td><code>docs/research/B-problem-types.md</code></td><td>Every kind of problem, with its named steps, common slips, and the picture that helps</td></tr><tr><td><code>docs/research/C-learning.md</code></td><td>What chemistry-education research says beginners need</td></tr><tr><td><code>docs/research/D-apps.md</code></td><td>What existing apps do, and the gap</td></tr><tr><td><code>docs/research/E-engine.md</code></td><td>How to build a chemistry figure engine alongside BYE Math Engine</td></tr></tbody></table></div>
+<h2>1. The course (verified)</h2>
+<p><strong>Pasadena City College</strong> fits "PCC Chem 1A" (the friend's campus is still to be confirmed). From the <a href="https://curriculum.pasadena.edu/course-descriptions/chem/chem.pdf">PCC catalog</a>:</p>
+<div class="tw"><table><thead><tr><th>Course</th><th>Units</th><th>Prerequisites</th><th>Covers</th></tr></thead><tbody><tr><td><strong>CHEM 022</strong> Introductory Chemistry</td><td>4</td><td>Intermediate algebra</td><td>The beginner course (C-ID CHEM 101), described as preparation for 001A</td></tr><tr><td><strong>CHEM 001A</strong> General Chemistry and Chemical Analysis I</td><td>5 (54 h lecture, 108 h lab)</td><td>Intermediate algebra <strong>and</strong> CHEM 022 or placement</td><td>Atomic structure and bonding, stoichiometry, gases, liquids, solids, solutions; intro to equilibrium and organic; quantitative lab analysis. C-ID CHEM 110</td></tr><tr><td><strong>CHEM 001B</strong></td><td>5</td><td>001A</td><td>Kinetics, equilibrium, thermodynamics, electrochemistry, and more</td></tr></tbody></table></div>
+<p>The statewide <a href="https://data-c-idsystem.org/descriptors/final/show/297">C-ID CHEM 110</a> descriptor lists the required content: nomenclature, atomic structure, quantum theory and electronic structure, periodic properties, reactions, stoichiometry, gas laws, structure and bonding, states of matter, and aqueous solutions. That makes it the checklist for "Chem 1A level".</p>
+<p><strong>Course map.</strong> A-course.md maps 001A to OpenStax <em>Chemistry 2e</em> chapters 1–11, plus 13.1–13.3 and 20. All <strong>114 section titles</strong> in it were checked against live openstax.org pages. This replaces the earlier list written from memory.</p>
+<p><strong>Path from zero:</strong></p>
+<ul>
+<li><strong>Stage 0, maths floor:</strong> arithmetic, fractions, percent, ratios, scientific notation, rearranging formulas. PCC requires intermediate algebra; the specific skills are inferred.</li>
+<li><strong>Stage 1, the C-ID CHEM 101 intro list:</strong> matter and atoms → nomenclature → measurement → bonds → structure → reactions → stoichiometry → energy and states → gas laws → aqueous systems → solutions → acids and bases.</li>
+<li><strong>Stage 2:</strong> the 001A topics again, in more depth.</li>
+</ul>
+<h2>2. Problem types (the worked-example spec)</h2>
+<p>There are 74 problem types across 12 topics (B-problem-types.md), and they reduce to a few repeating step patterns:</p>
+<ol>
+<li><strong>The mole spine:</strong> grams → moles → mole ratio → moles → grams. Mass–mass problems, limiting reactant, solutions, titration and gas stoichiometry all use it.</li>
+<li><strong>Tally, compare, fix:</strong> balancing, net ionic equations, charge balance.</li>
+<li><strong>Mole table, divide by the smallest:</strong> empirical formulas, hydrates, combustion analysis.</li>
+<li><strong>Before / change / after table:</strong> limiting reactant and precipitation; later the ICE table for equilibrium.</li>
+<li><strong>Name what's conserved, write one equation:</strong> dilution, calorimetry, Hess's law, gas laws.</li>
+</ol>
+<p>Layouts by how many problem types they cover:</p>
+<div class="tw"><table><thead><tr><th>Layout</th><th>Problem types</th></tr></thead><tbody><tr><td>Unit-cancel chain</td><td>about 30</td></tr><tr><td>Column tables (atom tally, mole table, BCA, before/after)</td><td>about 25</td></tr><tr><td>Particle pictures</td><td>about 10</td></tr><tr><td>Energy diagrams</td><td>about 8</td></tr><tr><td>Lewis structures with 3D shapes</td><td>about 7</td></tr><tr><td>Orbital boxes</td><td>about 5</td></tr></tbody></table></div>
+<p><em>Caveat:</em> the methods are standard, but the "two independent sources per topic" goal wasn't met. Most rows have one checked source plus links to whole sites. Rows 5.8, 6.7, 8.5 and 8.8 are the thinnest.</p>
+<h2>3. What beginners need (evidence-backed)</h2>
+<p>From C-learning.md. Strength is how strong the evidence is.</p>
+<div class="tw"><table><thead><tr><th>#</th><th>Principle</th><th>Evidence</th><th>Strength</th></tr></thead><tbody><tr><td>1</td><td>Show one level at a time (what you see / particles / symbols) and label it</td><td><a href="https://doi.org/10.1111/j.1365-2729.1991.tb00230.x">Johnstone 1991</a>, <a href="https://doi.org/10.1039/A9RP90001B">2000</a></td><td>Strong as a framework</td></tr><tr><td>2</td><td>One new idea per revealed step (working memory)</td><td>Johnstone &amp; El-Banna; Sweller</td><td>Moderate–strong</td></tr><tr><td>3</td><td>Start fully worked, then <strong>fade</strong> to partial steps, then to solo problems</td><td>Worked-example and fading research</td><td>Strong in general, moderate in chemistry</td></tr><tr><td>4</td><td>Worked examples don't beat practice with feedback; they mainly save time, so practice is needed too</td><td>McLaren, Lim &amp; Koedinger 2008</td><td>Moderate</td></tr><tr><td>5</td><td>Pair every calculation with a particle picture or a "why" check</td><td><a href="https://doi.org/10.1021/ed064p508">Nurrenbern &amp; Pickering 1987</a></td><td>Strong for the gap</td></tr><tr><td>6</td><td>Subscripts are fixed; draw balanced equations as atom counts</td><td>Yarroch 1985</td><td>Moderate</td></tr><tr><td>7</td><td>Build in conservation-of-mass checks</td><td>Kind 2004 (RSC)</td><td>Moderate</td></tr><tr><td>8</td><td>Teach the mole as a counting unit that bridges mass, amount and particles, and give it extra time</td><td>Furió 2000; <a href="https://doi.org/10.1039/C8RP00115D">Ralph &amp; Lewis 2018</a></td><td>Moderate</td></tr><tr><td>9</td><td>Show units at every step, with "for every…" reasoning alongside</td><td>Mixed studies</td><td>Weak</td></tr><tr><td>10</td><td>A short maths refresher up front; maths skill predicts success</td><td><a href="https://doi.org/10.1039/C9RP00077A">Williamson 2020</a></td><td>Strong that maths predicts success</td></tr><tr><td>11</td><td>Pictures must teach: say what to notice, because novices read surface features</td><td>Kozma &amp; Russell 1997</td><td>Moderate–strong</td></tr><tr><td>12</td><td>Never use colour alone; 4.5:1 contrast; text that scales to 200%; 44 px tap targets</td><td>WCAG 2.2</td><td>Standard</td></tr></tbody></table></div>
+<p><strong>Not found:</strong> any research on returning adult learners, or on maths anxiety, in general chemistry.</p>
+<h2>4. The market gap</h2>
+<p>From D-apps.md. Many store and forum pages blocked automated reading, so several prices and ratings there are marked UNVERIFIED.</p>
+<p><strong>The gap:</strong></p>
+<ul>
+<li><strong>Nobody does paced, named, tap-to-reveal steps.</strong> Solvers dump every step at once, videos narrate continuously, and ALEKS's explanations are criticised as dense.</li>
+<li><strong>Particle pictures live in simulations</strong> (PhET), cut off from the calculation.</li>
+<li><strong>No short Learn path</strong> is aligned to a community-college Chem 1A, or aimed at returning adults.</li>
+<li><strong>Assigned platforms feel punitive or cost a lot:</strong> ALEKS has progress resets; Mastering codes are around $147 at retail.</li>
+<li><strong>Solver apps encourage copying answers</strong> and bill weekly. Chem AI, for example, is $5.99 a week (4.4★, 822 ratings, rechecked on the App Store).</li>
+</ul>
+<p><strong>Risks:</strong></p>
+<ul>
+<li>Free general AI is the biggest. BYE Chem has to win on checked correctness, pacing and pictures.</li>
+<li>Classes that mandate ALEKS or Mastering make BYE Chem a supplement, not a replacement.</li>
+<li>Khan Academy could improve its chemistry.</li>
+</ul>
+<h2>5. The chemistry figure engine</h2>
+<p>From E-engine.md: a separate <strong><code>bye-chem-engine</code></strong> package that depends on <code>bye-math-engine</code>. Like the math engine, it takes a JSON description, validates it, lays it out as a scene, and draws it with react-native-svg (three.js for 3D). Same rules: the description doubles as the accessibility label, and bad input shows an error box, never a crash.</p>
+<p><strong>New figure kinds</strong>, each laid out from data, with chemistry checks built in:</p>
+<ul>
+<li><code>particleBox</code> (checks atoms are conserved) and <code>reaction</code> (checks the equation balances);</li>
+<li><code>molecule2d</code> / <code>molecule3d</code> (shape from VSEPR);</li>
+<li><code>lewis</code> (electron counting and formal charge);</li>
+<li><code>orbitalBox</code> (Aufbau, Hund and Pauli rules);</li>
+<li><code>periodicTable</code>, <code>atomTally</code>, <code>bohr</code>, <code>unitChain</code>.</li>
+</ul>
+<p><strong>Already possible in the math engine's <code>plot2d</code>:</strong> concentration vs time, Arrhenius plots, Maxwell–Boltzmann curves, most energy profiles. Titration and heating curves partly work. Phase diagrams need log axes.</p>
+<p><strong>Changes the math engine needs first:</strong></p>
+<ul>
+<li>figure kinds are a fixed <code>switch</code> today (confirmed in <code>src/core/figure.ts</code>), so they need a pluggable registry;</li>
+<li>per-element colours or more style roles;</li>
+<li>an arc primitive.</li>
+</ul>
+<p><strong>Libraries:</strong> write our own element data, formula parser, VSEPR, electron configuration, balancing and unit algebra. For SMILES, use OpenChemLib JS (BSD-3, pure JS) or RDKit (BSD-3, WASM) at <strong>build time</strong> to generate coordinates. Avoid ChemDoodle (GPL or paid) and anything DOM- or WebView-only. Licences were rechecked on GitHub; 3Dmol's licence is unlabelled there.</p>
+<p><strong>Data:</strong> the licences of the IUPAC atomic-weight tables and of PubChem's periodic-table page are unclear. Atomic weights are scientific facts, but build our own table and colour palette rather than copying a dataset.</p>
+<h2>6. What the first design got right, and what it missed</h2>
+<p>The first design is the <a href="https://claude.ai/artifact/5vF771K1LwRRd1EjiAFKQR">beginner-flow artifact</a>.</p>
+<p><strong>Held up by the research:</strong></p>
+<ul>
+<li>Have / Want chips, plus the working as unit-cancel tiles. The cancel chain is the most-used layout (~30 types), and small steps match principle 2.</li>
+<li>The four-station route bar is the mole spine (pattern 1).</li>
+<li>The three-views Learn page (principle 1).</li>
+<li>The atom-tally table with locked subscripts (pattern 2, principle 6).</li>
+<li>The mole as "a chemist's dozen" (principle 8), and the mass-in = mass-out check (principle 7).</li>
+<li>"2 waters per oxygen" written beside the ratio tile (principle 9).</li>
+</ul>
+<p><strong>Missed or wrong:</strong></p>
+<ol>
+<li><strong>The beginner path starts in the wrong place.</strong> The real intro order begins with measurement, units and sig figs, and needs a <strong>maths refresher before anything</strong> (principle 10). The design started at "Matter and atoms".</li>
+<li><strong>The Chem 1A track was guessed.</strong> The real 001A list adds nomenclature, electronic structure and quantum, bonding and VSEPR, liquids and solids, intermolecular forces, solutions, and intro equilibrium and organic. Thermochemistry comes in mostly through calorimetry lab work. The home screen should follow the verified map in §1.</li>
+<li><strong>No fading.</strong> The design shows only fully worked problems. It needs the path fully worked → partly worked → try it yourself (principle 3). Practice with feedback matters too (principle 4), which means answer entry with a unit-aware checker; BYE Math has no answer entry either.</li>
+<li><strong>Two key layouts are missing:</strong> the <strong>BCA table</strong> (limiting reactant, and ICE later) and the <strong>mole table</strong> (empirical formulas). Together they serve about 25 problem types.</li>
+<li><strong>Colour carries meaning alone</strong> in two places: grams vs moles (the text says g and mol, which helps), and the atom balls. Put the element letter on each atom, or offer a labelled mode, for colour-blind users (principle 12).</li>
+<li><strong>Accessibility sizes are unchecked:</strong> the small grey captions and tap targets need checking against 4.5:1 contrast and 44 px.</li>
+</ol>
+<h2>How this was checked</h2>
+<ul>
+<li><strong>Course:</strong> the PCC catalog PDF was read directly. The C-ID descriptors are on c-idsystem.org. All 114 OpenStax section titles resolve on openstax.org.</li>
+<li><strong>Problem types:</strong> the 32 OpenStax pages cited were tested. 31 were correct; one invented page was fixed.</li>
+<li><strong>Learning research:</strong> seven key papers were confirmed on Crossref (titles, journals, years).</li>
+<li><strong>Apps:</strong> Chem AI's rating was confirmed through Apple's lookup API. Trustpilot couldn't be re-read; the ALEKS figure stays dated and attributed.</li>
+<li><strong>Engine:</strong> the licences of OpenChemLib, RDKit, SmilesDrawer and Ketcher were confirmed on GitHub. The math engine's fixed figure-kind <code>switch</code> was confirmed in its code.</li>
+<li><strong>Still UNVERIFIED</strong> (full lists in each file):</li>
+<ul>
+<li>which PCC the friend attends;</li>
+<li>PCC's detailed course outline of record and its textbook;</li>
+<li>UC transfer equivalents (ASSIST couldn't be read);</li>
+<li>second sources for most problem types;</li>
+<li>several paper details;</li>
+<li>store and forum opinions;</li>
+<li>data licences for IUPAC and PubChem.</li>
+</ul>
+</ul>
+</main></body></html>

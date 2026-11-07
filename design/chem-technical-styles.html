@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem technical drafting concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&amp;family=STIX+Two+Text:ital@0;1&amp;family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+} }
+</script>
+<style>
+  /* Drafting-table world (BYE paper, hairlines, clay O / slate N). Layout: three concept columns, same two scenes each. */
+  :root {
+    color-scheme: light;
+    --ground: #f6f3ec; --band: #fcfaf5; --line: #e3dccf; --ink: #1e1c19; --ink2: #5a554d; --muted: #6b655b;
+    --shu: #b5462a; --coral: #d9846a; --canvas: #e7e1d5; --slate: #6f86ad; --clay: #cf7a62;
+    --sans: 'Zen Kaku Gothic New', system-ui, sans-serif;
+    --serif: 'Shippori Mincho', Georgia, serif;
+    --chem: 'STIX Two Text', 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .top { max-width: 1290px; margin: 0 auto; padding: 36px 24px 8px; }
+  .top h1 { font-family: var(--serif); font-weight: 400; font-size: 32px; margin: 0 0 10px; text-wrap: balance; }
+  .top p { margin: 0 0 10px; max-width: 74ch; color: var(--ink2); line-height: 1.65; font-size: 15px; }
+  .cols { max-width: 1290px; margin: 0 auto; padding: 16px 24px 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; }
+  .col { background: var(--ground); border-radius: 26px; padding: 22px 22px 26px; box-shadow: 0 1px 0 var(--line), 0 18px 40px rgba(30,28,25,.08); }
+  .kanji { font-family: var(--serif); font-size: 44px; line-height: 1; }
+  .name { font-family: var(--serif); font-size: 24px; margin: 8px 0 4px; }
+  .one { font-size: 14.5px; line-height: 22px; color: var(--ink2); margin: 0; }
+  .eyebrow { font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); margin: 18px 0 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .view { position: relative; width: 100%; aspect-ratio: 32 / 23; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); touch-action: none; cursor: grab; background: var(--ground); }
+  .view canvas { display: block; width: 100% !important; height: 100% !important; }
+  .labels { position: absolute; inset: 0; pointer-events: none; }
+  .hint { position: absolute; left: 10px; top: 8px; font-size: 11.5px; color: var(--muted); background: rgba(246,243,236,.85); padding: 1px 8px; border-radius: 9px; pointer-events: none; }
+  /* labels drawn into the 3D views */
+  .dim { font-family: var(--chem); font-size: 13px; color: var(--ink); background: rgba(246,243,236,.9); padding: 0 4px; border-radius: 3px; white-space: nowrap; }
+  .dim.small { font-size: 11.5px; color: var(--ink2); }
+  .axis { font-family: var(--chem); font-style: italic; font-size: 13px; color: var(--ink2); }
+  .tag { font-family: var(--sans); font-size: 11px; letter-spacing: .6px; color: var(--ink2); background: rgba(246,243,236,.92); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+  /* title block (concept 1) */
+  .tblock { position: absolute; right: 8px; top: 8px; border: 1px solid var(--ink); background: rgba(246,243,236,.94); font-size: 10.5px; line-height: 15px; pointer-events: none; }
+  .tblock div { display: grid; grid-template-columns: 52px 1fr; border-top: 1px solid var(--ink); }
+  .tblock div:first-child { border-top: 0; }
+  .tblock span { padding: 1px 5px; } .tblock span:first-child { border-right: 1px solid var(--ink); color: var(--ink2); letter-spacing: .5px; text-transform: uppercase; font-size: 9.5px; }
+  .tblock b { font-family: var(--chem); font-weight: 400; font-size: 12px; }
+  /* instrument panel (concept 2) */
+  .chart { width: 100%; height: auto; display: block; margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--band); }
+  .reads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .reads div { border: 1px solid var(--line); border-radius: 10px; padding: 6px 9px; background: var(--band); }
+  .reads small { display: block; font-size: 9.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink2); }
+  .reads b { font-family: var(--chem); font-weight: 400; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .ctrl { display: flex; align-items: center; gap: 8px; letter-spacing: 0; text-transform: none; }
+  .ctrl button { width: 32px; height: 32px; border-radius: 16px; border: 1px solid var(--line); background: var(--band); font-size: 17px; cursor: pointer; color: var(--ink); }
+  .ctrl b { font-family: var(--chem); font-weight: 400; font-size: 15px; min-width: 52px; text-align: center; color: var(--ink); }
+  table.spec { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .spec td { padding: 5px 4px; border-bottom: 1px solid var(--line); }
+  .spec td:last-child { text-align: right; font-family: var(--chem); font-size: 14.5px; }
+  .spec td:first-child { color: var(--ink2); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; padding: 2px; background: var(--band); letter-spacing: 0; text-transform: none; }
+  .seg button { border: 0; background: none; font: 500 12.5px var(--sans); color: var(--ink2); padding: 4px 11px; border-radius: 8px; cursor: pointer; min-height: 28px; }
+  .seg button.on { background: var(--ink); color: var(--ground); }
+  ul { margin: 12px 0 0; padding-left: 18px; font-size: 14px; line-height: 22px; color: var(--ink2); }
+  ul b { color: var(--ink); font-weight: 500; }
+  .from { margin-top: 12px; font-size: 12.5px; line-height: 19px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }
+  .from b { color: var(--ink); font-weight: 500; }
+  .foot { max-width: 1290px; margin: 0 auto 50px; padding: 0 24px; font-size: 14px; line-height: 1.7; color: var(--ink2); }
+  .foot b { color: var(--ink); font-weight: 500; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Drafting table, three technical directions</h1>
+  <p>Each concept keeps the Drafting table look (paper, hairline grid, matte clay oxygen and slate nitrogen) and adds a different kind of precision: <b>measurements drawn on the model</b>, <b>live instrument readings</b>, or <b>true atom sizes in a cut-away</b>. All views are real 3D: drag to turn, scroll to zoom.</p>
+  <p>Numbers are real: C–H bond 1.09 Å, H–C–H angle 109.5°, Bondi van der Waals radii, and gas speeds drawn from the Maxwell–Boltzmann distribution for nitrogen and oxygen. The gas box is shown 4.8 × 3.0 × 3.0 nm; molecules there are drawn about three times their true size so you can see them.</p>
+</header>
+
+<section class="cols">
+  <!-- 1 · Engineering drawing -->
+  <article class="col" data-concept="dims">
+    <div class="kanji">製図</div>
+    <div class="name">Engineering drawing</div>
+    <p class="one">Dimension lines, angle arcs, an axis triad and a title block, as on a technical drawing.</p>
+    <div class="eyebrow"><span>Air in a box</span><span>dimensioned</span></div>
+    <div class="view" data-scene="box"><div class="labels"></div><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Methane, CH<sub>4</sub></span><span>bond length · angle</span></div>
+    <div class="view" data-scene="mol">
+      <div class="labels"></div>
+      <div class="tblock"><div><span>Part</span><b>CH₄ methane</b></div><div><span>Shape</span><b>tetrahedral</b></div><div><span>Scale</span><b>1 unit = 1 Å</b></div></div>
+      <span class="hint">drag to turn</span>
+    </div>
+    <ul>
+      <li><b>Teaches:</b> that shapes have exact sizes and angles; good for Chapter 7 (VSEPR) and bond lengths.</li>
+      <li><b>Feels:</b> the most “engineer”, very close to BYE Math’s labelled graphs.</li>
+      <li><b>Risk:</b> labels can crowd small molecules; show them one step at a time.</li>
+    </ul>
+    <div class="from"><b>In the engine:</b> lines and arcs are plain three.js lines; the labels use BYE Math Engine’s 3D label overlay, so they stay upright and readable as the model turns.</div>
+  </article>
+
+  <!-- 2 · Instrument -->
+  <article class="col" data-concept="meter">
+    <div class="kanji">計測</div>
+    <div class="name">Instrument readout</div>
+    <p class="one">Every molecule carries its velocity arrow; a live speed chart and gauges sit under the box like a lab instrument.</p>
+    <div class="eyebrow"><span>Air in a box · 120 molecules</span><span class="ctrl"><button type="button" data-dt="-100" aria-label="Cooler">−</button><b data-T>300 K</b><button type="button" data-dt="100" aria-label="Hotter">+</button></span></div>
+    <div class="view" data-scene="box"><div class="labels"></div><span class="hint">drag to turn</span></div>
+    <canvas class="chart" width="640" height="250" aria-label="Histogram of molecule speeds with the Maxwell–Boltzmann curve for air at the current temperature."></canvas>
+    <div class="reads"><div><small>Mean speed</small><b data-mean>—</b></div><div><small>Theory</small><b data-theory>—</b></div><div><small>Most likely</small><b data-mp>—</b></div></div>
+    <div class="eyebrow"><span>Methane, CH<sub>4</sub></span><span>symmetry axis</span></div>
+    <div class="view" data-scene="mol"><div class="labels"></div><span class="hint">drag to turn</span></div>
+    <table class="spec"><tr><td>C–H bonds</td><td>4 × 1.09 Å</td></tr><tr><td>H–C–H angles</td><td>6 × 109.5°</td></tr><tr><td>Molar mass</td><td>16.04 g/mol</td></tr></table>
+    <ul>
+      <li><b>Teaches:</b> that “temperature” is a spread of speeds, not one speed; Chapter 9 (kinetic theory) almost for free.</li>
+      <li><b>Feels:</b> a real lab instrument; the most “doing science”.</li>
+      <li><b>Risk:</b> busiest screen; best for older learners and Chem 1A.</li>
+    </ul>
+    <div class="from"><b>In the engine:</b> velocity arrows are one line buffer updated each frame; the chart is a BYE Math Engine bar chart with a function curve, which it already draws.</div>
+  </article>
+
+  <!-- 3 · Cutaway -->
+  <article class="col" data-concept="cut">
+    <div class="kanji">断面</div>
+    <div class="name">Cut-away</div>
+    <p class="one">Atoms at their true size as faint shells, sliced open to show the ball-and-stick model inside; a section plane through the gas.</p>
+    <div class="eyebrow"><span>Air in a box</span><span>section at z = 0</span></div>
+    <div class="view" data-scene="box"><div class="labels"></div><span class="hint">drag to turn</span></div>
+    <div class="eyebrow"><span>Methane, CH<sub>4</sub></span><span class="seg"><button type="button" data-cut="1" class="on">Cut</button><button type="button" data-cut="0">Whole</button></span></div>
+    <div class="view" data-scene="mol"><div class="labels"></div><span class="hint">drag to turn</span></div>
+    <ul>
+      <li><b>Teaches:</b> that ball-and-stick is a simplification; real atoms are fuzzy and overlap. Good for Chapters 2, 7 and 10.</li>
+      <li><b>Feels:</b> the most striking of the three; reads like a museum cut-away model.</li>
+      <li><b>Risk:</b> see-through shells cost more on older phones; turn them off in big scenes.</li>
+    </ul>
+    <div class="from"><b>In the engine:</b> one clipping plane and transparent matte shells; no custom shaders, so it runs anywhere three.js does.</div>
+  </article>
+</section>
+
+<p class="foot"><b>They combine well.</b> A natural split: <b>Engineering drawing</b> as the default look for molecules and Learn pictures, <b>Instrument readout</b> inside the gas and reaction sandboxes, and <b>Cut-away</b> as a toggle (“show real size”) on any molecule. All three share the same paper, grid, colours and materials, so they read as one app.</p>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const C = { bg: 0xf6f3ec, ink: 0x1e1c19, ink2: 0x5a554d, line: 0xb9b1a3, H: 0xfbf9f4, C: 0x4a4641, N: 0x6f86ad, O: 0xcf7a62, coral: 0xd9846a, shu: 0xb5462a };
+
+  // ── physics constants (SI) and the two gases ──
+  const kB = 1.380649e-23, AMU = 1.66053907e-27;
+  const GAS = { N: { M: 28.014 }, O: { M: 31.998 } };
+  const mass = (el) => GAS[el].M * AMU;
+
+  function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  const gauss = (R) => Math.sqrt(-2 * Math.log(1 - R())) * Math.cos(2 * Math.PI * R());
+
+  function label(html, cls = 'dim') { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; return new CSS2DObject(d); }
+
+  function setup(host, camPos) {
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.setClearColor(C.bg);
+    renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.localClippingEnabled = true;
+    host.prepend(renderer.domElement);
+    const css = new CSS2DRenderer({ element: host.querySelector('.labels') });
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 32 / 23, 0.1, 200); camera.position.set(...camPos);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.enablePan = false; controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.6;
+    renderer.domElement.addEventListener('pointerdown', () => { controls.autoRotate = false; host.querySelector('.hint')?.remove(); });
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xe7e1d5, 1.6));
+    const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-3, 5, 4); scene.add(key);
+    const resize = () => { const w = host.clientWidth, h = host.clientHeight; renderer.setSize(w, h, false); css.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+    new ResizeObserver(resize).observe(host); resize();
+    return { renderer, css, scene, camera, controls, render() { controls.update(); renderer.render(scene, camera); css.render(scene, camera); } };
+  }
+  const lineMat = (color = C.ink, opacity = 1) => new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity });
+  const seg = (pts, mat) => new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), mat);
+  const poly = (pts, mat) => new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat);
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  function grid(scene, y, size = 12, div = 48) { const g = new THREE.GridHelper(size, div, 0xd9d1c2, 0xe8e2d6); g.position.y = y; scene.add(g); return g; }
+  function outline(geo, scale = 1.06) { const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: C.ink, side: THREE.BackSide })); m.scale.setScalar(scale); return m; }
+
+  // A dimension line from a to b, pushed out by `off`, with extension lines, 45° ticks and a centred label.
+  function dimension(scene, a, b, off, text, cls) {
+    const g = new THREE.Group(), m = lineMat(C.ink2);
+    const a2 = a.clone().add(off), b2 = b.clone().add(off), along = b.clone().sub(a).normalize();
+    const tick = along.clone().add(off.clone().normalize()).normalize().multiplyScalar(0.07);
+    g.add(seg([a.clone().addScaledVector(off, 0.15), a2.clone().addScaledVector(off, 0.25), b.clone().addScaledVector(off, 0.15), b2.clone().addScaledVector(off, 0.25), a2, b2,
+      a2.clone().sub(tick), a2.clone().add(tick), b2.clone().sub(tick), b2.clone().add(tick)], m));
+    const l = label(text, cls); l.position.copy(a2).add(b2).multiplyScalar(0.5); g.add(l);
+    scene.add(g); return g;
+  }
+  // An arc between directions u and v (unit), radius r around centre c, with a label at its middle.
+  function angleArc(scene, c, u, v, r, text) {
+    const n = u.clone().cross(v).normalize(), ang = u.angleTo(v), pts = [];
+    for (let i = 0; i <= 32; i++) pts.push(c.clone().addScaledVector(u.clone().applyAxisAngle(n, (ang * i) / 32), r));
+    scene.add(poly(pts, lineMat(C.shu)));
+    const mid = u.clone().applyAxisAngle(n, ang / 2); const l = label(text, 'dim'); l.element.style.color = '#b5462a'; l.position.copy(c).addScaledVector(mid, r + 0.28); scene.add(l);
+  }
+  function axisTriad(scene, at, len = 0.6) {
+    const m = lineMat(C.ink2);
+    for (const [d, t] of [[V(1, 0, 0), 'x'], [V(0, 1, 0), 'y'], [V(0, 0, 1), 'z']]) {
+      scene.add(seg([at, at.clone().addScaledVector(d, len)], m));
+      const head = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.1, 10), new THREE.MeshBasicMaterial({ color: C.ink2 }));
+      head.position.copy(at).addScaledVector(d, len); head.quaternion.setFromUnitVectors(V(0, 1, 0), d); scene.add(head);
+      const l = label(t, 'axis'); l.position.copy(at).addScaledVector(d, len + 0.16); scene.add(l);
+    }
+  }
+
+  // ── Molecule geometry (Å) ──
+  const k = 1 / Math.sqrt(3), CH = 1.09;
+  const METHANE = [{ el: 'C', p: V(0, 0, 0) }, ...[[k, k, k], [k, -k, -k], [-k, k, -k], [-k, -k, k]].map((d) => ({ el: 'H', p: V(...d).multiplyScalar(CH) }))];
+  const BALL = { C: 0.36, H: 0.24 }, VDW = { C: 1.70, H: 1.20, N: 1.55, O: 1.52 };
+  function ballAndStick(group, atoms, outlined) {
+    const mats = {}, geos = {};
+    for (const a of atoms) {
+      geos[a.el] ??= new THREE.SphereGeometry(BALL[a.el], 40, 28);
+      mats[a.el] ??= new THREE.MeshLambertMaterial({ color: C[a.el] });
+      const m = new THREE.Mesh(geos[a.el], mats[a.el]); m.position.copy(a.p); group.add(m);
+      if (outlined) { const o = outline(geos[a.el], 1.07); o.position.copy(a.p); group.add(o); }
+      const l = label(a.el, 'axis'); l.element.style.fontStyle = 'normal'; l.element.style.color = a.el === 'C' ? '#f6f3ec' : '#1e1c19'; l.position.copy(a.p); group.add(l);
+    }
+    const bm = new THREE.MeshLambertMaterial({ color: C.line });
+    for (const a of atoms.slice(1)) {
+      const d = a.p.clone(); const b = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, d.length(), 14), bm);
+      b.position.copy(d).multiplyScalar(0.5); b.quaternion.setFromUnitVectors(V(0, 1, 0), d.clone().normalize()); group.add(b);
+    }
+  }
+
+  // ── Gas box ──
+  const BX = 2.4, BY = 1.5, BZ = 1.5;  // half sizes: box is 4.8 × 3.0 × 3.0 nm
+  const SIM = 0.65 / 476;               // screen units per second, per m/s (mean speed of N2 at 300 K = 476 m/s)
+  function makeGas(n, T, seed) {
+    const R = rng(seed);
+    return Array.from({ length: n }, (_, i) => {
+      const el = i % 5 === 0 ? 'O' : 'N', s = Math.sqrt(kB * T / mass(el));
+      return { el, p: V((R() * 2 - 1) * (BX - 0.3), (R() * 2 - 1) * (BY - 0.3), (R() * 2 - 1) * (BZ - 0.3)), v: V(gauss(R) * s, gauss(R) * s, gauss(R) * s),
+        q: new THREE.Quaternion().setFromEuler(new THREE.Euler(R() * 6, R() * 6, R() * 6)), axis: V(R() - .5, R() - .5, R() - .5).normalize() };
+    });
+  }
+  function gasMeshes(scene, mols, r, colorFn, extra) {
+    const geo = new THREE.SphereGeometry(r, 18, 12);
+    const mesh = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ color: 0xffffff }), mols.length * 2); scene.add(mesh);
+    const ol = extra?.outline ? new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: C.ink, side: THREE.BackSide }), mols.length * 2) : null; if (ol) scene.add(ol);
+    const m4 = new THREE.Matrix4(), off = V(0, 0, 0), pos = V(0, 0, 0), one = V(1, 1, 1), big = V(1.12, 1.12, 1.12), q = new THREE.Quaternion(), spin = new THREE.Quaternion(), col = new THREE.Color();
+    return (dt, T) => {
+      mols.forEach((m, i) => {
+        if (!reduce) {
+          m.p.addScaledVector(m.v, SIM * dt);
+          for (const [ax, lim] of [['x', BX], ['y', BY], ['z', BZ]]) if (Math.abs(m.p[ax]) > lim - 0.2) { m.v[ax] *= -1; m.p[ax] = Math.sign(m.p[ax]) * (lim - 0.2); }
+          m.q.multiply(spin.setFromAxisAngle(m.axis, dt * 1.6));
+        }
+        off.set(r * 0.95, 0, 0).applyQuaternion(m.q);
+        col.setHex(colorFn(m));
+        for (const s of [0, 1]) {
+          pos.copy(m.p).addScaledVector(off, s ? -1 : 1);
+          m4.compose(pos, q, one); mesh.setMatrixAt(i * 2 + s, m4); mesh.setColorAt(i * 2 + s, col);
+          if (ol) { m4.compose(pos, q, big); ol.setMatrixAt(i * 2 + s, m4); }
+        }
+      });
+      mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true; if (ol) ol.instanceMatrix.needsUpdate = true;
+    };
+  }
+  const boxEdges = (scene, color = C.ink2) => scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(BX * 2, BY * 2, BZ * 2)), lineMat(color)));
+
+  // ═════ Concept 1: Engineering drawing ═════
+  function dimsBox(host) {
+    const v = setup(host, [5.2, 3.6, 7.6]); grid(v.scene, -BY - 0.002); boxEdges(v.scene, C.ink);
+    dimension(v.scene, V(-BX, -BY, BZ), V(BX, -BY, BZ), V(0, -0.45, 0.25), '4.8 nm');
+    dimension(v.scene, V(BX, -BY, BZ), V(BX, BY, BZ), V(0.45, 0, 0.25), '3.0 nm');
+    dimension(v.scene, V(BX, -BY, -BZ), V(BX, -BY, BZ), V(0.45, -0.3, 0), '3.0 nm');
+    axisTriad(v.scene, V(-BX - 0.9, -BY, BZ + 0.6), 0.55);
+    const mols = makeGas(30, 300, 7);
+    const step = gasMeshes(v.scene, mols, 0.11, (m) => C[m.el], { outline: true });
+    return (dt) => { step(dt); v.render(); };
+  }
+  function dimsMol(host) {
+    const v = setup(host, [2.4, 1.6, 5.4]); grid(v.scene, -1.5);
+    const g = new THREE.Group(); v.scene.add(g); ballAndStick(g, METHANE, true);
+    const H1 = METHANE[1].p, H3 = METHANE[3].p, H4 = METHANE[4].p;
+    // bond length on the C–H4 bond, pushed out away from the other bonds
+    const away = H4.clone().normalize().cross(V(0, 1, 0)).normalize().multiplyScalar(-0.55);
+    dimension(g, V(0, 0, 0), H4, away, '1.09 Å');
+    // the angle on the far side, between the two upper bonds
+    angleArc(g, V(0, 0, 0), H1.clone().normalize(), H3.clone().normalize(), 0.78, '109.5°');
+    axisTriad(v.scene, V(-1.9, -1.45, 1.2), 0.45);
+    return () => v.render();
+  }
+
+  // ═════ Concept 2: Instrument readout ═════
+  function meterBox(host, col) {
+    const v = setup(host, [5.2, 3.4, 7.8]); grid(v.scene, -BY - 0.002); boxEdges(v.scene);
+    let T = 300; const mols = makeGas(120, T, 11);
+    const step = gasMeshes(v.scene, mols, 0.085, (m) => C[m.el]);
+    // velocity arrows: one buffer of segments
+    const arrows = new THREE.LineSegments(new THREE.BufferGeometry(), lineMat(C.ink2, 0.75));
+    arrows.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(mols.length * 6), 3)); v.scene.add(arrows);
+    const L = 0.0011; // screen units per m/s of arrow
+    const chart = col.querySelector('.chart'), g2 = chart.getContext('2d');
+    const out = { T: col.querySelector('[data-T]'), mean: col.querySelector('[data-mean]'), th: col.querySelector('[data-theory]'), mp: col.querySelector('[data-mp]') };
+    const mix = [['N', 0.8], ['O', 0.2]];
+    const f = (u, el) => { const m = mass(el), a = m / (2 * kB * T); return 4 * Math.PI * Math.pow(a / Math.PI, 1.5) * u * u * Math.exp(-a * u * u); };
+    function draw() {
+      const W = chart.width, H = chart.height, pad = { l: 46, r: 14, t: 16, b: 40 }, vmax = 1500, bw = 75, nb = vmax / bw;
+      const bins = new Array(nb).fill(0); let sum = 0;
+      for (const m of mols) { const s = m.v.length(); sum += s; bins[Math.min(nb - 1, Math.floor(s / bw))]++; }
+      const curve = (u) => mols.length * bw * mix.reduce((acc, [el, w]) => acc + w * f(u, el), 0);
+      let ymax = Math.max(...bins); for (let u = 0; u < vmax; u += 10) ymax = Math.max(ymax, curve(u)); ymax = Math.ceil(ymax / 5) * 5 + 2;
+      const X = (u) => pad.l + (u / vmax) * (W - pad.l - pad.r), Y = (c) => H - pad.b - (c / ymax) * (H - pad.t - pad.b);
+      g2.clearRect(0, 0, W, H);
+      g2.strokeStyle = '#e8e2d6'; g2.lineWidth = 1; g2.font = '19px "Zen Kaku Gothic New", sans-serif'; g2.fillStyle = '#5a554d';
+      for (let u = 0; u <= vmax; u += 300) { g2.beginPath(); g2.moveTo(X(u), pad.t); g2.lineTo(X(u), H - pad.b); g2.stroke(); g2.textAlign = 'center'; g2.fillText(u, X(u), H - pad.b + 22); }
+      for (let c = 0; c <= ymax; c += 10) { g2.beginPath(); g2.moveTo(pad.l, Y(c)); g2.lineTo(W - pad.r, Y(c)); g2.stroke(); g2.textAlign = 'right'; g2.fillText(c, pad.l - 8, Y(c) + 6); }
+      g2.textAlign = 'right'; g2.fillText('speed, m/s', W - pad.r, H - 4);
+      g2.fillStyle = 'rgba(111,134,173,.55)'; bins.forEach((b, i) => g2.fillRect(X(i * bw) + 1, Y(b), X(bw) - X(0) - 2, Y(0) - Y(b)));
+      g2.strokeStyle = '#b5462a'; g2.lineWidth = 2.4; g2.beginPath(); for (let u = 0; u <= vmax; u += 10) { const y = Y(curve(u)); u ? g2.lineTo(X(u), y) : g2.moveTo(X(u), y); } g2.stroke();
+      g2.fillStyle = '#b5462a'; g2.textAlign = 'left'; g2.fillText('Maxwell–Boltzmann, air at ' + T + ' K', pad.l + 10, pad.t + 18);
+      const mN = mass('N'), mO = mass('O');
+      const theory = 0.8 * Math.sqrt(8 * kB * T / (Math.PI * mN)) + 0.2 * Math.sqrt(8 * kB * T / (Math.PI * mO));
+      out.T.textContent = T + ' K'; out.mean.textContent = Math.round(sum / mols.length) + ' m/s'; out.th.textContent = Math.round(theory) + ' m/s'; out.mp.textContent = Math.round(Math.sqrt(2 * kB * T / mN)) + ' m/s';
+    }
+    col.querySelectorAll('[data-dt]').forEach((b) => b.addEventListener('click', () => {
+      const T2 = Math.max(100, Math.min(900, T + +b.dataset.dt)); const s = Math.sqrt(T2 / T); for (const m of mols) m.v.multiplyScalar(s); T = T2; draw();
+    }));
+    draw();
+    const pa = arrows.geometry.attributes.position;
+    return (dt) => {
+      step(dt);
+      mols.forEach((m, i) => { pa.setXYZ(i * 2, m.p.x, m.p.y, m.p.z); pa.setXYZ(i * 2 + 1, m.p.x + m.v.x * L, m.p.y + m.v.y * L, m.p.z + m.v.z * L); });
+      pa.needsUpdate = true; arrows.geometry.computeBoundingSphere(); v.render();
+    };
+  }
+  function meterMol(host) {
+    const v = setup(host, [2.4, 1.6, 5.4]); grid(v.scene, -1.5);
+    const g = new THREE.Group(); v.scene.add(g); ballAndStick(g, METHANE, false);
+    // C3 symmetry axis through C and one H, dashed
+    const ax = METHANE[1].p.clone().normalize();
+    const dashed = new THREE.Line(new THREE.BufferGeometry().setFromPoints([ax.clone().multiplyScalar(-2.0), ax.clone().multiplyScalar(2.0)]), new THREE.LineDashedMaterial({ color: C.shu, dashSize: 0.12, gapSize: 0.08 }));
+    dashed.computeLineDistances(); g.add(dashed);
+    const l = label('C<sub>3</sub> axis · turn 120°, looks the same', 'tag'); l.position.copy(ax.clone().multiplyScalar(2.45)); g.add(l);
+    // turn arrow around the axis (120°)
+    const n = ax, u = V(0, 1, 0).cross(n).normalize(), pts = [];
+    for (let i = 0; i <= 30; i++) pts.push(ax.clone().multiplyScalar(1.55).addScaledVector(u.clone().applyAxisAngle(n, (i / 30) * (2 * Math.PI / 3)), 0.35));
+    g.add(poly(pts, lineMat(C.shu)));
+    return () => v.render();
+  }
+
+  // ═════ Concept 3: Cut-away ═════
+  function cutBox(host) {
+    const v = setup(host, [5.4, 3.4, 7.6]); grid(v.scene, -BY - 0.002); boxEdges(v.scene);
+    // ruler ticks every 0.5 nm along the front-bottom edge
+    const tm = lineMat(C.ink2), tp = [];
+    for (let x = -BX, i = 0; x <= BX + 1e-6; x += 0.5, i++) { const big = i % 2 === 0; tp.push(V(x, -BY, BZ), V(x, -BY - (big ? 0.16 : 0.08), BZ)); if (big && i > 0) { const l = label((i / 2).toFixed(0), 'dim small'); l.position.set(x, -BY - 0.32, BZ); v.scene.add(l); } }
+    v.scene.add(seg(tp, tm)); { const l = label('nm', 'dim small'); l.position.set(-BX, -BY - 0.32, BZ); v.scene.add(l); }
+    // the section plane at z = 0
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(BX * 2, BY * 2), new THREE.MeshBasicMaterial({ color: C.coral, transparent: true, opacity: 0.10, side: THREE.DoubleSide, depthWrite: false }));
+    v.scene.add(plane); v.scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(BX * 2, BY * 2)), lineMat(C.shu)));
+    const pl = label('section z = 0', 'tag'); pl.position.set(-BX + 0.75, BY - 0.2, 0); v.scene.add(pl);
+    const mols = makeGas(30, 300, 5);
+    const step = gasMeshes(v.scene, mols, 0.11, (m) => (Math.abs(m.p.z) < 0.22 ? C.shu : C[m.el]));
+    return (dt) => { step(dt); v.render(); };
+  }
+  function cutMol(host, col) {
+    const v = setup(host, [3.2, 2.0, 7.4]); grid(v.scene, -2.2);
+    const g = new THREE.Group(); v.scene.add(g); ballAndStick(g, METHANE, false);
+    const clip = new THREE.Plane(V(0, 0, -1), 0.0); // keeps z < 0: the front half is cut away
+    const shells = [];
+    for (const a of METHANE) {
+      const geo = new THREE.SphereGeometry(VDW[a.el], 48, 32);
+      const shell = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: C[a.el] === C.H ? 0xe9e4da : C[a.el], transparent: true, opacity: a.el === 'C' ? 0.22 : 0.32, depthWrite: false, side: THREE.DoubleSide, clippingPlanes: [clip] }));
+      shell.position.copy(a.p); g.add(shell); shells.push(shell);
+      const wire = new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.SphereGeometry(VDW[a.el], 16, 10)), new THREE.LineBasicMaterial({ color: C.ink2, transparent: true, opacity: 0.18, clippingPlanes: [clip] }));
+      wire.position.copy(a.p); g.add(wire); shells.push(wire);
+    }
+    const r1 = label('C · 1.70 Å', 'tag'); r1.position.set(0, VDW.C + 0.25, 0); g.add(r1);
+    const r2 = label('H · 1.20 Å', 'tag'); r2.position.copy(METHANE[1].p).add(V(0.6, 0.9, 0)); g.add(r2);
+    col.querySelectorAll('[data-cut]').forEach((b) => b.addEventListener('click', () => {
+      const on = b.dataset.cut === '1';
+      col.querySelectorAll('[data-cut]').forEach((x) => x.classList.toggle('on', x === b));
+      for (const s of shells) s.material.clippingPlanes = on ? [clip] : [];
+    }));
+    return () => v.render();
+  }
+
+  await document.fonts.ready;
+  const loops = [];
+  for (const col of document.querySelectorAll('.col')) {
+    const c = col.dataset.concept, box = col.querySelector('[data-scene="box"]'), mol = col.querySelector('[data-scene="mol"]');
+    if (c === 'dims') { loops.push(dimsBox(box), dimsMol(mol)); }
+    if (c === 'meter') { loops.push(meterBox(box, col), meterMol(mol)); }
+    if (c === 'cut') { loops.push(cutBox(box), cutMol(mol, col)); }
+  }
+  let last = performance.now();
+  const tick = (t) => { const dt = Math.min(0.05, (t - last) / 1000); last = t; loops.forEach((f) => f(dt)); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>

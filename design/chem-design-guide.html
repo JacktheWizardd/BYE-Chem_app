@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem design guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&amp;family=STIX+Two+Text:ital@0;1&amp;family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+  /* Drafting-table world. Layout: a reference sheet of cards, grouped by what a chemist uses. */
+  :root {
+    color-scheme: light;
+    --ground: #f6f3ec; --band: #fcfaf5; --line: #e3dccf; --grid: #e8e2d6; --ink: #1e1c19; --ink2: #5a554d; --muted: #6b655b;
+    --shu: #b5462a; --coral: #d9846a; --canvas: #e7e1d5; --bond: #b9b1a3;
+    --sans: 'Zen Kaku Gothic New', system-ui, sans-serif;
+    --serif: 'Shippori Mincho', Georgia, serif;
+    --chem: 'STIX Two Text', 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  sub { font-size: .72em; vertical-align: -.26em; line-height: 0; } sup { font-size: .7em; vertical-align: .5em; line-height: 0; }
+  .top { max-width: 1290px; margin: 0 auto; padding: 36px 24px 6px; }
+  .top h1 { font-family: var(--serif); font-weight: 400; font-size: 32px; margin: 0 0 10px; text-wrap: balance; }
+  .top p { margin: 0 0 10px; max-width: 76ch; color: var(--ink2); line-height: 1.65; font-size: 15px; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 13.5px; }
+  nav a { color: var(--ink2); text-decoration: none; border-bottom: 1px solid var(--line); }
+  h2 { max-width: 1290px; margin: 34px auto 0; padding: 18px 24px 0; font-family: var(--serif); font-weight: 400; font-size: 24px; border-top: 1px solid #d6cfc1; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+  h2 span { font-family: var(--sans); font-size: 14px; color: var(--ink2); }
+  .grid { max-width: 1290px; margin: 0 auto; padding: 16px 24px 4px; display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+  .card { background: var(--ground); border-radius: 20px; padding: 18px 20px 20px; box-shadow: 0 1px 0 var(--line), 0 12px 30px rgba(30,28,25,.06); }
+  .card h3 { margin: 0; font-size: 16px; font-weight: 500; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .card h3 small { font-weight: 400; font-size: 12px; color: var(--muted); letter-spacing: .4px; white-space: nowrap; }
+  .use { margin: 4px 0 0; font-size: 13.5px; line-height: 20px; color: var(--ink2); }
+  .ex { margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--band); }
+  .ex svg { display: block; width: 100%; height: auto; }
+  .f { font-family: var(--chem); }
+  .big { font-family: var(--chem); font-size: 22px; line-height: 34px; }
+  .rules { margin: 12px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 21px; color: var(--ink2); }
+  .rules b { color: var(--ink); font-weight: 500; }
+  .cond { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: -2px; margin: 0 4px; }
+  .cond small { font-family: var(--sans); font-size: 11.5px; color: var(--ink2); margin-bottom: 3px; white-space: nowrap; }
+  .qrow { display: flex; flex-wrap: wrap; gap: 4px 22px; font-family: var(--chem); font-size: 21px; line-height: 32px; }
+  .qrow span { white-space: nowrap; }
+  .ox { position: relative; display: inline-block; }
+  .ox small { position: absolute; left: 50%; top: -0.85em; transform: translateX(-50%); font-size: 12px; line-height: 1; color: var(--shu); white-space: nowrap; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .pair div { border-radius: 10px; padding: 8px 10px; font-family: var(--chem); font-size: 17px; }
+  .pair .no { background: #f6e7e1; } .pair .yes { background: #e6efe8; }
+  .pair small { display: block; font-family: var(--sans); font-size: 11.5px; color: var(--ink2); }
+  table.t { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .t th { text-align: left; font-weight: 400; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink2); padding: 5px 4px; border-bottom: 1px solid var(--line); }
+  .t td { padding: 6px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .t td.v { font-family: var(--chem); font-size: 14.5px; white-space: nowrap; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .el { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink2); }
+  .ball { width: 26px; height: 26px; border-radius: 13px; display: inline-grid; place-items: center; font-family: var(--chem); font-size: 14px; box-shadow: inset -3px -4px 6px rgba(0,0,0,.12); border: 1.2px solid #1e1c19; }
+  .tag { display: inline-block; font-size: 11px; letter-spacing: .5px; padding: 1px 8px; border-radius: 9px; border: 1px solid var(--line); color: var(--ink2); background: var(--band); margin: 2px 4px 0 0; }
+  .tag.eng { color: #2f6b4a; border-color: #bfd3c6; } .tag.new { color: var(--shu); border-color: #e6c9bf; }
+  .elcard { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start; }
+  .elcard .sym { font-family: var(--chem); font-size: 52px; line-height: 52px; border: 1.5px solid var(--ink); border-radius: 10px; padding: 10px 14px 8px; text-align: center; min-width: 96px; background: #fffdf8; }
+  .elcard .sym small { display: block; font-family: var(--chem); font-size: 13px; line-height: 16px; color: var(--ink2); }
+  .elcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; }
+  .elcard dt { color: var(--ink2); } .elcard dd { margin: 0; font-family: var(--chem); font-size: 14.5px; }
+  .hz { display: flex; gap: 10px; align-items: flex-start; }
+  .hz .sig { font-weight: 700; font-size: 13px; letter-spacing: 1px; color: #fff; background: var(--shu); border-radius: 6px; padding: 3px 9px; }
+  .hz .sig.warn { background: #8a6d1f; }
+  .foot { max-width: 1290px; margin: 30px auto 50px; padding: 0 24px; font-size: 13px; line-height: 1.75; color: var(--ink2); }
+  .foot a { color: #2f4b7c; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>BYE Chem design guide: how chemistry is drawn</h1>
+  <p>Everything a working chemist reads, writes and measures, drawn the BYE Chem way: the <b>図 Drafting table</b> look with its three technical layers (engineering drawing, instrument readout, cut-away). Notation follows IUPAC conventions so students learn the forms they’ll meet in labs and papers. Graphs are drawn by <b>BYE Math Engine</b>, marked <span class="tag eng">BYE Math Engine</span>; anything it can’t do yet is marked <span class="tag new">engine addition</span>. The 3D chemistry engine itself is not decided; this guide is what it has to meet.</p>
+  <nav><a href="#look">Look</a><a href="#notation">Notation</a><a href="#data">Data</a><a href="#structures">Structures</a><a href="#models">3D models</a><a href="#graphs">Graphs</a><a href="#spectra">Spectra</a><a href="#lab">Lab</a><a href="#tools">Tools</a></nav>
+</header>
+
+<!-- ───── Look ───── -->
+<h2 id="look">1 · The look <span>paper, hairlines, matte atoms, letters on every atom</span></h2>
+<section class="grid">
+  <div class="card">
+    <h3>Element colours <small>muted CPK families</small></h3>
+    <p class="use">Chemists expect oxygen red, nitrogen blue, sulfur yellow, chlorine green (the Jmol/CPK families). Same families, redrawn for paper; every atom has an ink outline and a letter with at least 4.5:1 contrast.</p>
+    <div class="ex"><div class="chips" id="elchips"></div></div>
+  </div>
+  <div class="card">
+    <h3>Line and colour roles <small>one meaning each</small></h3>
+    <div class="ex"><svg viewBox="0 0 360 150" font-family="Zen Kaku Gothic New, sans-serif" font-size="12" fill="#5a554d">
+      <line x1="10" y1="20" x2="110" y2="20" stroke="#1e1c19" stroke-width="1.6"/><text x="125" y="24">ink · outlines, box edges</text>
+      <line x1="10" y1="48" x2="110" y2="48" stroke="#5a554d" stroke-width="1"/><path d="M14 44 L6 52 M106 44 L114 52" stroke="#5a554d"/><text x="125" y="52">ink 2 · dimension lines</text>
+      <line x1="10" y1="76" x2="110" y2="76" stroke="#8a8378" stroke-width="6" stroke-linecap="round"/><text x="125" y="80">bond grey · bonds (3.4:1)</text>
+      <path d="M20 112 A40 40 0 0 1 100 112" stroke="#b5462a" stroke-width="1.6" fill="none"/><text x="125" y="108">shu · what is being measured</text>
+      <rect x="10" y="126" width="100" height="14" rx="7" fill="#d9846a"/><text x="125" y="137">coral · where you are (UI only)</text>
+    </svg></div>
+  </div>
+  <div class="card">
+    <h3>Three layers <small>use the one the task needs</small></h3>
+    <table class="t">
+      <tr><th>Layer</th><th>Shows</th><th>For</th></tr>
+      <tr><td>製図 Engineering</td><td>dimensions, angle arcs, title block</td><td>shapes, bond lengths, unit cells</td></tr>
+      <tr><td>計測 Instrument</td><td>velocity arrows, gauges, live graph</td><td>gas and reaction sandboxes</td></tr>
+      <tr><td>断面 Cut-away</td><td>true-size shells, clip facing you, section planes</td><td>“real size” toggle, liquids, solids</td></tr>
+    </table>
+    <p class="rules">See them live in <b>design/chem-technical-styles.html</b>.</p>
+  </div>
+</section>
+
+<!-- ───── Notation ───── -->
+<h2 id="notation">2 · Notation <span>the forms chemists actually write</span></h2>
+<section class="grid">
+  <div class="card">
+    <h3>Equations <small>IUPAC</small></h3>
+    <div class="ex">
+      <div class="big">2H<sub>2</sub>(g) + O<sub>2</sub>(g) → 2H<sub>2</sub>O(l)</div>
+      <div class="big" style="margin-top:10px">N<sub>2</sub>(g) + 3H<sub>2</sub>(g) <span class="cond"><small>Fe, 450 °C</small>⇌</span> 2NH<sub>3</sub>(g)</div>
+      <div class="big">Fe<sup>3+</sup>(aq) + 3OH<sup>−</sup>(aq) → Fe(OH)<sub>3</sub>(s)</div>
+    </div>
+    <ul class="rules"><li><b>→</b> reaction, <b>⇌</b> equilibrium, <b>↔</b> resonance only.</li><li>Conditions above or below the arrow; state symbols in brackets, never subscript.</li><li>Charge: number then sign, raised: SO<sub>4</sub><sup>2−</sup>.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Quantities and units <small>IUPAC Green Book</small></h3>
+    <div class="ex">
+      <div class="qrow"><span><i>p</i> = 101.3 kPa</span><span><i>T</i> = 298 K</span><span><i>V</i> = 25.0 mL</span><span><i>c</i>(HCl) = 0.100 mol L<sup>−1</sup></span><span>[H<sup>+</sup>] = 1.0 × 10<sup>−3</sup> M</span></div>
+    </div>
+    <div class="pair"><div class="no">25°C · 298°K · SO<sub>4</sub><sup>−2</sup><small>no space; °K; sign first</small></div><div class="yes">25 °C · 298 K · SO<sub>4</sub><sup>2−</sup><small>as chemists write it</small></div></div>
+    <ul class="rules"><li><b>Italic</b> quantity symbols (<i>p, V, n, T, c</i>), <b>upright</b> units and element symbols.</li><li>A space between number and unit; none before K.</li><li>×10<sup>n</sup>, never “E”; sig figs follow the data.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Isotopes and oxidation states</h3>
+    <div class="ex">
+      <div class="big"><span style="display:inline-flex;flex-direction:column;line-height:15px;font-size:14px;text-align:right;vertical-align:middle;margin-right:1px"><span>14</span><span>6</span></span>C &nbsp;&nbsp; <span style="display:inline-flex;flex-direction:column;line-height:15px;font-size:14px;text-align:right;vertical-align:middle;margin-right:1px"><span>235</span><span>92</span></span>U</div>
+      <div class="big" style="margin-top:18px"><span class="ox"><small>+3</small>Fe</span><sub>2</sub><span class="ox"><small>−2</small>O</span><sub>3</sub> &nbsp; iron(III) oxide</div>
+    </div>
+    <ul class="rules"><li>Mass number upper left, atomic number lower left.</li><li>Oxidation states: Roman numerals in names; signed numbers above atoms while assigning.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Graph axes <small>quantity / unit</small></h3>
+    <div class="ex"><svg id="axisdemo" viewBox="0 0 360 210"></svg></div>
+    <ul class="rules"><li>Label as <i>T</i> / K, <i>V</i>(NaOH) / mL, so tick values are plain numbers.</li><li>The plain name can lead: “Temperature, <i>T</i> / °C”.</li></ul>
+  </div>
+</section>
+
+<!-- ───── Data ───── -->
+<h2 id="data">3 · Data <span>looked up every day</span></h2>
+<section class="grid">
+  <div class="card">
+    <h3>Element card <small>tap any element</small></h3>
+    <div class="ex elcard">
+      <div class="sym"><small>8</small>O<small>15.999</small></div>
+      <dl><dt>Name</dt><dd>oxygen</dd><dt>Configuration</dt><dd>[He] 2s<sup>2</sup> 2p<sup>4</sup></dd><dt>Group, period</dt><dd>16, 2</dd><dt>Oxidation states</dt><dd>−2 (common), −1</dd><dt>Electronegativity</dt><dd>3.44 (Pauling)</dd></dl>
+    </div>
+    <ul class="rules"><li>IUPAC group numbers 1–18; standard atomic weights; electron configuration in noble-gas shorthand.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Constants <small>exact SI values since 2019</small></h3>
+    <table class="t">
+      <tr><td>Avogadro constant, <i>N</i><sub>A</sub></td><td class="v">6.022 140 76 × 10<sup>23</sup> mol<sup>−1</sup></td></tr>
+      <tr><td>Gas constant, <i>R</i></td><td class="v">8.314 J mol<sup>−1</sup> K<sup>−1</sup></td></tr>
+      <tr><td><i>R</i>, for gas problems</td><td class="v">0.082 06 L atm mol<sup>−1</sup> K<sup>−1</sup></td></tr>
+      <tr><td>Faraday constant, <i>F</i></td><td class="v">96 485 C mol<sup>−1</sup></td></tr>
+      <tr><td>Planck constant, <i>h</i></td><td class="v">6.626 070 15 × 10<sup>−34</sup> J s</td></tr>
+      <tr><td>Speed of light, <i>c</i></td><td class="v">299 792 458 m s<sup>−1</sup></td></tr>
+      <tr><td>Boltzmann constant, <i>k</i><sub>B</sub></td><td class="v">1.380 649 × 10<sup>−23</sup> J K<sup>−1</sup></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Data tables <small>each row cited</small></h3>
+    <table class="t">
+      <tr><th>Table</th><th>Chapter</th></tr>
+      <tr><td>Polyatomic ions (name, formula, charge)</td><td>2</td></tr>
+      <tr><td>Solubility rules</td><td>4, 11</td></tr>
+      <tr><td>Standard enthalpies of formation, ΔH°<sub>f</sub></td><td>5</td></tr>
+      <tr><td>Specific heats; bond energies</td><td>5, 7</td></tr>
+      <tr><td><i>K</i><sub>a</sub> and <i>K</i><sub>b</sub> values</td><td>14</td></tr>
+      <tr><td>Standard reduction potentials, <i>E</i>°</td><td>17</td></tr>
+    </table>
+    <ul class="rules"><li>Values are facts, but each table states its source (for example NIST) and the conditions (298.15 K, 1 bar).</li></ul>
+  </div>
+</section>
+
+<!-- ───── Structures ───── -->
+<h2 id="structures">4 · Structures in 2D <span>IUPAC 2008 drawing standards</span></h2>
+<section class="grid">
+  <div class="card">
+    <h3>Lewis structure <small>every valence electron</small></h3>
+    <div class="ex"><svg viewBox="0 0 360 180" font-family="STIX Two Text, serif" font-size="26" fill="#1e1c19" text-anchor="middle">
+      <g transform="translate(70 80)">
+        <text x="0" y="9">O</text>
+        <line x1="-12" y1="10" x2="-38" y2="36" stroke="#1e1c19" stroke-width="2"/><text x="-48" y="52">H</text>
+        <line x1="12" y1="10" x2="38" y2="36" stroke="#1e1c19" stroke-width="2"/><text x="48" y="52">H</text>
+        <circle cx="-21" cy="-12" r="2.6"/><circle cx="-13" cy="-21" r="2.6"/>
+        <circle cx="13" cy="-21" r="2.6"/><circle cx="21" cy="-12" r="2.6"/>
+      </g>
+      <g transform="translate(250 80)">
+        <text x="0" y="9">N</text>
+        <line x1="-12" y1="0" x2="-48" y2="0" stroke="#1e1c19" stroke-width="2"/><text x="-60" y="9">H</text>
+        <line x1="12" y1="0" x2="48" y2="0" stroke="#1e1c19" stroke-width="2"/><text x="60" y="9">H</text>
+        <line x1="0" y1="-14" x2="0" y2="-44" stroke="#1e1c19" stroke-width="2"/><text x="0" y="-50">H</text>
+        <line x1="0" y1="16" x2="0" y2="46" stroke="#1e1c19" stroke-width="2"/><text x="0" y="70">H</text>
+        <circle cx="22" cy="-22" r="10" fill="none" stroke="#b5462a" stroke-width="1.2"/><text x="22" y="-17" font-size="15" fill="#b5462a">+</text>
+      </g>
+      <text x="70" y="172" font-size="13" font-family="Zen Kaku Gothic New, sans-serif" fill="#5a554d">water: 2 lone pairs</text>
+      <text x="250" y="172" font-size="13" font-family="Zen Kaku Gothic New, sans-serif" fill="#5a554d">ammonium: formal charge +1</text>
+    </svg></div>
+    <ul class="rules"><li>Bonds as lines, lone pairs as dot pairs, formal charge circled beside the atom.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Skeletal formula <small>organic chemistry</small></h3>
+    <div class="ex"><svg viewBox="0 0 360 146" font-family="STIX Two Text, serif" font-size="22" fill="#1e1c19">
+      <polyline points="40,95 80,72 120,95 160,72" fill="none" stroke="#1e1c19" stroke-width="2"/>
+      <text x="166" y="78">OH</text>
+      <text x="40" y="122" font-size="12.5" font-family="Zen Kaku Gothic New, sans-serif" fill="#5a554d">propan-1-ol</text><text x="40" y="137" font-size="12.5" font-family="Zen Kaku Gothic New, sans-serif" fill="#5a554d">corners are C; H on C not drawn</text>
+      <g transform="translate(290 70)">
+        <line x1="0" y1="0" x2="0" y2="-40" stroke="#1e1c19" stroke-width="2"/>
+        <line x1="0" y1="0" x2="-36" y2="22" stroke="#1e1c19" stroke-width="2"/>
+        <polygon points="0,0 34,18 30,26" fill="#1e1c19"/>
+        <g stroke="#1e1c19" stroke-width="1.6"><line x1="4" y1="2" x2="3" y2="5"/><line x1="10" y1="4" x2="8" y2="9"/><line x1="16" y1="6" x2="13" y2="13"/><line x1="22" y1="9" x2="18" y2="17"/></g>
+      </g>
+      <text x="290" y="122" font-size="12.5" font-family="Zen Kaku Gothic New, sans-serif" fill="#5a554d" text-anchor="middle">wedge:</text><text x="290" y="137" font-size="12.5" font-family="Zen Kaku Gothic New, sans-serif" fill="#5a554d" text-anchor="middle">toward you</text>
+    </svg></div>
+    <ul class="rules"><li>Zig-zag at 120°; heteroatoms labelled with their H.</li><li>Solid wedge toward the viewer, hashed wedge away; narrow end at the stereocentre.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Resonance <small>↔ and brackets</small></h3>
+    <div class="ex big" style="text-align:center">[ O=N–O<sup>−</sup> &nbsp;↔&nbsp; <sup>−</sup>O–N=O ]</div>
+    <ul class="rules"><li>Nitrite ion, NO<sub>2</sub><sup>−</sup> (lone pairs left out here): two drawings of one real structure. The double-headed ↔ means resonance, never equilibrium.</li></ul>
+  </div>
+</section>
+
+<!-- ───── 3D models ───── -->
+<h2 id="models">5 · 3D models <span>scale 1 unit = 1 Å, always stated</span></h2>
+<section class="grid">
+  <div class="card">
+    <h3>VSEPR shapes <small>ideal and measured angles</small></h3>
+    <table class="t">
+      <tr><th>Shape</th><th>Angle</th><th>Example</th></tr>
+      <tr><td>linear</td><td class="v">180°</td><td class="f">CO<sub>2</sub></td></tr>
+      <tr><td>trigonal planar</td><td class="v">120°</td><td class="f">BF<sub>3</sub></td></tr>
+      <tr><td>tetrahedral</td><td class="v">109.5°</td><td class="f">CH<sub>4</sub></td></tr>
+      <tr><td>trigonal pyramidal</td><td class="v">107° (measured)</td><td class="f">NH<sub>3</sub></td></tr>
+      <tr><td>bent</td><td class="v">104.5° (measured)</td><td class="f">H<sub>2</sub>O</td></tr>
+      <tr><td>trigonal bipyramidal</td><td class="v">90°, 120°</td><td class="f">PCl<sub>5</sub></td></tr>
+      <tr><td>octahedral</td><td class="v">90°</td><td class="f">SF<sub>6</sub></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Three ways to show a molecule</h3>
+    <div class="ex"><svg viewBox="0 0 360 130" id="modeldemo"></svg></div>
+    <ul class="rules"><li><b>Ball-and-stick</b> by default; <b>real size</b> uses van der Waals radii (Bondi: H 1.20, C 1.70, N 1.55, O 1.52 Å); <b>cut-away</b> slices the shells to show the model inside.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Orbitals and unit cells <small>later chapters</small></h3>
+    <div class="ex"><svg viewBox="0 0 360 130" font-family="STIX Two Text, serif" font-size="14" fill="#5a554d" text-anchor="middle">
+      <circle cx="50" cy="60" r="30" fill="#cfdae9" stroke="#5a554d"/><text x="50" y="118">s</text>
+      <ellipse cx="140" cy="38" rx="17" ry="26" fill="#cfdae9" stroke="#5a554d"/><ellipse cx="140" cy="86" rx="17" ry="26" fill="#f0d8cf" stroke="#5a554d"/>
+      <text x="140" y="42" font-size="16">+</text><text x="140" y="90" font-size="16">−</text><text x="168" y="118">p (two tones and a sign)</text>
+      <g transform="translate(270 22)" fill="none" stroke="#1e1c19" stroke-width="1.2"><rect x="0" y="20" width="60" height="60"/><rect x="18" y="0" width="60" height="60"/><line x1="0" y1="20" x2="18" y2="0"/><line x1="60" y1="20" x2="78" y2="0"/><line x1="0" y1="80" x2="18" y2="60"/><line x1="60" y1="80" x2="78" y2="60"/>
+        <circle cx="39" cy="40" r="7" fill="#a3998a"/></g>
+      <text x="309" y="118">body-centred cubic</text>
+    </svg></div>
+    <ul class="rules"><li>Orbital phase in two tones <b>and</b> a + / − sign; unit-cell edge dimensioned in pm.</li></ul>
+  </div>
+</section>
+
+<!-- ───── Graphs ───── -->
+<h2 id="graphs">6 · Graphs <span>drawn by BYE Math Engine; real data</span></h2>
+<section class="grid">
+  <div class="card"><h3>Heating curve of water <small><span class="tag eng">plot2d</span></small></h3><p class="use">1 mol of ice from −20 °C to steam at 120 °C. The flat parts are melting (6.01 kJ) and boiling (40.7 kJ).</p><div class="ex"><svg id="heat" viewBox="0 0 360 210"></svg></div></div>
+  <div class="card"><h3>Titration curve <small><span class="tag eng">plot2d</span></small></h3><p class="use">25.0 mL of 0.100 M HCl with 0.100 M NaOH. Equivalence at 25.0 mL, pH 7.00.</p><div class="ex"><svg id="titr" viewBox="0 0 360 210"></svg></div></div>
+  <div class="card"><h3>First-order decay <small><span class="tag eng">plot2d</span></small></h3><p class="use">[A] = [A]<sub>0</sub>e<sup>−<i>kt</i></sup>, <i>k</i> = 0.100 s<sup>−1</sup>: each half-life (6.93 s) halves what’s left.</p><div class="ex"><svg id="kin" viewBox="0 0 360 210"></svg></div></div>
+  <div class="card"><h3>Energy diagram <small><span class="tag eng">plot2d</span> schematic</small></h3><p class="use">Activation energy <i>E</i><sub>a</sub> and enthalpy change Δ<i>H</i> for an exothermic reaction.</p><div class="ex"><svg id="energy" viewBox="0 0 360 210"></svg></div></div>
+  <div class="card"><h3>Speed distribution <small><span class="tag eng">plot2d</span></small></h3><p class="use">Maxwell–Boltzmann curves for N<sub>2</sub> at 300 K and 900 K: hotter means faster and wider.</p><div class="ex"><svg id="mb" viewBox="0 0 360 210"></svg></div></div>
+  <div class="card"><h3>Still to add to the engine <small><span class="tag new">engine addition</span></small></h3>
+    <ul class="rules" style="margin-top:6px"><li><b>Phase diagrams</b> need a logarithmic pressure axis.</li><li><b>IR and NMR spectra</b> need a reversed x-axis (wavenumber and chemical shift decrease to the right).</li><li><b>Reaction coordinate</b> needs an unlabelled axis option.</li></ul></div>
+</section>
+
+<!-- ───── Spectra ───── -->
+<h2 id="spectra">7 · Light and spectra <span>Chapter 6</span></h2>
+<section class="grid">
+  <div class="card">
+    <h3>Hydrogen emission lines <small>visible (Balmer) series</small></h3>
+    <div class="ex"><svg id="hspec" viewBox="0 0 360 120"></svg></div>
+    <ul class="rules"><li>Lines at 410.2, 434.0, 486.1 and 656.3 nm; each labelled with its wavelength, not colour alone.</li></ul>
+  </div>
+</section>
+
+<!-- ───── Lab ───── -->
+<h2 id="lab">8 · Lab: reading instruments and staying safe</h2>
+<section class="grid">
+  <div class="card">
+    <h3>Reading a buret <small>bottom of the meniscus</small></h3>
+    <div class="ex"><svg viewBox="0 0 360 200" font-family="STIX Two Text, serif" font-size="13" fill="#1e1c19">
+      <rect x="150" y="10" width="44" height="180" fill="#fffdf8" stroke="#1e1c19" stroke-width="1.4"/>
+      <rect x="151" y="98" width="42" height="91" fill="#dbe7f3"/>
+      <path d="M151 92 Q172 108 193 92 L193 100 L151 100 Z" fill="#dbe7f3"/>
+      <path d="M151 92 Q172 108 193 92" fill="none" stroke="#2f4b7c" stroke-width="1.6"/>
+      <g stroke="#1e1c19" id="ticks"></g>
+      <line x1="120" y1="100" x2="230" y2="100" stroke="#b5462a" stroke-dasharray="4 3"/>
+      <text x="236" y="104" fill="#b5462a">22.35 mL</text>
+      <text x="8" y="104" font-family="Zen Kaku Gothic New, sans-serif" font-size="12" fill="#5a554d">eye level →</text>
+    </svg></div>
+    <ul class="rules"><li>Read the bottom of the meniscus at eye level; estimate one digit past the marks (0.01 mL on a 0.1 mL buret).</li><li>The same rule sets significant figures for every instrument: balance, pipet, graduated cylinder.</li></ul>
+  </div>
+  <div class="card">
+    <h3>Safety information <small>words first</small></h3>
+    <div class="ex">
+      <div class="hz"><span class="sig">DANGER</span><div><b>Hydrochloric acid, 6 M</b><div class="use">Causes severe skin burns and eye damage. Wear goggles and gloves; add acid to water, never water to acid.</div></div></div>
+      <div class="hz" style="margin-top:12px"><span class="sig warn">WARNING</span><div><b>Ethanol</b><div class="use">Highly flammable liquid and vapour. Keep away from flames.</div></div></div>
+    </div>
+    <ul class="rules"><li>Signal word, hazard and what to do, in plain words. The official GHS pictograms are referenced from the real label, not redrawn.</li><li>The app is for learning, never a substitute for the lab’s safety sheet.</li></ul>
+  </div>
+</section>
+
+<!-- ───── Tools ───── -->
+<h2 id="tools">9 · Tools <span>each shows its working and links to its section</span></h2>
+<section class="grid">
+  <div class="card" style="grid-column: 1 / -1">
+    <table class="t">
+      <tr><th>Tool</th><th>Does</th><th>Chapters</th><th>Status</th></tr>
+      <tr><td>Periodic table + element card</td><td>Look up any element; trend heat maps (radius, ionisation energy, electronegativity)</td><td>2, 6</td><td>mocked up</td></tr>
+      <tr><td>Molar mass and mole converter</td><td>Formula → g/mol with every atom shown; g ↔ mol ↔ particles</td><td>3</td><td>mocked up</td></tr>
+      <tr><td>Equation balancer</td><td>Atom tally left vs right, coefficient by coefficient</td><td>4</td><td>designed</td></tr>
+      <tr><td>Concentration and dilution</td><td><i>M</i> = <i>n</i>/<i>V</i>; <i>M</i><sub>1</sub><i>V</i><sub>1</sub> = <i>M</i><sub>2</sub><i>V</i><sub>2</sub></td><td>3</td><td>planned</td></tr>
+      <tr><td>Gas calculator</td><td><i>pV</i> = <i>nRT</i> with units converted for you</td><td>9</td><td>planned; Lab sandbox built</td></tr>
+      <tr><td>Calorimetry and Hess’s law</td><td><i>q</i> = <i>mc</i>Δ<i>T</i>; ΔH° from formation enthalpies</td><td>5</td><td>planned</td></tr>
+      <tr><td>pH</td><td>pH, pOH, [H<sup>+</sup>], [OH<sup>−</sup>] from any one</td><td>14</td><td>planned</td></tr>
+      <tr><td>Units and sig figs</td><td>Convert and keep the right number of figures</td><td>1</td><td>planned</td></tr>
+      <tr><td>Structure builder</td><td>Lewis structures with an octet and formal-charge check</td><td>7</td><td>planned (Lab)</td></tr>
+      <tr><td>3D viewer</td><td>Turn a molecule; model / cut / real size; dimensions</td><td>7, 8</td><td>demo built</td></tr>
+      <tr><td>Data tables and constants</td><td>Ions, solubility, ΔH°<sub>f</sub>, <i>K</i><sub>a</sub>, <i>E</i>°, constants</td><td>2–17</td><td>planned</td></tr>
+    </table>
+  </div>
+</section>
+
+<p class="foot">Revised after checking against real tools (ChemDraw, Jmol, ChimeraX, IUPAC, NIST) and research: see §11 of the written guide and reports I and J. Conventions follow IUPAC, <i>Quantities, Units and Symbols in Physical Chemistry</i>, 3rd ed. (2007), <a href="https://doi.org/10.1039/9781847557889">doi:10.1039/9781847557889</a>, and IUPAC, <i>Graphical representation standards for chemical structure diagrams</i>, Pure Appl. Chem. 80, 277–410 (2008), <a href="https://doi.org/10.1351/pac200880020277">doi:10.1351/pac200880020277</a>. Constants are the exact SI values fixed in 2019. Element colours are our own, following the familiar CPK families. All drawings are original. Full rules: <b>docs/design-guide.md</b>.</p>
+
+<script>
+  // Element chips
+  const ELS = [['H','#fbf9f4','#1e1c19'],['C','#4a4641','#fff'],['N','#6f86ad','#1e1c19'],['O','#cf7a62','#1e1c19'],['S','#d9b44a','#1e1c19'],['P','#d98a3d','#1e1c19'],['Cl','#7fa36b','#1e1c19'],['Br','#9b5a4a','#fff'],['I','#7a5a8c','#fff'],['Na','#8e7cc3','#1e1c19'],['Ca','#6f9a8c','#1e1c19'],['Fe','#a3998a','#1e1c19'],['Ne','#b9a6c9','#1e1c19']];
+  const NAMES = { H:'hydrogen', C:'carbon', N:'nitrogen', O:'oxygen', S:'sulfur', P:'phosphorus', Cl:'F, Cl', Br:'bromine', I:'iodine', Na:'alkali metals', Ca:'alkaline earths', Fe:'transition metals', Ne:'noble gases' };
+  document.getElementById('elchips').innerHTML = ELS.map(([s, bg, fg]) => `<span class="el"><span class="ball" style="background:${bg};color:${fg}">${s}</span>${NAMES[s]}</span>`).join('');
+
+  // A small plot helper in the BYE Math Engine look (paper, hairline grid, ink axes, quantity / unit labels).
+  const NS = 'http://www.w3.org/2000/svg';
+  function plot(svg, o) {
+    const W = 360, H = 210, L = 48, R = 12, T = 14, B = 36;
+    const X = (x) => L + ((x - o.x[0]) / (o.x[1] - o.x[0])) * (W - L - R), Y = (y) => H - B - ((y - o.y[0]) / (o.y[1] - o.y[0])) * (H - T - B);
+    let s = '';
+    for (const x of o.xt) s += `<line x1="${X(x)}" x2="${X(x)}" y1="${T}" y2="${H - B}" stroke="#e8e2d6"/><text x="${X(x)}" y="${H - B + 15}" text-anchor="middle">${x}</text>`;
+    for (const y of o.yt) s += `<line x1="${L}" x2="${W - R}" y1="${Y(y)}" y2="${Y(y)}" stroke="#e8e2d6"/><text x="${L - 6}" y="${Y(y) + 4}" text-anchor="end">${y}</text>`;
+    s += `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="#5a554d"/><line x1="${L}" x2="${L}" y1="${T}" y2="${H - B}" stroke="#5a554d"/>`;
+    s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle" font-size="12">${o.xl}</text><text transform="translate(13 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle" font-size="12">${o.yl}</text>`;
+    for (const c of o.curves) { const d = c.pts.map(([x, y], i) => `${i ? 'L' : 'M'}${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(''); s += `<path d="${d}" fill="none" stroke="${c.color || '#2f4b7c'}" stroke-width="${c.w || 2}" ${c.dash ? 'stroke-dasharray="5 4"' : ''}/>`; }
+    for (const m of o.marks || []) s += m(X, Y);
+    svg.setAttribute('font-family', 'STIX Two Text, serif'); svg.setAttribute('font-size', '11'); svg.setAttribute('fill', '#5a554d');
+    svg.innerHTML = s;
+  }
+  const range = (a, b, n) => Array.from({ length: n + 1 }, (_, i) => a + ((b - a) * i) / n);
+
+  // Axis demo
+  plot(document.getElementById('axisdemo'), { x: [0, 60], y: [0, 100], xt: [0, 20, 40, 60], yt: [0, 50, 100], xl: '<tspan font-style="italic">t</tspan> / s', yl: '<tspan font-style="italic">T</tspan> / °C',
+    curves: [{ pts: range(0, 60, 60).map((t) => [t, 20 + 70 * (1 - Math.exp(-t / 15))]) }] });
+
+  // Heating curve: 1 mol water. Cp(ice) 37.6, Cp(liq) 75.3, Cp(steam) 33.6 J/(mol K); ΔHfus 6.01, ΔHvap 40.7 kJ/mol.
+  (() => {
+    const q1 = 20 * 37.6 / 1000, q2 = q1 + 6.01, q3 = q2 + 100 * 75.3 / 1000, q4 = q3 + 40.7, q5 = q4 + 20 * 33.6 / 1000;
+    plot(document.getElementById('heat'), { x: [0, 60], y: [-30, 130], xt: [0, 20, 40, 60], yt: [-20, 0, 50, 100], xl: 'heat added, <tspan font-style="italic">q</tspan> / kJ', yl: '<tspan font-style="italic">T</tspan> / °C',
+      curves: [{ pts: [[0, -20], [q1, 0], [q2, 0], [q3, 100], [q4, 100], [q5, 120]] }],
+      marks: [(X, Y) => `<text x="${X((q1 + q2) / 2)}" y="${Y(0) - 7}" text-anchor="middle" fill="#b5462a">melts</text><text x="${X((q3 + q4) / 2)}" y="${Y(100) - 7}" text-anchor="middle" fill="#b5462a">boils, 40.7 kJ</text>`] });
+  })();
+
+  // Titration: 25.0 mL 0.100 M HCl + 0.100 M NaOH
+  (() => {
+    const pH = (v) => { const a = 2.5 - 0.1 * v, tot = 25 + v; if (Math.abs(a) < 1e-9) return 7; return a > 0 ? -Math.log10(a / tot) : 14 + Math.log10(-a / tot); };
+    plot(document.getElementById('titr'), { x: [0, 50], y: [0, 14], xt: [0, 10, 20, 30, 40, 50], yt: [0, 7, 14], xl: '<tspan font-style="italic">V</tspan>(NaOH) / mL', yl: 'pH',
+      curves: [{ pts: range(0, 50, 1000).map((v) => [v, pH(v)]) }],
+      marks: [(X, Y) => `<circle cx="${X(25)}" cy="${Y(7)}" r="4" fill="#b5462a"/><text x="${X(25) + 8}" y="${Y(7) + 4}" fill="#b5462a">equivalence, 25.0 mL</text>`] });
+  })();
+
+  // First-order decay, k = 0.100 s⁻¹, [A]0 = 1.00 M
+  (() => {
+    const k = 0.1, th = Math.log(2) / k;
+    plot(document.getElementById('kin'), { x: [0, 30], y: [0, 1], xt: [0, 10, 20, 30], yt: [0, 0.5, 1], xl: '<tspan font-style="italic">t</tspan> / s', yl: '[A] / M',
+      curves: [{ pts: range(0, 30, 120).map((t) => [t, Math.exp(-k * t)]) }],
+      marks: [(X, Y) => [1, 2, 3].map((n) => `<line x1="${X(n * th)}" x2="${X(n * th)}" y1="${Y(0)}" y2="${Y(Math.pow(0.5, n))}" stroke="#b5462a" stroke-dasharray="3 3"/>`).join('') + `<text x="${X(th) + 4}" y="${Y(0.5) - 6}" fill="#b5462a">t½ = 6.93 s</text>`] });
+  })();
+
+  // Energy diagram (schematic): reactants 0, Ea 60, products −40
+  (() => {
+    const E = (x) => (x < 0.5 ? 0 : -40 * (0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, (x - 0.5) / 0.3)))) + 75 * Math.exp(-Math.pow((x - 0.5) / 0.12, 2)) * (x < 0.5 ? 1 : 1);
+    const peak = Math.max(...range(0, 1, 400).map(E));
+    plot(document.getElementById('energy'), { x: [0, 1], y: [-60, 100], xt: [], yt: [], xl: 'reaction progress', yl: 'energy',
+      curves: [{ pts: range(0, 1, 400).map((x) => [x, E(x)]) }],
+      marks: [(X, Y) => `<line x1="${X(0.5)}" x2="${X(0.5)}" y1="${Y(0)}" y2="${Y(peak)}" stroke="#b5462a" stroke-dasharray="3 3"/><text x="${X(0.5) + 6}" y="${Y(peak / 2)}" fill="#b5462a" font-size="13" font-style="italic">E</text><text x="${X(0.5) + 15}" y="${Y(peak / 2) + 4}" fill="#b5462a" font-size="9">a</text>` +
+        `<line x1="${X(0.92)}" x2="${X(0.92)}" y1="${Y(0)}" y2="${Y(-40)}" stroke="#b5462a"/><line x1="${X(0.02)}" x2="${X(0.95)}" y1="${Y(0)}" y2="${Y(0)}" stroke="#b9b1a3" stroke-dasharray="4 3"/><text x="${X(0.8)}" y="${Y(-22)}" fill="#b5462a">ΔH &lt; 0</text>` +
+        `<text x="${X(0.03)}" y="${Y(0) - 6}">reactants</text><text x="${X(0.97)}" y="${Y(-40) + 15}" text-anchor="end">products</text>`] });
+  })();
+
+  // Maxwell–Boltzmann, N2 at 300 K and 900 K (fraction per m/s ×1000)
+  (() => {
+    const kB = 1.380649e-23, m = 28.014 * 1.66053907e-27;
+    const f = (u, T) => { const a = m / (2 * kB * T); return 4 * Math.PI * Math.pow(a / Math.PI, 1.5) * u * u * Math.exp(-a * u * u) * 1000; };
+    plot(document.getElementById('mb'), { x: [0, 1500], y: [0, 2.2], xt: [0, 500, 1000, 1500], yt: [0, 1, 2], xl: 'speed, <tspan font-style="italic">u</tspan> / m s⁻¹', yl: 'fraction per 1000 m s⁻¹',
+      curves: [{ pts: range(0, 1500, 300).map((u) => [u, f(u, 300)]) }, { pts: range(0, 1500, 300).map((u) => [u, f(u, 900)]), color: '#b5462a' }],
+      marks: [(X, Y) => `<text x="${X(470)}" y="${Y(2.05)}">300 K</text><text x="${X(830)}" y="${Y(1.25)}" fill="#b5462a">900 K</text>`] });
+  })();
+
+  // Hydrogen emission lines on a 380–720 nm scale
+  (() => {
+    const svg = document.getElementById('hspec'), X = (nm) => 20 + ((nm - 380) / 340) * 320;
+    let s = '<rect x="20" y="14" width="320" height="56" fill="#1e1c19" rx="4"/>';
+    for (const [nm, c] of [[410.2, '#7b5cc4'], [434.0, '#5a63d8'], [486.1, '#3fb6c9'], [656.3, '#e0473a']]) s += `<line x1="${X(nm)}" x2="${X(nm)}" y1="16" y2="68" stroke="${c}" stroke-width="3"/><text x="${X(nm)}" y="86" text-anchor="middle">${nm}</text>`;
+    for (let nm = 400; nm <= 700; nm += 100) s += `<line x1="${X(nm)}" x2="${X(nm)}" y1="70" y2="74" stroke="#5a554d"/>`;
+    s += `<text x="180" y="108" text-anchor="middle" font-size="12">wavelength, <tspan font-style="italic">λ</tspan> / nm</text>`;
+    svg.setAttribute('font-family', 'STIX Two Text, serif'); svg.setAttribute('font-size', '11'); svg.setAttribute('fill', '#5a554d'); svg.innerHTML = s;
+  })();
+
+  // Three model types
+  (() => {
+    const svg = document.getElementById('modeldemo');
+    const atom = (x, y, r, fill, letter, fg, op = 1) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" fill-opacity="${op}" stroke="#1e1c19" stroke-opacity="${op < 1 ? .35 : .8}" stroke-width="1"/>${letter ? `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="12" fill="${fg}">${letter}</text>` : ''}`;
+    const water = (cx, mode) => {
+      const O = [cx, 58], H1 = [cx - 30, 80], H2 = [cx + 30, 80];
+      if (mode === 'bs') return `<line x1="${O[0]}" y1="${O[1]}" x2="${H1[0]}" y2="${H1[1]}" stroke="#8a8378" stroke-width="5"/><line x1="${O[0]}" y1="${O[1]}" x2="${H2[0]}" y2="${H2[1]}" stroke="#8a8378" stroke-width="5"/>` + atom(...H1, 9, '#fbf9f4', 'H', '#1e1c19') + atom(...H2, 9, '#fbf9f4', 'H', '#1e1c19') + atom(...O, 13, '#cf7a62', 'O', '#1e1c19');
+      if (mode === 'sf') return atom(...H1, 22, '#fbf9f4', '', '') + atom(...H2, 22, '#fbf9f4', '', '') + atom(...O, 28, '#cf7a62', 'O', '#1e1c19');
+      return atom(...H1, 22, '#e9e4da', '', '', .35) + atom(...H2, 22, '#e9e4da', '', '', .35) + atom(...O, 28, '#cf7a62', '', '', .25) + water(cx, 'bs');
+    };
+    svg.setAttribute('font-family', 'STIX Two Text, serif');
+    svg.innerHTML = water(60, 'bs') + water(180, 'sf') + water(300, 'cut') +
+      ['ball-and-stick', 'real size', 'cut-away'].map((t, i) => `<text x="${60 + i * 120}" y="124" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="12" fill="#5a554d">${t}</text>`).join('');
+  })();
+
+  // Buret ticks: 22.0 to 23.0 mL, every 0.1 mL; scale 80 px per mL (22.35 sits at y = 100)
+  (() => {
+    const g = document.getElementById('ticks'); let s = '';
+    for (let i = 0; i <= 20; i++) { const v = 21.0 + i * 0.1, y = 100 + (v - 22.35) * 80; if (y < 12 || y > 188) continue; const major = i % 10 === 0, mid = i % 5 === 0;
+      s += `<line x1="150" x2="${150 + (major ? 22 : mid ? 15 : 9)}" y1="${y}" y2="${y}" stroke-width="${major ? 1.4 : 1}"/>`; if (major) s += `<text x="140" y="${y + 4}" text-anchor="end" font-size="12" stroke="none">${v.toFixed(0)}</text>`; }
+    g.innerHTML = s;
+  })();
+</script>
+</body>
+</html>

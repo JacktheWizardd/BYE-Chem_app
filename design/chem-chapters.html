@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem chapters, lab and tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&amp;family=STIX+Two+Text:ital@0;1&amp;family=Schibsted+Grotesk:wght@700&amp;family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+  /* BYE family look (light only): paper ground, hairlines, one meaning per colour.
+     Layout idea: phone boards in reading order (Learn, then Tools), then the full chapter map. */
+  :root {
+    color-scheme: light;
+    --ground: #f6f3ec; --band: #fcfaf5; --note: #efeadf; --line: #e3dccf; --axis: #8a8378;
+    --muted: #6b655b;   /* secondary text that must still read at 4.5:1 */
+    --ink: #1e1c19; --ink2: #5a554d; --onInk: #f6f3ec; --canvas: #e7e1d5;
+    --coral: #d9846a; --too: #f3b63f; --shu: #b5462a;
+    --mass: #2f4b7c;    /* grams */
+    --mol: #2f6b4a;     /* moles */
+    --elH: #fffdf8; --elO: #c4553a; --elC: #2c2a27; --elN: #3b5ea8;
+    --sans: 'Zen Kaku Gothic New', 'Hiragino Sans', system-ui, sans-serif;
+    --serif: 'Shippori Mincho', 'Hiragino Mincho ProN', Georgia, serif;
+    --chem: 'STIX Two Text', 'Times New Roman', serif;
+    --grotesk: 'Schibsted Grotesk', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+  sub { font-size: .72em; vertical-align: -.26em; line-height: 0; }
+  sup { font-size: .7em; vertical-align: .5em; line-height: 0; }
+
+  /* Canvas */
+  .top { max-width: 1290px; margin: 0 auto; padding: 36px 24px 6px; }
+  .top h1 { font-family: var(--serif); font-weight: 400; font-size: 32px; line-height: 1.25; margin: 0 0 10px; text-wrap: balance; }
+  .top p { margin: 0 0 10px; max-width: 72ch; color: var(--ink2); line-height: 1.65; font-size: 15px; }
+  .rowhead { max-width: 1290px; margin: 26px auto 0; padding: 18px 24px 0; display: flex; align-items: baseline; gap: 14px; border-top: 1px solid #d6cfc1; flex-wrap: wrap; }
+  .rowhead h2 { font-family: var(--serif); font-weight: 400; font-size: 23px; margin: 0; }
+  .rowhead span { font-size: 14px; color: var(--ink2); }
+  .boards { max-width: 1290px; margin: 0 auto; padding: 18px 24px 8px; display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+  .board { width: 390px; max-width: 100%; }
+  .board > .label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); margin: 0 0 10px 4px; }
+  .phone { position: relative; background: var(--ground); border-radius: 34px; overflow: hidden; box-shadow: 0 1px 0 var(--line), 0 18px 40px rgba(30, 28, 25, .10); padding: 20px 26px 30px; }
+  .notes { margin: 14px 4px 0; font-size: 14px; line-height: 1.6; color: var(--ink2); }
+  .notes b { color: var(--ink); font-weight: 500; }
+  .why { display: inline-block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--mol); border: 1px solid #bfd3c6; border-radius: 10px; padding: 1px 8px; margin: 0 4px 4px 0; }
+
+  /* App pieces, as in BYE Math */
+  .f { font-family: var(--chem); }
+  .eyebrow { font-size: 12px; line-height: 16px; letter-spacing: 2.2px; text-transform: uppercase; color: var(--ink2); }
+  .back { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; color: var(--ink2); }
+  .back::before { content: ''; width: 8px; height: 8px; border-left: 1.5px solid var(--ink2); border-bottom: 1.5px solid var(--ink2); transform: rotate(45deg); }
+  .title { margin: 8px 0 6px; font-family: var(--serif); font-size: 34px; line-height: 42px; font-weight: 400; text-wrap: balance; }
+  .jp { font-size: 15px; color: var(--ink2); }
+  .hook { margin-top: 20px; font-family: var(--serif); font-size: 21px; line-height: 31px; }
+  .counts { margin: 10px 0 0; font-size: 13px; color: var(--ink2); }
+  .p { font-size: 15.5px; line-height: 25px; margin: 12px 0 0; }
+  .small { font-size: 13px; line-height: 20px; color: var(--ink2); }
+  .band { margin: 20px -26px 0; padding: 18px 26px; background: var(--band); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 22px; }
+  .meta { font-size: 13px; color: var(--ink2); }
+  .gl { text-decoration: underline dotted var(--axis); text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+  .btn { display: flex; justify-content: center; margin-top: 22px; }
+  .btn span { min-height: 50px; padding: 0 24px; border-radius: 25px; background: var(--ink); color: var(--onInk); font-weight: 500; font-size: 16px; display: inline-flex; align-items: center; }
+  .g { color: var(--mass); } .m { color: var(--mol); }
+
+  /* Home */
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .wordmark { font-family: var(--grotesk); font-size: 30px; letter-spacing: -0.8px; }
+  .wordmark i { font-style: normal; color: var(--too); }
+  .rule { width: 1px; height: 34px; background: var(--line); }
+  .brandsub { font-size: 15px; line-height: 17px; color: var(--ink2); }
+  .tabs { display: flex; gap: 26px; margin-top: 30px; border-bottom: 1px solid var(--line); }
+  .tab { padding-bottom: 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--muted); font-size: 16px; }
+  .tab.on { color: var(--ink); border-bottom-color: var(--coral); }
+  .hero { margin: 24px 0 10px; font-family: var(--serif); font-size: 36px; line-height: 44px; letter-spacing: -0.4px; text-wrap: balance; }
+  .sub { font-size: 16px; line-height: 25px; color: var(--ink2); margin: 0; }
+  .start { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); align-items: flex-start; min-height: 44px; }
+  .start .ic { width: 28px; flex: none; font-family: var(--chem); font-size: 19px; color: var(--coral); text-align: center; line-height: 22px; }
+  .start .t { font-weight: 500; font-size: 16px; line-height: 22px; }
+  .start .s { font-size: 13.5px; line-height: 20px; color: var(--ink2); margin-top: 2px; }
+  .chrow { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: flex-start; min-height: 44px; }
+  .chrow .num { width: 28px; flex: none; font-family: var(--serif); font-size: 18px; line-height: 22px; color: var(--ink2); }
+  .chrow .t { font-weight: 500; font-size: 16px; line-height: 21px; }
+  .chrow .s { font-size: 13.5px; line-height: 19px; color: var(--ink2); margin-top: 2px; }
+  .chrow .body { flex: 1; }
+  .chrow.later .t, .chrow.later .num { color: var(--muted); font-weight: 400; }
+  .tags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+  .tag { font-size: 11px; line-height: 16px; letter-spacing: .4px; padding: 0 7px; border-radius: 8px; border: 1px solid var(--line); color: var(--ink2); background: var(--band); }
+  .tag.intro { border-color: #c9d6e6; color: var(--mass); }
+  .tag.a1 { border-color: #bfd3c6; color: var(--mol); }
+  .tag.b1 { color: var(--muted); }
+  .chev { align-self: center; width: 7px; height: 7px; border-right: 1.5px solid var(--axis); border-top: 1.5px solid var(--axis); transform: rotate(45deg); margin-right: 3px; flex: none; }
+
+  /* Chapter page */
+  .group { margin-top: 18px; font-weight: 500; font-size: 14px; }
+  .maprow { display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .maprow .num { width: 34px; flex: none; font-family: var(--serif); font-size: 17px; line-height: 22px; color: var(--ink2); }
+  .rowtitle { font-weight: 500; font-size: 16px; line-height: 22px; }
+  .asks { font-size: 14px; line-height: 20px; color: var(--ink2); margin-top: 3px; }
+  .ready { padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .ready .q { font-size: 16px; line-height: 24px; }
+  .ready .a { font-size: 14px; line-height: 21px; color: var(--ink2); margin-top: 6px; }
+  .ready .from { font-size: 13px; color: var(--mass); margin-top: 4px; }
+  .glance { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .glance .eq { font-family: var(--chem); font-size: 20px; line-height: 28px; }
+  .glance .note { font-size: 13.5px; line-height: 20px; color: var(--ink2); margin-top: 2px; }
+  .glance .from { font-size: 12.5px; color: var(--mass); margin-top: 3px; }
+  .use { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .use .where { font-weight: 500; font-size: 15px; }
+  .use .what { font-size: 14px; line-height: 21px; color: var(--ink2); margin: 3px 0 4px; }
+  .use .eq { font-family: var(--chem); font-size: 17px; }
+
+  /* Mole map picture */
+  .frames { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: var(--ink2); }
+  .dots { display: flex; gap: 6px; } .dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line); } .dots i.on { background: var(--ink); }
+
+  /* Section page */
+  .levels { display: flex; gap: 22px; margin-top: 18px; border-bottom: 1px solid var(--line); }
+  .levels span { padding-bottom: 10px; color: var(--muted); font-size: 16px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .levels span.on { color: var(--ink); border-bottom-color: var(--coral); }
+  .tool { padding: 14px 0; border-bottom: 1px solid var(--line); text-align: center; font-family: var(--chem); font-size: 22px; }
+  .idea { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .idea .n { width: 22px; flex: none; font-family: var(--serif); font-size: 17px; color: var(--ink2); }
+  .idea .t { font-weight: 500; font-size: 15.5px; }
+  .idea .d { font-size: 14px; line-height: 21px; color: var(--ink2); margin-top: 2px; }
+  .views { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .views div { border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; text-align: center; background: #fffdf8; }
+  .views .k { font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink2); }
+  .views .v { font-family: var(--chem); font-size: 15.5px; margin-top: 6px; line-height: 20px; }
+
+  /* Tools */
+  .toolrow { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: center; min-height: 56px; }
+  .toolrow .ic { white-space: nowrap; width: 38px; height: 38px; flex: none; border-radius: 10px; border: 1px solid var(--line); background: #fffdf8; display: grid; place-items: center; font-family: var(--chem); font-size: 15px; }
+  .toolrow .t { font-weight: 500; font-size: 16px; }
+  .toolrow .s { font-size: 13.5px; line-height: 19px; color: var(--ink2); margin-top: 1px; }
+  .toolrow .body { flex: 1; }
+  label.fl { display: block; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--ink2); margin-top: 16px; }
+  .input { margin-top: 8px; width: 100%; min-height: 50px; border: 1.5px solid var(--ink); border-radius: 14px; background: #fffdf8; padding: 8px 14px; font-family: var(--chem); font-size: 24px; color: var(--ink); }
+  .input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px #f3d9cf; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { min-height: 34px; padding: 4px 11px; border-radius: 17px; border: 1px solid var(--line); background: var(--band); font-family: var(--chem); font-size: 15px; color: var(--ink); cursor: pointer; }
+  .chip:hover { border-color: var(--axis); }
+  .pretty { font-family: var(--chem); font-size: 30px; margin-top: 14px; min-height: 38px; }
+  .err { margin-top: 10px; font-size: 14px; color: var(--shu); line-height: 20px; }
+  table.mm { width: 100%; border-collapse: collapse; margin-top: 10px; font-variant-numeric: tabular-nums; }
+  .mm th { text-align: left; font-weight: 400; font-size: 11.5px; letter-spacing: 1.3px; text-transform: uppercase; color: var(--ink2); padding: 6px 4px; border-bottom: 1px solid var(--line); }
+  .mm td { padding: 8px 4px; border-bottom: 1px solid var(--line); font-family: var(--chem); font-size: 17px; }
+  .mm td.r, .mm th.r { text-align: right; }
+  .mm tr.tot td { border-bottom: 0; font-size: 20px; padding-top: 10px; }
+  .conv { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: end; margin-top: 8px; }
+  .conv .input { font-size: 20px; min-height: 46px; }
+  .conv .arrow { padding-bottom: 12px; font-family: var(--chem); color: var(--ink2); }
+  .conv .out { min-height: 46px; border: 1px dashed var(--line); border-radius: 14px; display: flex; align-items: center; padding: 0 12px; font-family: var(--chem); font-size: 20px; background: var(--band); }
+  .ptwrap { overflow-x: auto; margin: 14px -26px 0; padding: 0 26px 6px; }
+  .ptable { display: grid; grid-template-columns: repeat(18, 30px); gap: 3px; width: max-content; }
+  .el { width: 30px; height: 34px; border-radius: 5px; border: 1px solid var(--line); background: #fffdf8; font-family: var(--chem); font-size: 13px; display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--ink); }
+  .el.metalloid { background: #f1eee6; } .el.nonmetal { background: #eaf0f6; } .el.noble { background: #eee9f3; }
+  .el.pick { border: 1.5px solid var(--coral); background: #fbefe9; }
+  .key { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 10px; font-size: 12px; color: var(--ink2); }
+  .key span { display: inline-flex; align-items: center; gap: 5px; }
+  .key i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--line); display: inline-block; }
+  .card { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .card .row { display: flex; align-items: baseline; gap: 14px; }
+  .card .sym { font-family: var(--chem); font-size: 44px; line-height: 48px; }
+  .card .nm { font-family: var(--serif); font-size: 22px; }
+  .card dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; font-size: 14px; }
+  .card dt { color: var(--ink2); } .card dd { margin: 0; font-family: var(--chem); font-size: 16px; }
+
+
+  /* Lab */
+  .labcard, .labrow { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: flex-start; min-height: 56px; }
+  .labcard { border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: var(--band); margin-top: 8px; }
+  .labcard .t, .labrow .t { font-weight: 500; font-size: 16px; }
+  .labcard .s, .labrow .s { font-size: 13.5px; line-height: 20px; color: var(--ink2); margin-top: 2px; }
+  .labrow .body { flex: 1; }
+  .try { margin-top: 6px; font-size: 13.5px; line-height: 20px; color: var(--shu); }
+  .labmini { width: 64px; flex: none; display: flex; align-items: center; justify-content: center; gap: 1px; min-height: 40px; border-radius: 10px; background: #fffdf8; border: 1px solid var(--line); }
+  .labcard .labmini { width: 74px; }
+  .ball { width: 17px; height: 17px; border-radius: 9px; display: inline-grid; place-items: center; font-family: var(--chem); font-size: 10px; line-height: 1; }
+  .ball.H { background: var(--elH); border: 1px solid #8a8378; color: var(--ink); width: 13px; height: 13px; font-size: 8.5px; }
+  .ball.O { background: var(--elO); color: #fff; } .ball.C { background: var(--elC); color: #fff; } .ball.N { background: var(--elN); color: #fff; }
+  .ball.big { width: 20px; height: 20px; }
+  .plus { font-family: var(--chem); font-size: 13px; color: var(--ink2); margin: 0 2px; }
+  .dotp { width: 6px; height: 6px; border-radius: 3px; background: var(--mass); margin: 0 3px; }
+  .cube { width: 14px; height: 14px; background: #dbe7f3; border: 1px solid #9fb4cc; border-radius: 3px; }
+  .drop { width: 12px; height: 15px; background: #9fc0e3; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+  .ion { width: 16px; height: 16px; border-radius: 8px; display: inline-grid; place-items: center; font-size: 11px; color: #fff; margin: 0 1px; }
+  .ion.na { background: #7b6aa8; } .ion.cl { background: #3f8a5a; }
+  .chip.on { background: var(--ink); color: var(--onInk); border-color: var(--ink); }
+  .recipeLine { margin-top: 12px; font-family: var(--chem); font-size: 22px; text-align: center; }
+  .steppers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .stepper { border: 1px solid var(--line); border-radius: 14px; padding: 8px 10px; background: #fffdf8; }
+  .stepper .k { font-family: var(--chem); font-size: 17px; }
+  .stepper .row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .stepper button { width: 44px; height: 44px; border-radius: 22px; border: 1px solid var(--line); background: var(--band); font-size: 22px; color: var(--ink); cursor: pointer; }
+  .stepper .n { font-family: var(--chem); font-size: 24px; min-width: 30px; text-align: center; font-variant-numeric: tabular-nums; }
+  .boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .boxlab { font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--ink2); margin-bottom: 4px; }
+  .pbox { width: 100%; border: 1.5px solid var(--ink2); border-top-width: 0; border-radius: 0 0 14px 14px; background: #fffdf8; display: block; }
+  .pbox g.mol { transition: opacity .35s; }
+  .go { min-height: 48px; padding: 0 26px; border-radius: 24px; border: 0; background: var(--ink); color: var(--onInk); font: 500 16px var(--sans); cursor: pointer; margin: 0 5px; }
+  .go.ghost { background: none; color: var(--ink); border: 1px solid var(--line); }
+  .rxsum { margin-top: 14px; font-size: 15px; line-height: 23px; min-height: 46px; }
+  .rxsum b { font-weight: 500; }
+  .chall { margin-top: 14px; border: 1px dashed var(--coral); border-radius: 14px; padding: 10px 12px; font-size: 14px; line-height: 21px; }
+  .chall .ck { font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--shu); margin-bottom: 2px; }
+  .chall.done { border-style: solid; border-color: var(--mol); background: #e6efe8; }
+  .chall.done .ck { color: var(--mol); }
+  .gaswrap { margin-top: 12px; border: 1.5px solid var(--ink2); border-radius: 12px; background: #fffdf8; overflow: hidden; }
+  #gas { display: block; width: 100%; height: auto; }
+  .gauge { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .gauge > div { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: var(--band); }
+  .gk { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink2); }
+  .gv { font-family: var(--chem); font-size: 24px; font-variant-numeric: tabular-nums; }
+  .fl b { font-family: var(--chem); font-weight: 400; font-size: 15px; letter-spacing: 0; text-transform: none; color: var(--ink); margin-left: 6px; }
+  .slider { width: 100%; margin-top: 8px; accent-color: var(--coral); height: 28px; }
+
+  /* Chapter map panel */
+  .map { max-width: 1290px; margin: 0 auto 40px; padding: 0 24px; }
+  .map .wrap { background: var(--ground); border-radius: 18px; padding: 8px 22px 18px; overflow-x: auto; box-shadow: 0 1px 0 var(--line); }
+  table.cm { width: 100%; border-collapse: collapse; min-width: 900px; }
+  .cm th { text-align: left; font-weight: 400; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--ink2); padding: 12px 8px 8px; border-bottom: 1px solid var(--line); }
+  .cm td { padding: 11px 8px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 14px; line-height: 21px; }
+  .cm td.n { font-family: var(--serif); font-size: 18px; color: var(--ink2); width: 40px; }
+  .cm td.ti b { font-weight: 500; font-size: 15px; display: block; }
+  .cm td.ti span { color: var(--ink2); }
+  .cm td.secs { color: var(--ink2); font-size: 13px; }
+  .cm tr.later td { opacity: .62; }
+  .src { margin-top: 12px; font-size: 13px; color: var(--ink2); line-height: 1.7; }
+  @media (prefers-reduced-motion: no-preference) { .chip, .el { transition: border-color .15s, background .15s; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>BYE Chem: chapters, lab and tools</h1>
+  <p>A standalone app with the BYE Math structure you already know. Home lists numbered chapters; a chapter page tells the story, maps its sections and checks you’re ready; each section has Learn, then Simple, Medium and Hard. Worked problems are on hold, so this round is the chapters, plus a <b>Lab</b> tab (sandboxes to play in) and a <b>Tools</b> tab (look-ups you use every day).</p>
+  <p>Chapters follow OpenStax <i>Chemistry 2e</i> numbering, the way calculus follows Stewart, with a Chapter 0 for the maths chemistry uses. Tags show which course needs a chapter: <b class="g">Intro</b> (a first chemistry course, like PCC CHEM 022), <b class="m">Chem 1A</b> (like PCC CHEM 001A), <b style="color:var(--muted)">Chem 1B</b> (later). The two Lab sandboxes, the molar-mass calculator and the periodic table below actually work: try them.</p>
+</header>
+
+<!-- ───────── Row 1: chapters ───────── -->
+<div class="rowhead"><h2>1 · Chapters</h2><span>Home, Chapter 0, a full chapter page, and a section</span></div>
+<section class="boards">
+
+  <div class="board">
+    <div class="label">Home · Learn tab</div>
+    <div class="phone">
+      <div class="brand">
+        <div class="wordmark">BYE<i>.</i></div><div class="rule"></div>
+        <div><div class="brandsub">Chem</div><div class="brandsub" style="font-size:14px">一歩ずつ</div></div>
+      </div>
+      <div class="tabs"><span class="tab on">Learn</span><span class="tab">Lab</span><span class="tab">Tools</span></div>
+      <div class="hero">Chemistry, one step at a time.</div>
+      <p class="sub">From zero to Chem 1A. Every word is explained the first time it shows up.</p>
+
+      <div class="head"><span class="eyebrow">Start here</span></div>
+      <div class="start"><span class="ic">◎</span><div><div class="t">Find your gaps</div><div class="s">10 quick questions, about 5 minutes. See which chapters to review and skip the rest.</div></div></div>
+      <div class="start"><span class="ic">→</span><div><div class="t">Learn from zero</div><div class="s">Never studied chemistry, or it’s been years? Start at Chapter 0 and go in order.</div></div></div>
+      <div class="start"><span class="ic">1A</span><div><div class="t">I’m taking Chem 1A</div><div class="s">Show only your course’s chapters, in your class order.</div></div></div>
+
+      <div class="head"><span class="eyebrow">Chapters</span><span class="meta">OpenStax Chemistry 2e</span></div>
+      <div class="chrow"><span class="num">0</span><div class="body"><div class="t">Maths for Chemistry</div><div class="s">The few maths moves chemistry uses, refreshed</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">1</span><div class="body"><div class="t">Essential Ideas</div><div class="s">What is matter, and how do we measure it honestly?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">2</span><div class="body"><div class="t">Atoms, Molecules, and Ions</div><div class="s">What is everything made of, and how do we write and name it?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">3</span><div class="body"><div class="t">Composition of Substances and Solutions</div><div class="s">How do you count atoms you can’t see?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">4</span><div class="body"><div class="t">Stoichiometry of Chemical Reactions</div><div class="s">How much do you get from how much you use?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">5</span><div class="body"><div class="t">Thermochemistry</div><div class="s">How much heat does a reaction give off or take in?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">6</span><div class="body"><div class="t">Electronic Structure and Periodic Properties of Elements</div><div class="s">Where are an atom’s electrons, and why does the table repeat?</div><div class="tags"><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">7</span><div class="body"><div class="t">Chemical Bonding and Molecular Geometry</div><div class="s">Why do atoms stick together, and what shape do they make?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">8–11</span><div class="body"><div class="t">Bonding up close · Gases · Liquids and Solids · Solutions</div><div class="s">Four more Chem 1A chapters, then a first look at 13 and 20</div></div><span class="chev"></span></div>
+      <div class="chrow later"><span class="num">12+</span><div class="body"><div class="t">Chem 1B chapters</div><div class="s">Kinetics, equilibrium, acids and bases, thermodynamics, electrochemistry, nuclear</div><div class="tags"><span class="tag b1">Chem 1B · later</span></div></div><span class="chev"></span></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>Same home as BYE Math, three ways in.</b> A beginner starts at Chapter 0 (maths skill predicts who succeeds in general chemistry); a returning learner takes the gap check; a Chem 1A student filters to their course. Every textbook title has a plain question under it, and the tags carry words, not just colour.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Chapter 0 · maths first</div>
+    <div class="phone">
+      <div class="back">Chemistry</div>
+      <div class="eyebrow">Chapter 0</div>
+      <div class="title">Maths for Chemistry</div>
+      <div class="jp">化学のための数学</div>
+      <div class="hook">A spoonful of sugar holds about 7 × 10<sup>21</sup> molecules. Can you read that number, and work with it?</div>
+      <div class="counts">4 sections · short, no chemistry needed</div>
+
+      <div class="head"><span class="eyebrow">The road map</span><span class="meta">in order</span></div>
+      <div class="maprow"><span class="num">0.1</span><div><div class="rowtitle">Powers of Ten</div><div class="asks">How do you write, multiply and divide very big and very small numbers?</div></div></div>
+      <div class="maprow"><span class="num">0.2</span><div><div class="rowtitle">Ratios, Rates and Percent</div><div class="asks">What does “2 for every 1” mean, and how do you scale it up?</div></div></div>
+      <div class="maprow"><span class="num">0.3</span><div><div class="rowtitle">Rearranging a Formula</div><div class="asks">How do you get the letter you want on its own?</div></div></div>
+      <div class="maprow"><span class="num">0.4</span><div><div class="rowtitle">Units Travel With Numbers</div><div class="asks">Why do units multiply, divide and cancel like numbers?</div></div></div>
+
+      <div class="band">
+        <div class="eyebrow">Ready? Three quick ones</div>
+        <div class="ready"><div class="q">Write 0.000 15 in scientific notation.</div><div class="a">1.5 × 10<sup>−4</sup>. Move the point 4 places right, so the power is −4.</div></div>
+        <div class="ready"><div class="q">Solve d = m ÷ V for m.</div><div class="a">m = d × V. Multiply both sides by V.</div></div>
+        <div class="ready" style="border:0"><div class="q">What is 15% of 40 g?</div><div class="a">6 g. 0.15 × 40 = 6.</div></div>
+      </div>
+      <div class="btn"><span>Start Chapter 0</span></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>Maths before chemistry, kept short.</b> PCC’s courses require intermediate algebra, and arithmetic skill predicts general-chemistry success. Each section is the one move chemistry needs, with chemistry-flavoured numbers, so it doesn’t feel like a maths class.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Chapter page · top</div>
+    <div class="phone">
+      <div class="back">Chemistry</div>
+      <div class="eyebrow">Chemistry · Chapter 3</div>
+      <div class="title">Composition of Substances and Solutions</div>
+      <div class="jp">物質と溶液の組成</div>
+      <div class="hook">A teaspoon of sugar, about 4 g, holds about 7 × 10<sup>21</sup> molecules. Nobody counted them. How do we know?</div>
+      <div class="counts">4 sections · Learn and 3 levels each</div>
+
+      <div class="head"><span class="eyebrow">The story</span></div>
+      <p class="p">Atoms are far too small to count, so chemists count by <b>weighing</b>, the way a bank weighs a bag of coins instead of counting them (3.1). The counting unit is the <span class="gl">mole</span>: 6.022 × 10<sup>23</sup> of anything.</p>
+
+      <div class="band" style="margin-top:14px">
+        <svg viewBox="0 0 338 150" width="100%" role="img" aria-label="The mole map: grams and particles both connect through moles. Divide grams by molar mass to get moles; multiply moles by 6.022 times 10 to the 23 to get particles.">
+          <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5a554d"/></marker></defs>
+          <rect x="4" y="52" width="88" height="46" rx="12" fill="#fffdf8" stroke="#2f4b7c" stroke-width="1.5"/>
+          <text x="48" y="80" text-anchor="middle" font-family="STIX Two Text, serif" font-size="18" fill="#2f4b7c">grams</text>
+          <rect x="125" y="52" width="88" height="46" rx="12" fill="#fffdf8" stroke="#2f6b4a" stroke-width="2"/>
+          <text x="169" y="80" text-anchor="middle" font-family="STIX Two Text, serif" font-size="18" fill="#2f6b4a">moles</text>
+          <rect x="246" y="52" width="88" height="46" rx="12" fill="#fffdf8" stroke="#1e1c19" stroke-width="1.5"/>
+          <text x="290" y="80" text-anchor="middle" font-family="STIX Two Text, serif" font-size="18" fill="#1e1c19">particles</text>
+          <path d="M94 66 L122 66" stroke="#5a554d" stroke-width="1.4" marker-end="url(#ar)"/>
+          <path d="M123 86 L95 86" stroke="#5a554d" stroke-width="1.4" marker-end="url(#ar)"/>
+          <path d="M215 66 L243 66" stroke="#5a554d" stroke-width="1.4" marker-end="url(#ar)"/>
+          <path d="M244 86 L216 86" stroke="#5a554d" stroke-width="1.4" marker-end="url(#ar)"/>
+          <text x="108" y="34" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">÷ molar mass</text>
+          <text x="108" y="122" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">× molar mass</text>
+          <text x="229" y="34" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">× 6.022 × 10²³</text>
+          <text x="229" y="122" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">÷ 6.022 × 10²³</text>
+          <text x="169" y="144" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#6b655b">every trip goes through moles</text>
+        </svg>
+        <div class="frames"><span>The mole map · 2 of 3</span><span class="dots"><i></i><i class="on"></i><i></i></span></div>
+      </div>
+
+      <p class="p">The same counting tells you a compound’s formula from the masses in it (3.2). Then the counting moves into liquids: how many moles in each litre (3.3), and the %, ppm and ppb you see on labels (3.4).</p>
+
+      <div class="head"><span class="eyebrow">The road map</span><span class="meta">4 sections, in order</span></div>
+      <div class="group">Counting by weighing</div>
+      <div class="maprow"><span class="num">3.1</span><div><div class="rowtitle">Formula Mass and the Mole Concept</div><div class="asks">How do you count particles by weighing them?</div></div></div>
+      <div class="maprow"><span class="num">3.2</span><div><div class="rowtitle">Determining Empirical and Molecular Formulas</div><div class="asks">Given the masses in a compound, what is its formula?</div></div></div>
+      <div class="group">Counting in a liquid</div>
+      <div class="maprow"><span class="num">3.3</span><div><div class="rowtitle">Molarity</div><div class="asks">How much is dissolved in each litre?</div></div></div>
+      <div class="maprow"><span class="num">3.4</span><div><div class="rowtitle">Other Units for Solution Concentrations</div><div class="asks">What do %, ppm and ppb on a label mean?</div></div></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>The chapter’s one picture is the mole map.</b> Grams, moles and particles, with every trip going through moles: the bridge beginners most often miss. The road map groups sections by the question they share, as BYE Math does.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Chapter page · bottom</div>
+    <div class="phone">
+      <div class="head" style="margin-top:4px"><span class="eyebrow">Ready for this chapter?</span></div>
+      <p class="small" style="margin:4px 0 0">Try each, then tap to see the answer.</p>
+      <div class="ready"><div class="q">Write 602 200 in scientific notation.</div><div class="a">6.022 × 10<sup>5</sup>.</div><div class="from">Review · 0.1 Powers of Ten</div></div>
+      <div class="ready"><div class="q">How many O atoms are in <span class="f">Ca(NO<sub>3</sub>)<sub>2</sub></span>?</div><div class="a">6. Each NO<sub>3</sub> has 3, and the 2 outside the bracket doubles everything inside.</div><div class="from">Review · 2.4 Chemical Formulas</div></div>
+      <div class="ready"><div class="q">Change 250 mL to litres.</div><div class="a">0.250 L. There are 1000 mL in a litre.</div><div class="from">Review · 1.6 Mathematical Treatment of Measurement Results</div></div>
+      <div class="btn"><span>Start with 3.1</span></div>
+
+      <div class="head"><span class="eyebrow">Play with it</span><span class="meta">Lab</span></div>
+      <div class="labcard">
+        <div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="ball O">O</span><span class="plus">+</span><span class="ball H">H</span><span class="ball H">H</span></div>
+        <div><div class="t">Mix and react</div><div class="s">Put molecules in a box and react them. Count the atoms before and after.</div><div class="try">Try this: make exactly 4 waters with nothing left over.</div></div>
+      </div>
+
+      <div class="band">
+        <div class="eyebrow">The chapter at a glance</div>
+        <div class="glance"><div class="eq"><span class="m">moles</span> = <span class="g">grams</span> ÷ molar mass</div><div class="note">Molar mass is grams per mole: add up the atomic masses in the formula.</div><div class="from">3.1</div></div>
+        <div class="glance"><div class="eq">particles = <span class="m">moles</span> × 6.022 × 10<sup>23</sup></div><div class="note">Avogadro’s number: how many are in one mole.</div><div class="from">3.1</div></div>
+        <div class="glance"><div class="eq">% by mass = part ÷ whole × 100</div><div class="note">Assume 100 g, and the percents become grams.</div><div class="from">3.2</div></div>
+        <div class="glance"><div class="eq">molarity (M) = <span class="m">moles</span> of solute ÷ litres</div><div class="note">M is moles per litre of the whole solution.</div><div class="from">3.3</div></div>
+        <div class="glance" style="border:0"><div class="eq">M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub></div><div class="note">Adding water changes the volume, not the moles.</div><div class="from">3.3</div></div>
+      </div>
+
+      <div class="head"><span class="eyebrow">Where it shows up</span></div>
+      <div class="use"><div class="where">Hospital saline drip</div><div class="what">“0.9% saline” is 9 g of salt per litre, which is 0.154 M.</div><div class="eq">9.0 g ÷ 58.44 g/mol = 0.154 mol</div></div>
+      <div class="use"><div class="where">Blood sugar</div><div class="what">A normal reading of 90 mg/dL is about 5 millimoles of glucose per litre.</div><div class="eq">0.90 g/L ÷ 180.16 g/mol = 0.0050 M</div></div>
+      <div class="use" style="border:0"><div class="where">Seawater</div><div class="what">About 35 g of dissolved salts in every kilogram: 3.5% by mass.</div><div class="eq">35 g ÷ 1000 g × 100 = 3.5%</div></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>“Ready?” points back, not forward.</b> Each check names the exact section to review, including Chapter 0. The glance strip doubles as the chapter’s formula sheet (it also lives in Tools), written in words first, symbols second.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Section · Learn tab</div>
+    <div class="phone">
+      <div class="back">Chapter 3</div>
+      <div class="eyebrow">Chapter 3 · §3.1</div>
+      <div class="title">Formula Mass and the Mole Concept</div>
+      <div class="jp">式量とモル</div>
+      <div class="levels"><span class="on">Learn</span><span>Simple</span><span>Medium</span><span>Hard</span></div>
+      <p class="p" style="font-size:16.5px;line-height:27px">You can’t count atoms one by one, so you count them by weighing. One <span class="gl">mole</span> of anything is 6.022 × 10<sup>23</sup> of it, the way one dozen is 12.</p>
+
+      <div class="head"><span class="eyebrow">The tool</span></div>
+      <div class="tool"><span class="m">moles</span> = <span class="g">grams</span> ÷ <span class="gl" style="font-family:var(--sans);font-size:17px">molar mass</span></div>
+
+      <div class="head"><span class="eyebrow">Key ideas</span><span class="meta">4</span></div>
+      <div class="idea"><span class="n">1</span><div><div class="t">Formula mass</div><div class="d">Add the masses of every atom in the formula. <span class="f">H<sub>2</sub>O</span>: 2 × 1.008 + 16.00 = 18.02.</div></div></div>
+      <div class="idea"><span class="n">2</span><div><div class="t">The mole is a count</div><div class="d">6.022 × 10<sup>23</sup> particles, chosen so the numbers line up with grams.</div></div></div>
+      <div class="idea"><span class="n">3</span><div><div class="t">Molar mass</div><div class="d">The mass of one mole: same number as the formula mass, in grams. Water: 18.02 g/mol.</div></div></div>
+      <div class="idea"><span class="n">4</span><div><div class="t">Count by weighing</div><div class="d">Divide grams by molar mass and you have moles, then particles.</div></div></div>
+
+      <div class="head"><span class="eyebrow">One mole of water, three ways</span></div>
+      <div class="views">
+        <div><div class="k">See it</div><div class="v">18 g<br><span style="font-family:var(--sans);font-size:12px;color:var(--ink2)">a bit more than a tablespoon</span></div></div>
+        <div><div class="k">Particles</div><div class="v">6.022 × 10<sup>23</sup><br><span style="font-family:var(--sans);font-size:12px;color:var(--ink2)">molecules</span></div></div>
+        <div><div class="k">Symbols</div><div class="v">1 mol <span class="f">H<sub>2</sub>O</span><br>= 18.02 g</div></div>
+      </div>
+
+      <div class="head"><span class="eyebrow">In the lab</span><span class="meta">2 minutes</span></div>
+      <div class="labcard">
+        <div class="labmini" aria-hidden="true"><span class="ball H">H</span><span class="ball O big">O</span><span class="ball H">H</span></div>
+        <div><div class="t">How many molecules is that?</div><div class="s">Weigh out water on the lab balance and watch the molecule counter climb.</div><div class="try">Try this: find the mass that gives exactly 1 mole.</div></div>
+      </div>
+
+      <div class="head"><span class="eyebrow">Where it shows up</span></div>
+      <div class="maprow"><span class="num">3.3</span><div><div class="rowtitle" style="font-size:15px">Molarity</div><div class="asks">Moles per litre starts here.</div></div></div>
+      <div class="maprow"><span class="num">4.3</span><div><div class="rowtitle" style="font-size:15px">Reaction Stoichiometry</div><div class="asks">Every recipe calculation goes through moles.</div></div></div>
+      <div class="maprow"><span class="num">9.2</span><div><div class="rowtitle" style="font-size:15px">The Ideal Gas Law</div><div class="asks">The n in PV = nRT is moles.</div></div></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>Same section page as BYE Math</b> (Learn, then Simple / Medium / Hard; the problems wait). The Learn tab adds a chemistry-only part: one quantity shown three ways (what you see, the particles, the symbols), because beginners lose their place moving between those levels.</div>
+  </div>
+</section>
+
+
+<!-- ───────── Row 2: the Lab ───────── -->
+<div class="rowhead"><h2>2 · Lab</h2><span>A sandbox to play in, with a few challenges. Both simulations below work: try them.</span></div>
+<section class="boards">
+
+  <div class="board">
+    <div class="label">Home · Lab tab</div>
+    <div class="phone">
+      <div class="brand">
+        <div class="wordmark">BYE<i>.</i></div><div class="rule"></div>
+        <div><div class="brandsub">Chem</div><div class="brandsub" style="font-size:14px">一歩ずつ</div></div>
+      </div>
+      <div class="tabs"><span class="tab">Learn</span><span class="tab on">Lab</span><span class="tab">Tools</span></div>
+      <div class="hero" style="font-size:32px;line-height:40px">Play first. The words can come later.</div>
+      <p class="sub">Mix things, heat them, squeeze them. Nothing breaks, nothing spills.</p>
+
+      <div class="head"><span class="eyebrow">Sandboxes</span><span class="meta">free play + challenges</span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="plus">+</span><span class="ball H">H</span><span class="ball H">H</span></div><div class="body"><div class="t">Mix and react</div><div class="s">Fill a box, react it, see what’s left over</div><div class="tags"><span class="tag">Ch 3–4</span><span class="tag">4 challenges</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="dotp"></span><span class="dotp"></span><span class="dotp"></span><span class="dotp"></span></div><div class="body"><div class="t">Gas in a box</div><div class="s">Heat it, squeeze it, add more: watch the pressure</div><div class="tags"><span class="tag">Ch 9</span><span class="tag">5 challenges</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball C">C</span><span class="ball O">O</span><span class="ball O">O</span></div><div class="body"><div class="t">Build a molecule</div><div class="s">Snap atoms together; it tells you when every atom is happy</div><div class="tags"><span class="tag">Ch 2, 7</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="cube"></span><span class="plus">→</span><span class="drop"></span></div><div class="body"><div class="t">Heat it up</div><div class="s">Melt, boil and freeze; see the particles speed up</div><div class="tags"><span class="tag">Ch 1, 10</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ion na">+</span><span class="ion cl">−</span><span class="ball O">O</span></div><div class="body"><div class="t">Dissolve it</div><div class="s">Drop salt in water and watch the ions pull apart</div><div class="tags"><span class="tag">Ch 11</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="ball H">H</span><span class="ball C">C</span></div><div class="body"><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it</div><div class="tags"><span class="tag">Ch 3</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+    </div>
+    <div class="notes"><span class="why">research</span><br><b>Free play, with a nudge.</b> Simulations help, but studies of PhET-style sims found that play alone often isn’t enough: learners do better with a goal. So every sandbox opens in free play and offers short “Try this” challenges, and each one links to the chapter that explains what you just saw.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Sandbox · Mix and react (working)</div>
+    <div class="phone">
+      <div class="back">Lab</div>
+      <div class="title" style="font-size:30px;line-height:38px">Mix and react</div>
+      <div class="chips" role="radiogroup" aria-label="Reaction" id="rxPick">
+        <button class="chip on" type="button" data-rx="water" role="radio" aria-checked="true">Water</button>
+        <button class="chip" type="button" data-rx="ammonia" role="radio" aria-checked="false">Ammonia</button>
+        <button class="chip" type="button" data-rx="co2" role="radio" aria-checked="false">Carbon dioxide</button>
+      </div>
+      <div class="recipeLine" id="rxEq"></div>
+
+      <div class="steppers" id="rxSteps"></div>
+
+      <div class="boxes">
+        <div><div class="boxlab">Before</div><svg class="pbox" id="boxBefore" viewBox="0 0 150 240" role="img"></svg></div>
+        <div><div class="boxlab">After</div><svg class="pbox" id="boxAfter" viewBox="0 0 150 240" role="img"></svg></div>
+      </div>
+      <div class="btn" style="margin-top:14px"><button class="go" type="button" id="rxGo">React</button><button class="go ghost" type="button" id="rxReset">Reset</button></div>
+
+      <div class="rxsum" id="rxSum" aria-live="polite"></div>
+      <table class="mm" aria-label="Atoms before and after" style="margin-top:6px">
+        <thead><tr><th>Atom</th><th class="r">Before</th><th class="r">After</th><th></th></tr></thead>
+        <tbody id="rxAtoms"></tbody>
+      </table>
+
+      <div id="rxChall"></div>
+    </div>
+    <div class="notes"><b>Limiting reactant, before anyone says the words.</b> Add molecules, press React, and see what forms and what’s left over. The atom table proves nothing is made or lost. Challenges (“exactly 4 waters, nothing left over”) turn the play into the recipe ratio. Atoms carry their letters, so colour is never the only clue.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Sandbox · Gas in a box (working)</div>
+    <div class="phone">
+      <div class="back">Lab</div>
+      <div class="title" style="font-size:30px;line-height:38px">Gas in a box</div>
+      <div class="gaswrap"><canvas id="gas" width="338" height="210" aria-label="Gas particles bouncing in a box. Their speed follows the temperature."></canvas></div>
+      <div class="gauge" aria-live="polite"><div><div class="gk">Pressure</div><div class="gv" id="gP">—</div></div><div><div class="gk">Wall hits / s</div><div class="gv" id="gHits">—</div></div></div>
+      <label class="fl" for="gT">Temperature <b id="gTv"></b></label>
+      <input type="range" id="gT" min="100" max="600" step="10" value="300" class="slider">
+      <label class="fl" for="gV">Volume <b id="gVv"></b></label>
+      <input type="range" id="gV" min="1" max="3" step="0.1" value="2" class="slider">
+      <label class="fl" for="gN">Amount <b id="gNv"></b></label>
+      <input type="range" id="gN" min="10" max="60" step="5" value="30" class="slider">
+      <p class="small" style="margin-top:12px">Each dot stands for 0.002 mol; a real box holds about 10<sup>22</sup> molecules. Pressure uses PV = nRT, taught in <span class="g">§9.2</span>.</p>
+      <div class="chall"><div class="ck">Try this</div><div>Double the pressure without adding any gas. (Two ways work.)</div></div>
+    </div>
+    <div class="notes"><b>Pressure you can see.</b> Hotter particles move faster and hit the walls more often; a smaller box means more hits too. The wall-hit counter is the kid-friendly version of pressure, and the gauge is the real number from PV = nRT. With Reduce Motion on, the particles stand still and the numbers still update.</div>
+  </div>
+</section>
+
+<!-- ───────── Row 3: tools ───────── -->
+<div class="rowhead"><h2>3 · Tools</h2><span>Useful every day, even outside a lesson. The calculator and the table work: try them.</span></div>
+<section class="boards">
+
+  <div class="board">
+    <div class="label">Home · Tools tab</div>
+    <div class="phone">
+      <div class="brand">
+        <div class="wordmark">BYE<i>.</i></div><div class="rule"></div>
+        <div><div class="brandsub">Chem</div><div class="brandsub" style="font-size:14px">一歩ずつ</div></div>
+      </div>
+      <div class="tabs"><span class="tab">Learn</span><span class="tab">Lab</span><span class="tab on">Tools</span></div>
+      <div class="hero" style="font-size:32px;line-height:40px">The things you look up, in one place.</div>
+      <p class="sub">Every tool links back to the section that explains it.</p>
+
+      <div class="head"><span class="eyebrow">Calculate</span></div>
+      <div class="toolrow"><span class="ic">g/mol</span><div class="body"><div class="t">Molar mass</div><div class="s">Type a formula, see every atom added up</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">⇄</span><div class="body"><div class="t">Grams · moles · particles</div><div class="s">The mole map as a converter</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">=</span><div class="body"><div class="t">Balance an equation</div><div class="s">Atom tally left and right, coefficient by coefficient</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">mL</span><div class="body"><div class="t">Units and sig figs</div><div class="s">Convert, and see how many figures to keep</div></div><span class="chev"></span></div>
+
+      <div class="toolrow"><span class="ic">⚗</span><div class="body"><div class="t">Open the Lab</div><div class="s">Sandboxes: mix, heat, squeeze and build</div></div><span class="chev"></span></div>
+
+      <div class="head"><span class="eyebrow">Look up</span></div>
+      <div class="toolrow"><span class="ic">Fe</span><div class="body"><div class="t">Periodic table</div><div class="s">Tap an element: mass, electrons, family</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">Σ</span><div class="body"><div class="t">Formula sheet</div><div class="s">Every chapter’s “at a glance”, in one list</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">SO<sub>4</sub></span><div class="body"><div class="t">Polyatomic ions</div><div class="s">Names, formulas and charges, with a self-quiz</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">aq</span><div class="body"><div class="t">Solubility rules</div><div class="s">Will it dissolve, or form a solid?</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">R</span><div class="body"><div class="t">Constants</div><div class="s">Avogadro’s number, R, the speed of light, Planck’s constant</div></div><span class="chev"></span></div>
+      <div class="toolrow"><span class="ic">Aa</span><div class="body"><div class="t">Glossary</div><div class="s">Every word in plain English, with where it’s taught</div></div><span class="chev"></span></div>
+    </div>
+    <div class="notes"><b>Tools make it worth opening every day.</b> These are the look-ups Chem 1A students reach for during homework and labs. Each one shows its working (not just an answer) and links to the section that teaches it, so a quick look-up can turn into a short lesson.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Tool · molar mass (working)</div>
+    <div class="phone">
+      <div class="back">Tools</div>
+      <div class="title" style="font-size:30px;line-height:38px">Molar mass</div>
+      <p class="small" style="margin:0">Type a formula. Brackets and hydrates work: <span class="f">Ca(NO3)2</span>, <span class="f">CuSO4·5H2O</span>.</p>
+      <label class="fl" for="mmIn">Formula</label>
+      <input id="mmIn" class="input" value="Ca(NO3)2" autocomplete="off" spellcheck="false" aria-describedby="mmErr">
+      <div class="chips" aria-label="Examples">
+        <button class="chip" type="button" data-f="H2O">H<sub>2</sub>O</button>
+        <button class="chip" type="button" data-f="CO2">CO<sub>2</sub></button>
+        <button class="chip" type="button" data-f="C6H12O6">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></button>
+        <button class="chip" type="button" data-f="NaCl">NaCl</button>
+        <button class="chip" type="button" data-f="CuSO4·5H2O">CuSO<sub>4</sub>·5H<sub>2</sub>O</button>
+      </div>
+      <div class="pretty" id="mmPretty" aria-live="polite"></div>
+      <div class="err" id="mmErr" role="status"></div>
+      <table class="mm" aria-label="Molar mass working">
+        <thead><tr><th>Atom</th><th class="r">Count</th><th class="r">× mass</th><th class="r">= g/mol</th></tr></thead>
+        <tbody id="mmBody"></tbody>
+      </table>
+      <label class="fl" for="gIn">Grams to moles</label>
+      <div class="conv">
+        <input id="gIn" class="input" value="10.0" inputmode="decimal" aria-label="Grams">
+        <span class="arrow">→</span>
+        <div class="out" id="molOut" aria-live="polite"></div>
+      </div>
+      <p class="small" style="margin-top:10px">Masses are rounded standard atomic weights. Your class table may differ in the last digit. Taught in <span class="g">§3.1 Formula Mass and the Mole Concept</span>.</p>
+    </div>
+    <div class="notes"><b>Shows the adding-up, not just the total.</b> Every atom, its count and its mass, so the tool teaches while it answers. A typo gets a plain message (“Element symbols start with a capital letter”), not a blank.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Tool · periodic table (working)</div>
+    <div class="phone">
+      <div class="back">Tools</div>
+      <div class="title" style="font-size:30px;line-height:38px">Periodic table</div>
+      <p class="small" style="margin:0">Tap an element. Swipe sideways across the table; rows 1–4 shown here.</p>
+      <div class="ptwrap"><div class="ptable" id="pt" role="grid" aria-label="Periodic table, periods 1 to 4"></div></div>
+      <div class="key"><span><i style="background:#fffdf8"></i>metal</span><span><i style="background:#eaf0f6"></i>nonmetal</span><span><i style="background:#f1eee6"></i>metalloid</span><span><i style="background:#eee9f3"></i>noble gas</span></div>
+      <div class="card" id="elCard" aria-live="polite"></div>
+    </div>
+    <div class="notes"><b>Every tile carries its symbol, and the card says the family in words</b>, so colour is never the only clue. Electron configurations come from the filling order, with the two exceptions in this range (Cr and Cu) handled. Taught in Chapters 2 and 6.</div>
+  </div>
+</section>
+
+<!-- ───────── Full chapter map ───────── -->
+<div class="rowhead"><h2>4 · The full chapter map</h2><span>Section titles checked against openstax.org; plain questions are ours</span></div>
+<section class="map">
+  <div class="wrap">
+    <table class="cm">
+      <thead><tr><th>Ch</th><th>Chapter, and the question it answers</th><th>Sections</th><th>Course</th></tr></thead>
+      <tbody>
+        <tr><td class="n">0</td><td class="ti"><b>Maths for Chemistry</b><span>The few maths moves chemistry uses, refreshed (BYE Chem’s own chapter)</span></td><td class="secs">0.1 Powers of Ten · 0.2 Ratios, Rates and Percent · 0.3 Rearranging a Formula · 0.4 Units Travel With Numbers</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">1</td><td class="ti"><b>Essential Ideas</b><span>What is matter, and how do we measure it honestly?</span></td><td class="secs">1.1 Chemistry in Context · 1.2 Phases and Classification of Matter · 1.3 Physical and Chemical Properties · 1.4 Measurements · 1.5 Measurement Uncertainty, Accuracy, and Precision · 1.6 Mathematical Treatment of Measurement Results</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">2</td><td class="ti"><b>Atoms, Molecules, and Ions</b><span>What is everything made of, and how do we write and name it?</span></td><td class="secs">2.1 Early Ideas in Atomic Theory · 2.2 Evolution of Atomic Theory · 2.3 Atomic Structure and Symbolism · 2.4 Chemical Formulas · 2.5 The Periodic Table · 2.6 Ionic and Molecular Compounds · 2.7 Chemical Nomenclature</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">3</td><td class="ti"><b>Composition of Substances and Solutions</b><span>How do you count atoms you can’t see?</span></td><td class="secs">3.1 Formula Mass and the Mole Concept · 3.2 Determining Empirical and Molecular Formulas · 3.3 Molarity · 3.4 Other Units for Solution Concentrations</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">4</td><td class="ti"><b>Stoichiometry of Chemical Reactions</b><span>How much do you get from how much you use?</span></td><td class="secs">4.1 Writing and Balancing Chemical Equations · 4.2 Classifying Chemical Reactions · 4.3 Reaction Stoichiometry · 4.4 Reaction Yields · 4.5 Quantitative Chemical Analysis</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">5</td><td class="ti"><b>Thermochemistry</b><span>How much heat does a reaction give off or take in?</span></td><td class="secs">5.1 Energy Basics · 5.2 Calorimetry · 5.3 Enthalpy</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">6</td><td class="ti"><b>Electronic Structure and Periodic Properties of Elements</b><span>Where are an atom’s electrons, and why does the table repeat?</span></td><td class="secs">6.1 Electromagnetic Energy · 6.2 The Bohr Model · 6.3 Development of Quantum Theory · 6.4 Electronic Structure of Atoms (Electron Configurations) · 6.5 Periodic Variations in Element Properties</td><td><span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">7</td><td class="ti"><b>Chemical Bonding and Molecular Geometry</b><span>Why do atoms stick together, and what shape do they make?</span></td><td class="secs">7.1 Ionic Bonding · 7.2 Covalent Bonding · 7.3 Lewis Symbols and Structures · 7.4 Formal Charges and Resonance · 7.5 Strengths of Ionic and Covalent Bonds · 7.6 Molecular Structure and Polarity</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">8</td><td class="ti"><b>Advanced Theories of Covalent Bonding</b><span>What does a bond look like up close?</span></td><td class="secs">8.1 Valence Bond Theory · 8.2 Hybrid Atomic Orbitals · 8.3 Multiple Bonds · 8.4 Molecular Orbital Theory</td><td><span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">9</td><td class="ti"><b>Gases</b><span>How do pressure, volume and temperature push on each other?</span></td><td class="secs">9.1 Gas Pressure · 9.2 Relating Pressure, Volume, Amount, and Temperature: The Ideal Gas Law · 9.3 Stoichiometry of Gaseous Substances, Mixtures, and Reactions · 9.4 Effusion and Diffusion of Gases · 9.5 The Kinetic-Molecular Theory · 9.6 Non-Ideal Gas Behavior</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">10</td><td class="ti"><b>Liquids and Solids</b><span>What holds liquids and solids together?</span></td><td class="secs">10.1 Intermolecular Forces · 10.2 Properties of Liquids · 10.3 Phase Transitions · 10.4 Phase Diagrams · 10.5 The Solid State of Matter · 10.6 Lattice Structures in Crystalline Solids</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">11</td><td class="ti"><b>Solutions and Colloids</b><span>What happens when something dissolves?</span></td><td class="secs">11.1 The Dissolution Process · 11.2 Electrolytes · 11.3 Solubility · 11.4 Colligative Properties · 11.5 Colloids</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
+        <tr><td class="n">13</td><td class="ti"><b>Fundamental Equilibrium Concepts</b><span>Why do some reactions stop partway? (1A: a first look at 13.1–13.3)</span></td><td class="secs">13.1 Chemical Equilibria · 13.2 Equilibrium Constants · 13.3 Shifting Equilibria: Le Chatelier’s Principle · 13.4 Equilibrium Calculations</td><td><span class="tag a1">Chem 1A · first look</span> <span class="tag b1">Chem 1B</span></td></tr>
+        <tr><td class="n">20</td><td class="ti"><b>Organic Chemistry</b><span>What can carbon build? (1A: a first look)</span></td><td class="secs">20.1 Hydrocarbons · 20.2 Alcohols and Ethers · 20.3 Aldehydes, Ketones, Carboxylic Acids, and Esters · 20.4 Amines and Amides</td><td><span class="tag a1">Chem 1A · first look</span></td></tr>
+        <tr class="later"><td class="n">12</td><td class="ti"><b>Kinetics</b><span>How fast does a reaction go, and why?</span></td><td class="secs">12.1–12.7 (7 sections)</td><td><span class="tag b1">Chem 1B</span></td></tr>
+        <tr class="later"><td class="n">14–19</td><td class="ti"><b>Acid–Base Equilibria · Other Equilibria · Thermodynamics · Electrochemistry · Representative Elements · Transition Metals</b><span>The second semester</span></td><td class="secs">14.1–14.7 · 15.1–15.3 · 16.1–16.4 · 17.1–17.7 · 18.1–18.12 · 19.1–19.3</td><td><span class="tag b1">Chem 1B</span></td></tr>
+        <tr class="later"><td class="n">21</td><td class="ti"><b>Nuclear Chemistry</b><span>What happens inside the nucleus?</span></td><td class="secs">21.1–21.6 (6 sections)</td><td><span class="tag b1">Chem 1B</span></td></tr>
+      </tbody>
+    </table>
+    <p class="src">Course tags from the <a href="https://curriculum.pasadena.edu/course-descriptions/chem/chem.pdf">PCC chemistry catalog</a> (CHEM 022 → 001A → 001B) and the C-ID descriptors <a href="https://data-c-idsystem.org/descriptors/final/show/432">CHEM 101</a> and <a href="https://data-c-idsystem.org/descriptors/final/show/297">CHEM 110</a>. Section titles are OpenStax <i>Chemistry 2e</i>’s, each checked against its openstax.org page; all wording in BYE Chem is our own. The Intro tag marks chapters a first course touches at a gentler level; within a section, Simple stays at that level. Chapter 5 is tagged for 1A from PCC’s calorimetry lab work; C-ID CHEM 110 itself doesn’t list thermochemistry.</p>
+  </div>
+</section>
+
+<script>
+  // Element data: our own table of rounded standard atomic weights (facts), periods 1–4 plus a few common heavier elements.
+  // [Z, symbol, name, mass, group, period, family]
+  const EL = [
+    [1,'H','Hydrogen','1.008',1,1,'nonmetal'],[2,'He','Helium','4.003',18,1,'noble'],
+    [3,'Li','Lithium','6.94',1,2,'metal'],[4,'Be','Beryllium','9.012',2,2,'metal'],[5,'B','Boron','10.81',13,2,'metalloid'],[6,'C','Carbon','12.01',14,2,'nonmetal'],[7,'N','Nitrogen','14.01',15,2,'nonmetal'],[8,'O','Oxygen','16.00',16,2,'nonmetal'],[9,'F','Fluorine','19.00',17,2,'nonmetal'],[10,'Ne','Neon','20.18',18,2,'noble'],
+    [11,'Na','Sodium','22.99',1,3,'metal'],[12,'Mg','Magnesium','24.31',2,3,'metal'],[13,'Al','Aluminum','26.98',13,3,'metal'],[14,'Si','Silicon','28.09',14,3,'metalloid'],[15,'P','Phosphorus','30.97',15,3,'nonmetal'],[16,'S','Sulfur','32.06',16,3,'nonmetal'],[17,'Cl','Chlorine','35.45',17,3,'nonmetal'],[18,'Ar','Argon','39.95',18,3,'noble'],
+    [19,'K','Potassium','39.10',1,4,'metal'],[20,'Ca','Calcium','40.08',2,4,'metal'],[21,'Sc','Scandium','44.96',3,4,'metal'],[22,'Ti','Titanium','47.87',4,4,'metal'],[23,'V','Vanadium','50.94',5,4,'metal'],[24,'Cr','Chromium','52.00',6,4,'metal'],[25,'Mn','Manganese','54.94',7,4,'metal'],[26,'Fe','Iron','55.85',8,4,'metal'],[27,'Co','Cobalt','58.93',9,4,'metal'],[28,'Ni','Nickel','58.69',10,4,'metal'],[29,'Cu','Copper','63.55',11,4,'metal'],[30,'Zn','Zinc','65.38',12,4,'metal'],[31,'Ga','Gallium','69.72',13,4,'metal'],[32,'Ge','Germanium','72.63',14,4,'metalloid'],[33,'As','Arsenic','74.92',15,4,'metalloid'],[34,'Se','Selenium','78.97',16,4,'nonmetal'],[35,'Br','Bromine','79.90',17,4,'nonmetal'],[36,'Kr','Krypton','83.80',18,4,'noble'],
+  ];
+  const EXTRA = { Rb:'85.47', Sr:'87.62', Ag:'107.87', Sn:'118.71', I:'126.90', Xe:'131.29', Cs:'132.91', Ba:'137.33', Pt:'195.08', Au:'196.97', Hg:'200.59', Pb:'207.2', U:'238.03' };
+  const MTXT = Object.assign({}, EXTRA); EL.forEach(e => { MTXT[e[1]] = e[3]; });
+  const MASS = {}; for (const k in MTXT) MASS[k] = parseFloat(MTXT[k]);
+  const FAMILY = { metal: 'Metal', nonmetal: 'Nonmetal', metalloid: 'Metalloid', noble: 'Noble gas' };
+
+  const SUBS = '₀₁₂₃₄₅₆₇₈₉', SUPS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+  const sup = n => String(n).split('').map(d => SUPS[+d]).join('');
+
+  // Formula parser: elements, counts, (brackets) and [brackets], and hydrates joined by · . or *.
+  function parseFormula(src) {
+    const s = src.replace(/\s+/g, '').replace(/[₀-₉]/g, c => String(SUBS.indexOf(c)));
+    if (!s) throw new Error('Type a formula, for example H2O.');
+    const parts = s.split(/[·.*]/);
+    const total = {};
+    for (const part of parts) {
+      if (!part) throw new Error('Something is missing next to the dot.');
+      let i = 0; let lead = 1;
+      const mLead = part.match(/^\d+/); if (mLead && parts.length > 1 && part !== parts[0]) { lead = +mLead[0]; i = mLead[0].length; }
+      const num = () => { const m = part.slice(i).match(/^\d+/); if (!m) return 1; i += m[0].length; if (+m[0] === 0) throw new Error('A count of 0 doesn’t make sense.'); return +m[0]; };
+      const group = (close) => {
+        const counts = {};
+        while (i < part.length) {
+          const c = part[i];
+          if (c === '(' || c === '[') { i++; const inner = group(c === '(' ? ')' : ']'); const n = num(); for (const k in inner) counts[k] = (counts[k] || 0) + inner[k] * n; continue; }
+          if (c === ')' || c === ']') { if (c !== close) throw new Error('A bracket closes that was never opened.'); i++; return counts; }
+          const m = part.slice(i).match(/^[A-Z][a-z]?/);
+          if (!m && /\d/.test(c) && i === 0) throw new Error('A number in front counts molecules, not mass. Type the formula without it, for example H2O.');
+          if (!m) throw new Error(/^[a-z]/.test(part.slice(i)) ? 'Element symbols start with a capital letter: Co is cobalt, CO is carbon monoxide.' : `“${c}” isn’t part of a formula.`);
+          let sym = m[0];
+          if (!(sym in MASS) && sym.length === 2 && (sym[0] in MASS)) sym = sym[0]; // e.g. "Ch" isn't an element, so try "C" then "h"
+          if (!(sym in MASS)) throw new Error(`“${sym}” isn’t an element in this table.`);
+          i += sym.length; const n = num(); counts[sym] = (counts[sym] || 0) + n;
+        }
+        if (close) throw new Error('A bracket was opened but never closed.');
+        return counts;
+      };
+      const counts = group(null);
+      for (const k in counts) total[k] = (total[k] || 0) + counts[k] * lead;
+    }
+    return total;
+  }
+  const pretty = s => s.replace(/\s+/g, '').replace(/(^|[·.*])(\d+)/g, '$1$2 ').replace(/([A-Za-z)\]])(\d+)/g, (_, a, d) => a + '<sub>' + d + '</sub>').replace(/[.*]/g, '·').replace(/(\d+) /g, '$1');
+  const fix = (x, d) => x.toFixed(d);
+  function sig(x, n) { if (!isFinite(x) || x === 0) return '0'; const d = Math.max(0, n - 1 - Math.floor(Math.log10(Math.abs(x)))); return x.toFixed(d); }
+  function sigCount(str) { const t = str.trim().replace(/^[-+]/, ''); if (!/\d/.test(t)) return 3; if (t.includes('.')) return t.replace('.', '').replace(/^0+/, '').length || 1; return t.replace(/^0+/, '').replace(/0+$/, '').length || 1; }
+
+  const mmIn = document.getElementById('mmIn'), mmBody = document.getElementById('mmBody'), mmErr = document.getElementById('mmErr'), mmPretty = document.getElementById('mmPretty'), gIn = document.getElementById('gIn'), molOut = document.getElementById('molOut');
+  let lastMM = null;
+  function renderMM() {
+    try {
+      const counts = parseFormula(mmIn.value);
+      const order = [...Object.keys(counts)];
+      let sum = 0; let rows = '';
+      for (const k of order) { const sub = counts[k] * MASS[k]; sum += sub; rows += `<tr><td>${k}</td><td class="r">${counts[k]}</td><td class="r">${MTXT[k]}</td><td class="r">${fix(sub, 2)}</td></tr>`; }
+      rows += `<tr class="tot"><td colspan="3">Total</td><td class="r">${fix(sum, 2)} <span style="font-size:14px;color:var(--ink2)">g/mol</span></td></tr>`;
+      mmBody.innerHTML = rows; mmErr.textContent = ''; mmPretty.innerHTML = pretty(mmIn.value); lastMM = sum;
+    } catch (e) { mmBody.innerHTML = ''; mmErr.textContent = e.message; mmPretty.innerHTML = ''; lastMM = null; }
+    renderMol();
+  }
+  function renderMol() {
+    const g = parseFloat(gIn.value);
+    if (lastMM == null || !(g > 0)) { molOut.textContent = '—'; return; }
+    const n = sigCount(gIn.value);
+    molOut.innerHTML = `<span class="m">${sig(g / lastMM, n)}&nbsp;mol</span>`;
+  }
+  mmIn.addEventListener('input', renderMM); gIn.addEventListener('input', renderMol);
+  document.querySelectorAll('.chip[data-f]').forEach(b => b.addEventListener('click', () => { mmIn.value = b.dataset.f; renderMM(); }));
+  renderMM();
+
+  // Periodic table, periods 1–4, with an element card.
+  const ORDER = ['1s','2s','2p','3s','3p','4s','3d','4p','5s','4d','5p'];
+  const CAP = { s: 2, p: 6, d: 10 };
+  function config(z) {
+    const out = []; let left = z;
+    for (const o of ORDER) { if (left <= 0) break; const n = Math.min(CAP[o[1]], left); out.push([o, n]); left -= n; }
+    if (z === 24 || z === 29) { const s = out.find(x => x[0] === '4s'), d = out.find(x => x[0] === '3d'); s[1] = 1; d[1] += 1; }
+    const noble = z > 18 ? ['[Ar]', 18] : z > 10 ? ['[Ne]', 10] : z > 2 ? ['[He]', 2] : null;
+    let skip = noble ? noble[1] : 0; const shown = [];
+    for (const [o, n] of out) { if (skip >= n && noble) { skip -= n; continue; } shown.push(o + sup(n)); }
+    return (noble ? noble[0] + ' ' : '') + shown.join(' ');
+  }
+  const pt = document.getElementById('pt'), card = document.getElementById('elCard');
+  function showEl(e) {
+    document.querySelectorAll('.el.pick').forEach(x => x.classList.remove('pick'));
+    document.getElementById('el' + e[0]).classList.add('pick');
+    card.innerHTML = `<div class="row"><span class="sym">${e[1]}</span><div><div class="nm">${e[2]}</div><div class="small">Atomic number ${e[0]} · ${FAMILY[e[6]]}</div></div></div>
+      <dl><dt>Molar mass</dt><dd>${e[3]} g/mol</dd><dt>Electrons</dt><dd>${config(e[0])}</dd><dt>Row, group</dt><dd>Period ${e[5]}, group ${e[4]}</dd></dl>
+      <p class="small" style="margin-top:10px">Electron configurations are taught in <span class="g">§6.4</span>; the table itself in <span class="g">§2.5</span>.</p>`;
+  }
+  EL.forEach(e => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'el ' + e[6]; b.id = 'el' + e[0]; b.textContent = e[1];
+    b.style.gridColumn = e[4]; b.style.gridRow = e[5];
+    b.setAttribute('aria-label', `${e[2]}, ${e[3]}`);
+    b.addEventListener('click', () => showEl(e));
+    pt.appendChild(b);
+  });
+  showEl(EL[7]);
+
+  // ───── Mix and react ─────
+  const RX = {
+    water:   { name: 'Water',          r: [['H2', 2], ['O2', 1]], p: [['H2O', 2]], eq: '2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O', start: [6, 2],
+               challenges: [['Make exactly 4 waters with nothing left over.', s => s.p.H2O === 4 && s.left.H2 === 0 && s.left.O2 === 0], ['Leave exactly 1 oxygen molecule unused.', s => s.left.O2 === 1 && s.p.H2O > 0]] },
+    ammonia: { name: 'Ammonia',        r: [['N2', 1], ['H2', 3]], p: [['NH3', 2]], eq: 'N<sub>2</sub> + 3H<sub>2</sub> → 2NH<sub>3</sub>', start: [2, 3],
+               challenges: [['Make 4 ammonia with nothing left over.', s => s.p.NH3 === 4 && s.left.N2 === 0 && s.left.H2 === 0]] },
+    co2:     { name: 'Carbon dioxide', r: [['C', 1], ['O2', 1]], p: [['CO2', 1]], eq: 'C + O<sub>2</sub> → CO<sub>2</sub>', start: [3, 2],
+               challenges: [['Make 5 CO<sub>2</sub> with nothing left over.', s => s.p.CO2 === 5 && s.left.C === 0 && s.left.O2 === 0]] },
+  };
+  const FORM = { H2: 'H<sub>2</sub>', O2: 'O<sub>2</sub>', N2: 'N<sub>2</sub>', C: 'C', H2O: 'H<sub>2</sub>O', NH3: 'NH<sub>3</sub>', CO2: 'CO<sub>2</sub>' };
+  const ATOMS = { H2: { H: 2 }, O2: { O: 2 }, N2: { N: 2 }, C: { C: 1 }, H2O: { H: 2, O: 1 }, NH3: { N: 1, H: 3 }, CO2: { C: 1, O: 2 } };
+  const ACOL = { H: ['#fffdf8', '#1e1c19', '#8a8378', 5.2], O: ['#c4553a', '#fff', null, 7], N: ['#3b5ea8', '#fff', null, 7], C: ['#2c2a27', '#fff', null, 7] };
+  const atom = (el, x, y, r) => { const [f, t, st] = ACOL[el]; r = r || ACOL[el][3]; return `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"${st ? ` stroke="${st}" stroke-width="0.9"` : ' stroke="#fffdf8" stroke-width="0.8"'}/><text x="${x}" y="${y + r * 0.36}" text-anchor="middle" font-family="STIX Two Text, serif" font-size="${r * 1.05}" fill="${t}">${el}</text>`; };
+  function molSvg(t, x, y) {
+    switch (t) {
+      case 'H2': return atom('H', x - 4.6, y) + atom('H', x + 4.6, y);
+      case 'O2': return atom('O', x - 6, y) + atom('O', x + 6, y);
+      case 'N2': return atom('N', x - 6, y) + atom('N', x + 6, y);
+      case 'C':  return atom('C', x, y);
+      case 'H2O': return atom('H', x - 8, y - 5) + atom('H', x + 8, y - 5) + atom('O', x, y + 1.5);
+      case 'NH3': return atom('H', x - 9, y + 4) + atom('H', x + 9, y + 4) + atom('H', x, y - 9) + atom('N', x, y + 1);
+      case 'CO2': return atom('O', x - 11, y) + atom('O', x + 11, y) + atom('C', x, y);
+    }
+  }
+  function rand(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function fillBox(svg, list, seed) {
+    // list: array of molecule types; place them in a 4 × 6 grid of cells, shuffled, with a little jitter.
+    const R = rand(seed), cells = [];
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 3; c++) cells.push([25 + c * 50, 17 + r * 29]);
+    for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
+    svg.innerHTML = list.slice(0, cells.length).map((t, i) => `<g class="mol" transform="translate(${(cells[i][0] + (R() - .5) * 6).toFixed(1)} ${(cells[i][1] + (R() - .5) * 4).toFixed(1)}) scale(1.2)">${molSvg(t, 0, 0)}</g>`).join('');
+    const counts = {}; list.forEach(t => counts[t] = (counts[t] || 0) + 1);
+    svg.setAttribute('aria-label', Object.keys(counts).length ? Object.entries(counts).map(([k, n]) => `${n} ${k}`).join(', ') : 'empty');
+  }
+  let rxKey = 'water', amounts = [], reacted = false, rxSeed = 7;
+  const rxSteps = document.getElementById('rxSteps'), rxEq = document.getElementById('rxEq'), boxB = document.getElementById('boxBefore'), boxA = document.getElementById('boxAfter'), rxSum = document.getElementById('rxSum'), rxAtoms = document.getElementById('rxAtoms'), rxChall = document.getElementById('rxChall');
+  const MAXM = 12;
+  function outcome() {
+    const R = RX[rxKey];
+    const ext = Math.min(...R.r.map(([t, c], i) => Math.floor(amounts[i] / c)));
+    const left = {}, p = {}; R.r.forEach(([t, c], i) => left[t] = amounts[i] - c * ext); R.p.forEach(([t, c]) => p[t] = c * ext);
+    return { ext, left, p };
+  }
+  function atomCount(list) { const a = {}; for (const [t, n] of list) for (const [el, k] of Object.entries(ATOMS[t])) a[el] = (a[el] || 0) + k * n; return a; }
+  function renderRx() {
+    const R = RX[rxKey];
+    rxEq.innerHTML = R.eq;
+    rxSteps.innerHTML = R.r.map(([t], i) => `<div class="stepper"><div class="k">${FORM[t]}</div><div class="row"><button type="button" data-i="${i}" data-d="-1" aria-label="Remove one ${t}">−</button><span class="n">${amounts[i]}</span><button type="button" data-i="${i}" data-d="1" aria-label="Add one ${t}">+</button></div></div>`).join('');
+    rxSteps.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.i; amounts[i] = Math.max(0, Math.min(MAXM, amounts[i] + +b.dataset.d)); reacted = false; rxSeed++; renderRx(); }));
+    const before = []; R.r.forEach(([t], i) => { for (let k = 0; k < amounts[i]; k++) before.push(t); });
+    fillBox(boxB, before, rxSeed);
+    const o = outcome();
+    const beforeAtoms = atomCount(R.r.map(([t], i) => [t, amounts[i]]));
+    if (reacted) {
+      const after = []; R.p.forEach(([t]) => { for (let k = 0; k < o.p[t]; k++) after.push(t); }); R.r.forEach(([t]) => { for (let k = 0; k < o.left[t]; k++) after.push(t); });
+      fillBox(boxA, after, rxSeed + 100);
+      const afterAtoms = atomCount([...R.p.map(([t]) => [t, o.p[t]]), ...R.r.map(([t]) => [t, o.left[t]])]);
+      rxAtoms.innerHTML = Object.keys(beforeAtoms).map(el => `<tr><td>${el}</td><td class="r">${beforeAtoms[el]}</td><td class="r">${afterAtoms[el] || 0}</td><td class="r" style="font-family:var(--sans);font-size:13px;color:var(--mol)">${beforeAtoms[el] === (afterAtoms[el] || 0) ? 'same ✓' : ''}</td></tr>`).join('');
+      const made = R.p.map(([t]) => `<b>${o.p[t]} ${FORM[t]}</b>`).join(', ');
+      const leftover = R.r.filter(([t]) => o.left[t] > 0).map(([t]) => `${o.left[t]} ${FORM[t]}`);
+      const ranOut = R.r.filter(([t]) => o.left[t] === 0 && o.ext > 0).map(([t]) => FORM[t]);
+      rxSum.innerHTML = o.ext === 0 ? 'Nothing reacted: the recipe needs some of <b>every</b> ingredient.' :
+        `Made ${made}. ` + (leftover.length ? `Left over: ${leftover.join(', ')}. ${ranOut.join(' and ')} ran out first.` : 'Nothing left over: a perfect recipe.');
+    } else {
+      boxA.innerHTML = '<text x="75" y="120" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11" fill="#6b655b">press React</text>';
+      boxA.setAttribute('aria-label', 'not reacted yet');
+      rxAtoms.innerHTML = Object.keys(beforeAtoms).map(el => `<tr><td>${el}</td><td class="r">${beforeAtoms[el]}</td><td class="r">–</td><td></td></tr>`).join('');
+      rxSum.innerHTML = '<span style="color:var(--ink2)">Add molecules with + and −, then press React.</span>';
+    }
+    const st = reacted ? o : null;
+    rxChall.innerHTML = R.challenges.map(([txt, ok]) => { const done = st && ok(st); return `<div class="chall${done ? ' done' : ''}" style="margin-top:8px"><div class="ck">${done ? 'Done ✓' : 'Try this'}</div><div>${txt}</div></div>`; }).join('');
+  }
+  function pickRx(k) { rxKey = k; amounts = [...RX[k].start]; reacted = false; document.querySelectorAll('#rxPick .chip').forEach(c => { const on = c.dataset.rx === k; c.classList.toggle('on', on); c.setAttribute('aria-checked', on); }); renderRx(); }
+  document.querySelectorAll('#rxPick .chip').forEach(c => c.addEventListener('click', () => pickRx(c.dataset.rx)));
+  document.getElementById('rxGo').addEventListener('click', () => { reacted = true; renderRx(); });
+  document.getElementById('rxReset').addEventListener('click', () => pickRx(rxKey));
+  pickRx('water');
+
+  // ───── Gas in a box ─────
+  (function () {
+    const cv = document.getElementById('gas'), ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height, dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = W * dpr; cv.height = H * dpr; ctx.scale(dpr, dpr);
+    const gT = document.getElementById('gT'), gV = document.getElementById('gV'), gN = document.getElementById('gN');
+    const out = { P: document.getElementById('gP'), hits: document.getElementById('gHits'), T: document.getElementById('gTv'), V: document.getElementById('gVv'), N: document.getElementById('gNv') };
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const R = rand(42); let parts = [];
+    const boxW = () => 60 + (W - 70) * (+gV.value - 1) / 2; // the piston moves with volume
+    function sync() {
+      const n = +gN.value;
+      while (parts.length < n) { const a = R() * Math.PI * 2; parts.push({ x: 10 + R() * (boxW() - 20), y: 10 + R() * (H - 20), a, s: 0.6 + R() * 0.8 }); }
+      parts.length = n;
+      const T = +gT.value, V = +gV.value, mol = n * 0.002, P = mol * 0.08206 * T / V;
+      out.T.textContent = T + ' K'; out.V.textContent = V.toFixed(1) + ' L'; out.N.textContent = mol.toFixed(3) + ' mol';
+      out.P.textContent = P.toFixed(2) + ' atm';
+      if (reduce) out.hits.textContent = Math.round(n * Math.sqrt(T / 300) * 14 / V) + ' (estimated)';
+    }
+    [gT, gV, gN].forEach(el => el.addEventListener('input', sync)); sync();
+    let hits = 0, lastT = performance.now(), acc = 0;
+    function frame(now) {
+      const dt = Math.min(40, now - lastT); lastT = now;
+      const speed = 0.09 * Math.sqrt(+gT.value / 300), bw = boxW();
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#efeadf'; ctx.fillRect(bw, 0, W - bw, H);       // outside the box
+      ctx.fillStyle = '#5a554d'; ctx.fillRect(bw, 0, 4, H);              // the piston
+      for (const p of parts) {
+        if (!reduce) {
+          p.x += Math.cos(p.a) * speed * p.s * dt; p.y += Math.sin(p.a) * speed * p.s * dt;
+          if (p.x < 5) { p.x = 5; p.a = Math.PI - p.a; hits++; }
+          if (p.x > bw - 5) { p.x = bw - 5; p.a = Math.PI - p.a; hits++; }
+          if (p.y < 5) { p.y = 5; p.a = -p.a; hits++; }
+          if (p.y > H - 5) { p.y = H - 5; p.a = -p.a; hits++; }
+        } else if (p.x > bw - 5) p.x = bw - 5;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = '#2f4b7c'; ctx.fill();
+      }
+      acc += dt; if (acc >= 1000 && !reduce) { out.hits.textContent = hits; hits = 0; acc = 0; }
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    if (reduce) [gT, gV, gN].forEach(el => el.addEventListener('input', () => requestAnimationFrame(frame)));
+  })();
+</script>
+</body>
+</html>
