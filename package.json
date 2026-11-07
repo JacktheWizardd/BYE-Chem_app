@@ -11,7 +11,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "test": "vitest run",
-    "check": "node scripts/gen-map.mjs --check && tsc --noEmit && expo lint && vitest run"
+    "check": "node scripts/gen-map.mjs --check && tsc --noEmit && expo lint && vitest run",
+    "build:web": "node scripts/build-web.mjs",
+    "serve:web": "node scripts/serve-web.mjs",
+    "deploy:web": "npm run build:web && cd deploy && npm run deploy"
   },
   "dependencies": {
     "@expo-google-fonts/schibsted-grotesk": "^0.4.2",
@@ -44,6 +47,7 @@
     "@types/three": "^0.187.0",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~58.0.4",
+    "subset-font": "^2.9.0",
     "typescript": "~6.0.3",
     "vitest": "^5.1.0"
   }

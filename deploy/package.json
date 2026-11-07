@@ -1,0 +1,13 @@
+{
+  "name": "bye-chem-demo-deploy",
+  "private": true,
+  "type": "module",
+  "description": "Serves the BYE Chem web build (../dist) from its own bye-chem-demo Cloudflare Worker.",
+  "scripts": {
+    "deploy": "cf deploy"
+  },
+  "devDependencies": {
+    "cf": "^1.0.0-beta.27",
+    "wrangler": "^4.157.0"
+  }
+}
