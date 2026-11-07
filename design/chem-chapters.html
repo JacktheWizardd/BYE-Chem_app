@@ -90,6 +90,8 @@
   .tag.intro { border-color: #c9d6e6; color: var(--mass); }
   .tag.a1 { border-color: #bfd3c6; color: var(--mol); }
   .tag.b1 { color: var(--muted); }
+  .tag.ap { border-color: var(--axis); color: var(--ink); }
+  .trot { font-size: 11.5px; line-height: 16px; color: var(--muted); margin-left: 2px; }
   .chev { align-self: center; width: 7px; height: 7px; border-right: 1.5px solid var(--axis); border-top: 1.5px solid var(--axis); transform: rotate(45deg); margin-right: 3px; flex: none; }
 
   /* Chapter page */
@@ -110,6 +112,24 @@
   .use .where { font-weight: 500; font-size: 15px; }
   .use .what { font-size: 14px; line-height: 21px; color: var(--ink2); margin: 3px 0 4px; }
   .use .eq { font-family: var(--chem); font-size: 17px; }
+
+  /* Topic page (from chem-app-flow.html, the liked design) */
+  .plain { font-size: 16px; line-height: 26px; color: var(--ink2); margin: 0; }
+  .group .eyebrow { margin-right: 8px; }
+  .stop { display: flex; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--line); align-items: center; }
+  .dot { width: 26px; height: 26px; flex: none; border-radius: 13px; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 12px; color: var(--axis); background: var(--ground); }
+  .stop.done .dot { background: var(--ink); border-color: var(--ink); color: var(--onInk); }
+  .stop.now .dot { border: 2px solid var(--coral); color: var(--coral); font-weight: 700; }
+  .stop .t { font-weight: 500; font-size: 16px; line-height: 21px; }
+  .stop .s { font-size: 13px; line-height: 19px; color: var(--ink2); }
+  .stop .tag { margin-left: auto; font-size: 12px; color: var(--axis); white-space: nowrap; border: 0; background: none; padding: 0; }
+  .stop.now .tag { color: var(--coral); }
+  .recipe { display: flex; align-items: flex-end; justify-content: center; gap: 10px; padding: 6px 0 2px; }
+  .recipe .part { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .recipe .mols { display: flex; gap: 6px; align-items: center; min-height: 34px; }
+  .recipe .op { font-family: var(--chem); font-size: 20px; color: var(--ink2); padding-bottom: 26px; }
+  .recipe .cap { font-size: 17px; font-family: var(--chem); }
+  .recipe .times { font-family: var(--chem); font-size: 16px; white-space: nowrap; }
 
   /* Mole map picture */
   .frames { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: var(--ink2); }
@@ -229,14 +249,22 @@
   .cm tr.later td { opacity: .62; }
   .src { margin-top: 12px; font-size: 13px; color: var(--ink2); line-height: 1.7; }
   @media (prefers-reduced-motion: no-preference) { .chip, .el { transition: border-color .15s, background .15s; } }
+  /* Narrow phones (323 px): stack the three views and the reaction steppers instead of clipping them */
+  @media (max-width: 360px) {
+    .views, .steppers { grid-template-columns: 1fr; }
+    .boards { padding-left: 12px; padding-right: 12px; }
+  }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="H2O" viewBox="0 0 38 30"><circle cx="8" cy="9" r="6.5" fill="var(--elH)" stroke="#8a8378" stroke-width="1.2"/><circle cx="30" cy="9" r="6.5" fill="var(--elH)" stroke="#8a8378" stroke-width="1.2"/><circle cx="19" cy="18" r="10" fill="var(--elO)" stroke="#f6f3ec" stroke-width="1"/></symbol>
+</svg>
 
 <header class="top">
   <h1>BYE Chem: chapters, lab and tools</h1>
   <p>A standalone app with the BYE Math structure you already know. Home lists numbered chapters; a chapter page tells the story, maps its sections and checks you’re ready; each section has Learn, then Simple, Medium and Hard. Worked problems are on hold, so this round is the chapters, plus a <b>Lab</b> tab (sandboxes to play in) and a <b>Tools</b> tab (look-ups you use every day).</p>
-  <p>Chapters follow OpenStax <i>Chemistry 2e</i> numbering, the way calculus follows Stewart, with a Chapter 0 for the maths chemistry uses. Tags show which course needs a chapter: <b class="g">Intro</b> (a first chemistry course, like PCC CHEM 022), <b class="m">Chem 1A</b> (like PCC CHEM 001A), <b style="color:var(--muted)">Chem 1B</b> (later). The two Lab sandboxes, the molar-mass calculator and the periodic table below actually work: try them.</p>
+  <p>Chapters follow <b>our own beginner order</b>: maths first, the mole as its own chapter, bonds and shapes before quantum. Each chapter and section says where it is in <b>Tro, <i>Chemistry: A Molecular Approach</i> 6e</b>, the class book. Tags show which course needs a chapter: <b class="g">Intro</b> (a first chemistry course, like PCC CHEM 022), <b class="m">Chem 1A</b> (like PCC CHEM 001A), <b style="color:var(--muted)">Chem 1B</b>, and <b>AP</b>. The two Lab sandboxes, the molar-mass calculator and the periodic table below actually work: try them.</p>
 </header>
 
 <!-- ───────── Row 1: chapters ───────── -->
@@ -252,26 +280,28 @@
       </div>
       <div class="tabs"><span class="tab on">Learn</span><span class="tab">Lab</span><span class="tab">Tools</span></div>
       <div class="hero">Chemistry, one step at a time.</div>
-      <p class="sub">From zero to Chem 1A. Every word is explained the first time it shows up.</p>
+      <p class="sub">From zero to Chem 1A, 1B and AP. Every word is explained the first time it shows up.</p>
 
       <div class="head"><span class="eyebrow">Start here</span></div>
       <div class="start"><span class="ic">◎</span><div><div class="t">Find your gaps</div><div class="s">10 quick questions, about 5 minutes. See which chapters to review and skip the rest.</div></div></div>
       <div class="start"><span class="ic">→</span><div><div class="t">Learn from zero</div><div class="s">Never studied chemistry, or it’s been years? Start at Chapter 0 and go in order.</div></div></div>
-      <div class="start"><span class="ic">1A</span><div><div class="t">I’m taking Chem 1A</div><div class="s">Show only your course’s chapters, in your class order.</div></div></div>
+      <div class="start"><span class="ic">1A</span><div><div class="t">I’m taking Chem 1A</div><div class="s">The same chapters in your book’s order (Tro), with your course’s tags.</div></div></div>
 
-      <div class="head"><span class="eyebrow">Chapters</span><span class="meta">OpenStax Chemistry 2e</span></div>
-      <div class="chrow"><span class="num">0</span><div class="body"><div class="t">Maths for Chemistry</div><div class="s">The few maths moves chemistry uses, refreshed</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">1</span><div class="body"><div class="t">Essential Ideas</div><div class="s">What is matter, and how do we measure it honestly?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">2</span><div class="body"><div class="t">Atoms, Molecules, and Ions</div><div class="s">What is everything made of, and how do we write and name it?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">3</span><div class="body"><div class="t">Composition of Substances and Solutions</div><div class="s">How do you count atoms you can’t see?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">4</span><div class="body"><div class="t">Stoichiometry of Chemical Reactions</div><div class="s">How much do you get from how much you use?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">5</span><div class="body"><div class="t">Thermochemistry</div><div class="s">How much heat does a reaction give off or take in?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">6</span><div class="body"><div class="t">Electronic Structure and Periodic Properties of Elements</div><div class="s">Where are an atom’s electrons, and why does the table repeat?</div><div class="tags"><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">7</span><div class="body"><div class="t">Chemical Bonding and Molecular Geometry</div><div class="s">Why do atoms stick together, and what shape do they make?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span></div></div><span class="chev"></span></div>
-      <div class="chrow"><span class="num">8–11</span><div class="body"><div class="t">Bonding up close · Gases · Liquids and Solids · Solutions</div><div class="s">Four more Chem 1A chapters, then a first look at 13 and 20</div></div><span class="chev"></span></div>
-      <div class="chrow later"><span class="num">12+</span><div class="body"><div class="t">Chem 1B chapters</div><div class="s">Kinetics, equilibrium, acids and bases, thermodynamics, electrochemistry, nuclear</div><div class="tags"><span class="tag b1">Chem 1B · later</span></div></div><span class="chev"></span></div>
+      <div class="head"><span class="eyebrow">Chapters</span><span class="meta">our order · Tro 6e refs</span></div>
+      <div class="chrow"><span class="num">0</span><div class="body"><div class="t">Maths for Chemistry</div><div class="s">The few maths moves chemistry uses, refreshed</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro App. I</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">1</span><div class="body"><div class="t">Matter and Measurement</div><div class="s">What is stuff made of, and how do we measure it honestly?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 1</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">2</span><div class="body"><div class="t">Atoms and Elements</div><div class="s">What is everything made of, and how do we know?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 2</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">3</span><div class="body"><div class="t">Compounds: Formulas and Names</div><div class="s">How do atoms join up, and how do we write and name what they make?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 3</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">4</span><div class="body"><div class="t">Counting by Weighing: the Mole</div><div class="s">Atoms are too small to count, so how do chemists count them?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro 2.9, 3.8–3.10</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">5</span><div class="body"><div class="t">Reactions and How Much</div><div class="s">How much do you get from how much you use?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 4</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">6</span><div class="body"><div class="t">Reactions in Water</div><div class="s">What happens when you mix two clear liquids and something appears?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 5</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">7</span><div class="body"><div class="t">Gases</div><div class="s">Why does a sealed bag of chips puff up on a mountain?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 6</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">8</span><div class="body"><div class="t">Energy in Reactions</div><div class="s">Why does a hand warmer get hot?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 7</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">9</span><div class="body"><div class="t">Bonds and Shapes</div><div class="s">Why is water bent and carbon dioxide straight?</div><div class="tags"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 10–11</span></div></div><span class="chev"></span></div>
+      <div class="chrow"><span class="num">10–16</span><div class="body"><div class="t">Light and the Electron · The Periodic Table Explained · Why Bonds Form · Liquids and Solids · Solutions · Solids and Materials · Carbon Compounds</div><div class="s">Seven more Chem 1A chapters</div><div class="tags"><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">Tro ch. 8–14, 22</span></div></div><span class="chev"></span></div>
+      <div class="chrow later"><span class="num">17–25</span><div class="body"><div class="t">Chem 1B chapters</div><div class="s">Kinetics, equilibrium, acids and bases, buffers, free energy, electrochemistry, nuclear, the elements up close, transition metals</div><div class="tags"><span class="tag b1">Chem 1B</span><span class="tag ap">AP</span><span class="trot">Tro ch. 15–21, 24–26</span></div></div><span class="chev"></span></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>Same home as BYE Math, three ways in.</b> A beginner starts at Chapter 0 (maths skill predicts who succeeds in general chemistry); a returning learner takes the gap check; a Chem 1A student filters to their course. Every textbook title has a plain question under it, and the tags carry words, not just colour.</div>
+    <div class="notes"><span class="why">research</span><br><b>Same home as BYE Math, three ways in.</b> A beginner starts at Chapter 0 (maths skill predicts who succeeds in general chemistry); a returning learner takes the gap check; a Chem 1A student sees the same chapters in their book’s order. Every chapter has a plain question under it and names where it is in Tro, and the tags carry words, not just colour.</div>
   </div>
 
   <div class="board">
@@ -282,13 +312,18 @@
       <div class="title">Maths for Chemistry</div>
       <div class="jp">化学のための数学</div>
       <div class="hook">A spoonful of sugar holds about 7 × 10<sup>21</sup> molecules. Can you read that number, and work with it?</div>
-      <div class="counts">4 sections · short, no chemistry needed</div>
+      <div class="counts">7 sections · short, no chemistry needed</div>
 
       <div class="head"><span class="eyebrow">The road map</span><span class="meta">in order</span></div>
+      <div class="group">Before Chapter 1</div>
       <div class="maprow"><span class="num">0.1</span><div><div class="rowtitle">Powers of Ten</div><div class="asks">How do you write, multiply and divide very big and very small numbers?</div></div></div>
       <div class="maprow"><span class="num">0.2</span><div><div class="rowtitle">Ratios, Rates and Percent</div><div class="asks">What does “2 for every 1” mean, and how do you scale it up?</div></div></div>
       <div class="maprow"><span class="num">0.3</span><div><div class="rowtitle">Rearranging a Formula</div><div class="asks">How do you get the letter you want on its own?</div></div></div>
       <div class="maprow"><span class="num">0.4</span><div><div class="rowtitle">Units Travel With Numbers</div><div class="asks">Why do units multiply, divide and cancel like numbers?</div></div></div>
+      <div class="group">When a later chapter needs it</div>
+      <div class="maprow"><span class="num">0.5</span><div><div class="rowtitle">Logarithms</div><div class="asks">What does log mean, and why does pH use it? <span class="trot">Needed by 6.7 pH</span></div></div></div>
+      <div class="maprow"><span class="num">0.6</span><div><div class="rowtitle">Solving a Quadratic</div><div class="asks">How do you solve one you can’t factor? <span class="trot">Needed by 18.6</span></div></div></div>
+      <div class="maprow"><span class="num">0.7</span><div><div class="rowtitle">Straight-Line Graphs</div><div class="asks">What do the slope and intercept of a data line tell you? <span class="trot">Needed by 1.9</span></div></div></div>
 
       <div class="band">
         <div class="eyebrow">Ready? Three quick ones</div>
@@ -298,24 +333,55 @@
       </div>
       <div class="btn"><span>Start Chapter 0</span></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>Maths before chemistry, kept short.</b> PCC’s courses require intermediate algebra, and arithmetic skill predicts general-chemistry success. Each section is the one move chemistry needs, with chemistry-flavoured numbers, so it doesn’t feel like a maths class.</div>
+    <div class="notes"><span class="why">research</span><br><b>Maths before chemistry, kept short.</b> PCC’s courses require intermediate algebra, and arithmetic skill predicts general-chemistry success. Each section is the one move chemistry needs, with chemistry-flavoured numbers, so it doesn’t feel like a maths class. Logs, quadratics and graphs wait until a chapter’s “Ready?” check sends you there.</div>
   </div>
 
   <div class="board">
     <div class="label">Chapter page · top</div>
     <div class="phone">
       <div class="back">Chemistry</div>
-      <div class="eyebrow">Chemistry · Chapter 3</div>
-      <div class="title">Composition of Substances and Solutions</div>
-      <div class="jp">物質と溶液の組成</div>
-      <div class="hook">A teaspoon of sugar, about 4 g, holds about 7 × 10<sup>21</sup> molecules. Nobody counted them. How do we know?</div>
-      <div class="counts">4 sections · Learn and 3 levels each</div>
+      <div class="eyebrow" style="margin-top:8px">Chapter 4</div>
+      <div class="title">Counting by Weighing: the Mole</div>
+      <p class="plain">Count atoms you can’t see, by weighing them.</p>
+      <div class="tags" style="margin-top:10px"><span class="tag intro">Intro</span><span class="tag a1">Chem 1A</span><span class="tag ap">AP</span><span class="trot">In your book: Tro 2.9, 3.8–3.10</span></div>
 
-      <div class="head"><span class="eyebrow">The story</span></div>
-      <p class="p">Atoms are far too small to count, so chemists count by <b>weighing</b>, the way a bank weighs a bag of coins instead of counting them (3.1). The counting unit is the <span class="gl">mole</span>: 6.022 × 10<sup>23</sup> of anything.</p>
+      <div class="band">
+        <div class="eyebrow">What this lets you do</div>
+        <p class="p" style="margin-top:8px">Weigh 36 g of water and say how many molecules are in it, without counting a single one.</p>
+        <div class="recipe" style="margin-top:12px" role="img" aria-label="18.02 grams of water is one mole: 6.022 times 10 to the 23 water molecules.">
+          <div class="part"><div class="mols"><svg width="26" height="32" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 2 C12 2 3 13 3 19.5 a9 9 0 0 0 18 0 C21 13 12 2 12 2 z" fill="#9fc0e3"/></svg></div><div class="cap g">18.02 g</div></div>
+          <div class="op">=</div>
+          <div class="part"><div class="mols"><svg width="38" height="30" aria-hidden="true"><use href="#H2O"/></svg><span class="times">× 6.022 × 10<sup>23</sup></span></div><div class="cap m">1 mol <span class="f">H<sub>2</sub>O</span></div></div>
+        </div>
+        <p class="small" style="margin:10px 0 0;text-align:center">The trick: 18.02 g of water is always the same number of molecules. So 36.04 g is twice as many.</p>
+      </div>
 
-      <div class="band" style="margin-top:14px">
-        <svg viewBox="0 0 338 150" width="100%" role="img" aria-label="The mole map: grams and particles both connect through moles. Divide grams by molar mass to get moles; multiply moles by 6.022 times 10 to the 23 to get particles.">
+      <div class="group" style="margin-top:20px"><span class="eyebrow">Ready? You need</span></div>
+      <div class="stop done"><span class="dot">✓</span><div><div class="t" style="font-size:15px">Work with 6.022 × 10<sup>23</sup></div><div class="s">0.1 Powers of Ten</div></div></div>
+      <div class="stop now"><span class="dot">!</span><div><div class="t" style="font-size:15px">Count the atoms in <span class="f">Ca(NO<sub>3</sub>)<sub>2</sub></span></div><div class="s">3.2 Writing Formulas and Models · 6 minutes</div></div><span class="tag">Review</span></div>
+      <div class="stop"><span class="dot">?</span><div><div class="t" style="font-size:15px">Read an atomic mass off the table</div><div class="s">2.6 Atomic Mass</div></div></div>
+
+      <div class="group" style="margin-top:20px"><span class="eyebrow">The lessons</span><span class="meta">3</span></div>
+      <div class="stop"><span class="dot">1</span><div><div class="t">The Mole and Molar Mass</div><div class="s">How do you count particles by weighing them? · Tro 2.9, 3.8</div></div></div>
+      <div class="stop"><span class="dot">2</span><div><div class="t">Percent Composition</div><div class="s">How much of a compound is each element, by mass? · Tro 3.9</div></div></div>
+      <div class="stop"><span class="dot">3</span><div><div class="t">Finding a Formula From Masses</div><div class="s">Given the masses in a compound, what is its formula? · Tro 3.10</div></div></div>
+      <div class="btn"><span>Start lesson 1</span></div>
+    </div>
+    <div class="notes"><span class="why">liked</span><br><b>The topic page you picked, now for every chapter.</b> A one-line promise, a task you’ll be able to do with a flat particle picture, “Ready? You need” that catches a missing basic first, then the numbered lessons. The tags say which courses need it, and the last line says where it is in Tro, the class book.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Chapter page · further down</div>
+    <div class="phone">
+      <div class="head" style="margin-top:4px"><span class="eyebrow">Play with it</span><span class="meta">Lab</span></div>
+      <div class="labcard">
+        <div class="labmini" aria-hidden="true"><span class="ball H">H</span><span class="ball O big">O</span><span class="ball H">H</span></div>
+        <div><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it.</div><div class="try">Try this: find the mass of water that gives exactly 1 mole.</div></div>
+      </div>
+
+      <div class="band">
+        <div class="eyebrow">The chapter at a glance</div>
+        <svg viewBox="0 0 338 150" width="100%" role="img" aria-label="The mole map: grams and particles both connect through moles. Divide grams by molar mass to get moles; multiply moles by 6.022 times 10 to the 23 to get particles." style="margin-top:6px">
           <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5a554d"/></marker></defs>
           <rect x="4" y="52" width="88" height="46" rx="12" fill="#fffdf8" stroke="#2f4b7c" stroke-width="1.5"/>
           <text x="48" y="80" text-anchor="middle" font-family="STIX Two Text, serif" font-size="18" fill="#2f4b7c">grams</text>
@@ -329,66 +395,32 @@
           <path d="M244 86 L216 86" stroke="#5a554d" stroke-width="1.4" marker-end="url(#ar)"/>
           <text x="108" y="34" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">÷ molar mass</text>
           <text x="108" y="122" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">× molar mass</text>
-          <text x="229" y="34" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">× 6.022 × 10²³</text>
-          <text x="229" y="122" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">÷ 6.022 × 10²³</text>
+          <text x="229" y="34" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">× 6.022 × 10<tspan dy="-5" font-size="8.5">23</tspan></text>
+          <text x="229" y="122" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#5a554d">÷ 6.022 × 10<tspan dy="-5" font-size="8.5">23</tspan></text>
           <text x="169" y="144" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" fill="#6b655b">every trip goes through moles</text>
         </svg>
-        <div class="frames"><span>The mole map · 2 of 3</span><span class="dots"><i></i><i class="on"></i><i></i></span></div>
-      </div>
-
-      <p class="p">The same counting tells you a compound’s formula from the masses in it (3.2). Then the counting moves into liquids: how many moles in each litre (3.3), and the %, ppm and ppb you see on labels (3.4).</p>
-
-      <div class="head"><span class="eyebrow">The road map</span><span class="meta">4 sections, in order</span></div>
-      <div class="group">Counting by weighing</div>
-      <div class="maprow"><span class="num">3.1</span><div><div class="rowtitle">Formula Mass and the Mole Concept</div><div class="asks">How do you count particles by weighing them?</div></div></div>
-      <div class="maprow"><span class="num">3.2</span><div><div class="rowtitle">Determining Empirical and Molecular Formulas</div><div class="asks">Given the masses in a compound, what is its formula?</div></div></div>
-      <div class="group">Counting in a liquid</div>
-      <div class="maprow"><span class="num">3.3</span><div><div class="rowtitle">Molarity</div><div class="asks">How much is dissolved in each litre?</div></div></div>
-      <div class="maprow"><span class="num">3.4</span><div><div class="rowtitle">Other Units for Solution Concentrations</div><div class="asks">What do %, ppm and ppb on a label mean?</div></div></div>
-    </div>
-    <div class="notes"><span class="why">research</span><br><b>The chapter’s one picture is the mole map.</b> Grams, moles and particles, with every trip going through moles: the bridge beginners most often miss. The road map groups sections by the question they share, as BYE Math does.</div>
-  </div>
-
-  <div class="board">
-    <div class="label">Chapter page · bottom</div>
-    <div class="phone">
-      <div class="head" style="margin-top:4px"><span class="eyebrow">Ready for this chapter?</span></div>
-      <p class="small" style="margin:4px 0 0">Try each, then tap to see the answer.</p>
-      <div class="ready"><div class="q">Write 602 200 in scientific notation.</div><div class="a">6.022 × 10<sup>5</sup>.</div><div class="from">Review · 0.1 Powers of Ten</div></div>
-      <div class="ready"><div class="q">How many O atoms are in <span class="f">Ca(NO<sub>3</sub>)<sub>2</sub></span>?</div><div class="a">6. Each NO<sub>3</sub> has 3, and the 2 outside the bracket doubles everything inside.</div><div class="from">Review · 2.4 Chemical Formulas</div></div>
-      <div class="ready"><div class="q">Change 250 mL to litres.</div><div class="a">0.250 L. There are 1000 mL in a litre.</div><div class="from">Review · 1.6 Mathematical Treatment of Measurement Results</div></div>
-      <div class="btn"><span>Start with 3.1</span></div>
-
-      <div class="head"><span class="eyebrow">Play with it</span><span class="meta">Lab</span></div>
-      <div class="labcard">
-        <div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="ball O">O</span><span class="plus">+</span><span class="ball H">H</span><span class="ball H">H</span></div>
-        <div><div class="t">Mix and react</div><div class="s">Put molecules in a box and react them. Count the atoms before and after.</div><div class="try">Try this: make exactly 4 waters with nothing left over.</div></div>
-      </div>
-
-      <div class="band">
-        <div class="eyebrow">The chapter at a glance</div>
-        <div class="glance"><div class="eq"><span class="m">moles</span> = <span class="g">grams</span> ÷ molar mass</div><div class="note">Molar mass is grams per mole: add up the atomic masses in the formula.</div><div class="from">3.1</div></div>
-        <div class="glance"><div class="eq">particles = <span class="m">moles</span> × 6.022 × 10<sup>23</sup></div><div class="note">Avogadro’s number: how many are in one mole.</div><div class="from">3.1</div></div>
-        <div class="glance"><div class="eq">% by mass = part ÷ whole × 100</div><div class="note">Assume 100 g, and the percents become grams.</div><div class="from">3.2</div></div>
-        <div class="glance"><div class="eq">molarity (M) = <span class="m">moles</span> of solute ÷ litres</div><div class="note">M is moles per litre of the whole solution.</div><div class="from">3.3</div></div>
-        <div class="glance" style="border:0"><div class="eq">M<sub>1</sub>V<sub>1</sub> = M<sub>2</sub>V<sub>2</sub></div><div class="note">Adding water changes the volume, not the moles.</div><div class="from">3.3</div></div>
+        <div class="glance"><div class="eq"><span class="m">moles</span> = <span class="g">grams</span> ÷ molar mass</div><div class="note">Molar mass is grams per mole: add up the atomic masses in the formula.</div><div class="from">4.1</div></div>
+        <div class="glance"><div class="eq">particles = <span class="m">moles</span> × 6.022 × 10<sup>23</sup></div><div class="note">Avogadro’s number: how many are in one mole.</div><div class="from">4.1</div></div>
+        <div class="glance"><div class="eq">% by mass = part ÷ whole × 100</div><div class="note">The element’s grams in one mole, over the compound’s molar mass.</div><div class="from">4.2</div></div>
+        <div class="glance" style="border:0"><div class="eq">grams → <span class="m">moles</span> → ÷ smallest</div><div class="note">For a formula from masses: assume 100 g, change each element to moles, divide by the smallest.</div><div class="from">4.3</div></div>
       </div>
 
       <div class="head"><span class="eyebrow">Where it shows up</span></div>
-      <div class="use"><div class="where">Hospital saline drip</div><div class="what">“0.9% saline” is 9 g of salt per litre, which is 0.154 M.</div><div class="eq">9.0 g ÷ 58.44 g/mol = 0.154 mol</div></div>
-      <div class="use"><div class="where">Blood sugar</div><div class="what">A normal reading of 90 mg/dL is about 5 millimoles of glucose per litre.</div><div class="eq">0.90 g/L ÷ 180.16 g/mol = 0.0050 M</div></div>
-      <div class="use" style="border:0"><div class="where">Seawater</div><div class="what">About 35 g of dissolved salts in every kilogram: 3.5% by mass.</div><div class="eq">35 g ÷ 1000 g × 100 = 3.5%</div></div>
+      <div class="use"><div class="where">A spoonful of sugar</div><div class="what">4 g of table sugar is about 7 × 10<sup>21</sup> molecules.</div><div class="eq">4.0 g ÷ 342.30 g/mol = 0.0117 mol</div></div>
+      <div class="use"><div class="where">A vitamin C tablet</div><div class="what">500 mg of vitamin C (<span class="f">C<sub>6</sub>H<sub>8</sub>O<sub>6</sub></span>) is 2.84 millimoles.</div><div class="eq">0.500 g ÷ 176.12 g/mol = 0.00284 mol</div></div>
+      <div class="use" style="border:0"><div class="where">Iron supplements</div><div class="what">Iron(II) sulfate, <span class="f">FeSO<sub>4</sub></span>, is 36.8% iron by mass.</div><div class="eq">55.85 ÷ 151.90 × 100 = 36.8%</div></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>“Ready?” points back, not forward.</b> Each check names the exact section to review, including Chapter 0. The glance strip doubles as the chapter’s formula sheet (it also lives in Tools), written in words first, symbols second.</div>
+    <div class="notes"><span class="why">research</span><br><b>The longer parts sit below the lessons.</b> The Lab link, the chapter at a glance (also the chapter’s formula sheet in Tools) and real uses stay, under the topic page instead of above it. The mole map is the chapter’s one picture: every trip goes through moles, the bridge beginners most often miss.</div>
   </div>
 
   <div class="board">
     <div class="label">Section · Learn tab</div>
     <div class="phone">
-      <div class="back">Chapter 3</div>
-      <div class="eyebrow">Chapter 3 · §3.1</div>
-      <div class="title">Formula Mass and the Mole Concept</div>
-      <div class="jp">式量とモル</div>
+      <div class="back">Chapter 4</div>
+      <div class="eyebrow">Chapter 4 · §4.1</div>
+      <div class="title">The Mole and Molar Mass</div>
+      <div class="jp">モルとモル質量</div>
+      <div class="trot" style="margin:6px 0 0">In your book: Tro 2.9, 3.8</div>
       <div class="levels"><span class="on">Learn</span><span>Simple</span><span>Medium</span><span>Hard</span></div>
       <p class="p" style="font-size:16.5px;line-height:27px">You can’t count atoms one by one, so you count them by weighing. One <span class="gl">mole</span> of anything is 6.022 × 10<sup>23</sup> of it, the way one dozen is 12.</p>
 
@@ -415,11 +447,11 @@
       </div>
 
       <div class="head"><span class="eyebrow">Where it shows up</span></div>
-      <div class="maprow"><span class="num">3.3</span><div><div class="rowtitle" style="font-size:15px">Molarity</div><div class="asks">Moles per litre starts here.</div></div></div>
-      <div class="maprow"><span class="num">4.3</span><div><div class="rowtitle" style="font-size:15px">Reaction Stoichiometry</div><div class="asks">Every recipe calculation goes through moles.</div></div></div>
-      <div class="maprow"><span class="num">9.2</span><div><div class="rowtitle" style="font-size:15px">The Ideal Gas Law</div><div class="asks">The n in PV = nRT is moles.</div></div></div>
+      <div class="maprow"><span class="num">5.2</span><div><div class="rowtitle" style="font-size:15px">Reaction Stoichiometry</div><div class="asks">Every recipe calculation goes through moles.</div></div></div>
+      <div class="maprow"><span class="num">6.1</span><div><div class="rowtitle" style="font-size:15px">Molarity and Dilution</div><div class="asks">Moles per litre starts here.</div></div></div>
+      <div class="maprow"><span class="num">7.3</span><div><div class="rowtitle" style="font-size:15px">The Ideal Gas Law</div><div class="asks">The n in PV = nRT is moles.</div></div></div>
     </div>
-    <div class="notes"><span class="why">research</span><br><b>Same section page as BYE Math</b> (Learn, then Simple / Medium / Hard; the problems wait). The Learn tab adds a chemistry-only part: one quantity shown three ways (what you see, the particles, the symbols), because beginners lose their place moving between those levels.</div>
+    <div class="notes"><span class="why">research</span><br><b>Same section page as BYE Math</b> (Learn, then Simple / Medium / Hard; the problems wait), with the matching Tro sections under the title. The Learn tab adds a chemistry-only part: one quantity shown three ways (what you see, the particles, the symbols), because beginners lose their place moving between those levels.</div>
   </div>
 </section>
 
@@ -440,12 +472,12 @@
       <p class="sub">Mix things, heat them, squeeze them. Nothing breaks, nothing spills.</p>
 
       <div class="head"><span class="eyebrow">Sandboxes</span><span class="meta">free play + challenges</span></div>
-      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="plus">+</span><span class="ball H">H</span><span class="ball H">H</span></div><div class="body"><div class="t">Mix and react</div><div class="s">Fill a box, react it, see what’s left over</div><div class="tags"><span class="tag">Ch 3–4</span><span class="tag">4 challenges</span></div></div><span class="chev"></span></div>
-      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="dotp"></span><span class="dotp"></span><span class="dotp"></span><span class="dotp"></span></div><div class="body"><div class="t">Gas in a box</div><div class="s">Heat it, squeeze it, add more: watch the pressure</div><div class="tags"><span class="tag">Ch 9</span><span class="tag">5 challenges</span></div></div><span class="chev"></span></div>
-      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball C">C</span><span class="ball O">O</span><span class="ball O">O</span></div><div class="body"><div class="t">Build a molecule</div><div class="s">Snap atoms together; it tells you when every atom is happy</div><div class="tags"><span class="tag">Ch 2, 7</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
-      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="cube"></span><span class="plus">→</span><span class="drop"></span></div><div class="body"><div class="t">Heat it up</div><div class="s">Melt, boil and freeze; see the particles speed up</div><div class="tags"><span class="tag">Ch 1, 10</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
-      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ion na">+</span><span class="ion cl">−</span><span class="ball O">O</span></div><div class="body"><div class="t">Dissolve it</div><div class="s">Drop salt in water and watch the ions pull apart</div><div class="tags"><span class="tag">Ch 11</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
-      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="ball H">H</span><span class="ball C">C</span></div><div class="body"><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it</div><div class="tags"><span class="tag">Ch 3</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="plus">+</span><span class="ball H">H</span><span class="ball H">H</span></div><div class="body"><div class="t">Mix and react</div><div class="s">Fill a box, react it, see what’s left over</div><div class="tags"><span class="tag">Ch 4–5</span><span class="tag">4 challenges</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="dotp"></span><span class="dotp"></span><span class="dotp"></span><span class="dotp"></span></div><div class="body"><div class="t">Gas in a box</div><div class="s">Heat it, squeeze it, add more: watch the pressure</div><div class="tags"><span class="tag">Ch 7</span><span class="tag">5 challenges</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball C">C</span><span class="ball O">O</span><span class="ball O">O</span></div><div class="body"><div class="t">Build a molecule</div><div class="s">Snap atoms together; it tells you when every atom is happy</div><div class="tags"><span class="tag">Ch 3, 9</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="cube"></span><span class="plus">→</span><span class="drop"></span></div><div class="body"><div class="t">Heat it up</div><div class="s">Melt, boil and freeze; see the particles speed up</div><div class="tags"><span class="tag">Ch 8, 13</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ion na">+</span><span class="ion cl">−</span><span class="ball O">O</span></div><div class="body"><div class="t">Dissolve it</div><div class="s">Drop salt in water and watch the ions pull apart</div><div class="tags"><span class="tag">Ch 6, 14</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
+      <div class="labrow"><div class="labmini" aria-hidden="true"><span class="ball O">O</span><span class="ball H">H</span><span class="ball C">C</span></div><div class="body"><div class="t">Lab balance</div><div class="s">Weigh anything; the molecule counter climbs with it</div><div class="tags"><span class="tag">Ch 4</span><span class="tag">Soon</span></div></div><span class="chev"></span></div>
     </div>
     <div class="notes"><span class="why">research</span><br><b>Free play, with a nudge.</b> Simulations help, but studies of PhET-style sims found that play alone often isn’t enough: learners do better with a goal. So every sandbox opens in free play and offers short “Try this” challenges, and each one links to the chapter that explains what you just saw.</div>
   </div>
@@ -494,7 +526,7 @@
       <input type="range" id="gV" min="1" max="3" step="0.1" value="2" class="slider">
       <label class="fl" for="gN">Amount <b id="gNv"></b></label>
       <input type="range" id="gN" min="10" max="60" step="5" value="30" class="slider">
-      <p class="small" style="margin-top:12px">Each dot stands for 0.002 mol; a real box holds about 10<sup>22</sup> molecules. Pressure uses PV = nRT, taught in <span class="g">§9.2</span>.</p>
+      <p class="small" style="margin-top:12px">Each dot stands for 0.002 mol; a real box holds about 10<sup>22</sup> molecules. Pressure uses PV = nRT, taught in <span class="g">§7.3</span>.</p>
       <div class="chall"><div class="ck">Try this</div><div>Double the pressure without adding any gas. (Two ways work.)</div></div>
     </div>
     <div class="notes"><b>Pressure you can see.</b> Hotter particles move faster and hit the walls more often; a smaller box means more hits too. The wall-hit counter is the kid-friendly version of pressure, and the gauge is the real number from PV = nRT. With Reduce Motion on, the particles stand still and the numbers still update.</div>
@@ -562,7 +594,7 @@
         <span class="arrow">→</span>
         <div class="out" id="molOut" aria-live="polite"></div>
       </div>
-      <p class="small" style="margin-top:10px">Masses are rounded standard atomic weights. Your class table may differ in the last digit. Taught in <span class="g">§3.1 Formula Mass and the Mole Concept</span>.</p>
+      <p class="small" style="margin-top:10px">Masses are rounded standard atomic weights. Your class table may differ in the last digit. Taught in <span class="g">§4.1 The Mole and Molar Mass</span>.</p>
     </div>
     <div class="notes"><b>Shows the adding-up, not just the total.</b> Every atom, its count and its mass, so the tool teaches while it answers. A typo gets a plain message (“Element symbols start with a capital letter”), not a blank.</div>
   </div>
@@ -577,37 +609,46 @@
       <div class="key"><span><i style="background:#fffdf8"></i>metal</span><span><i style="background:#eaf0f6"></i>nonmetal</span><span><i style="background:#f1eee6"></i>metalloid</span><span><i style="background:#eee9f3"></i>noble gas</span></div>
       <div class="card" id="elCard" aria-live="polite"></div>
     </div>
-    <div class="notes"><b>Every tile carries its symbol, and the card says the family in words</b>, so colour is never the only clue. Electron configurations come from the filling order, with the two exceptions in this range (Cr and Cu) handled. Taught in Chapters 2 and 6.</div>
+    <div class="notes"><b>Every tile carries its symbol, and the card says the family in words</b>, so colour is never the only clue. Electron configurations come from the filling order, with the two exceptions in this range (Cr and Cu) handled. Taught in Chapters 2 and 11.</div>
   </div>
 </section>
 
 <!-- ───────── Full chapter map ───────── -->
-<div class="rowhead"><h2>4 · The full chapter map</h2><span>Section titles checked against openstax.org; plain questions are ours</span></div>
+<div class="rowhead"><h2>4 · The full chapter map</h2><span>Our own order, with where each chapter is in Tro 6e. All titles and questions are ours.</span></div>
 <section class="map">
   <div class="wrap">
     <table class="cm">
-      <thead><tr><th>Ch</th><th>Chapter, and the question it answers</th><th>Sections</th><th>Course</th></tr></thead>
+      <thead><tr><th>Ch</th><th>Chapter, and the question it answers</th><th>Sections</th><th>In Tro 6e</th><th>Course</th></tr></thead>
       <tbody>
-        <tr><td class="n">0</td><td class="ti"><b>Maths for Chemistry</b><span>The few maths moves chemistry uses, refreshed (BYE Chem’s own chapter)</span></td><td class="secs">0.1 Powers of Ten · 0.2 Ratios, Rates and Percent · 0.3 Rearranging a Formula · 0.4 Units Travel With Numbers</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">1</td><td class="ti"><b>Essential Ideas</b><span>What is matter, and how do we measure it honestly?</span></td><td class="secs">1.1 Chemistry in Context · 1.2 Phases and Classification of Matter · 1.3 Physical and Chemical Properties · 1.4 Measurements · 1.5 Measurement Uncertainty, Accuracy, and Precision · 1.6 Mathematical Treatment of Measurement Results</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">2</td><td class="ti"><b>Atoms, Molecules, and Ions</b><span>What is everything made of, and how do we write and name it?</span></td><td class="secs">2.1 Early Ideas in Atomic Theory · 2.2 Evolution of Atomic Theory · 2.3 Atomic Structure and Symbolism · 2.4 Chemical Formulas · 2.5 The Periodic Table · 2.6 Ionic and Molecular Compounds · 2.7 Chemical Nomenclature</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">3</td><td class="ti"><b>Composition of Substances and Solutions</b><span>How do you count atoms you can’t see?</span></td><td class="secs">3.1 Formula Mass and the Mole Concept · 3.2 Determining Empirical and Molecular Formulas · 3.3 Molarity · 3.4 Other Units for Solution Concentrations</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">4</td><td class="ti"><b>Stoichiometry of Chemical Reactions</b><span>How much do you get from how much you use?</span></td><td class="secs">4.1 Writing and Balancing Chemical Equations · 4.2 Classifying Chemical Reactions · 4.3 Reaction Stoichiometry · 4.4 Reaction Yields · 4.5 Quantitative Chemical Analysis</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">5</td><td class="ti"><b>Thermochemistry</b><span>How much heat does a reaction give off or take in?</span></td><td class="secs">5.1 Energy Basics · 5.2 Calorimetry · 5.3 Enthalpy</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">6</td><td class="ti"><b>Electronic Structure and Periodic Properties of Elements</b><span>Where are an atom’s electrons, and why does the table repeat?</span></td><td class="secs">6.1 Electromagnetic Energy · 6.2 The Bohr Model · 6.3 Development of Quantum Theory · 6.4 Electronic Structure of Atoms (Electron Configurations) · 6.5 Periodic Variations in Element Properties</td><td><span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">7</td><td class="ti"><b>Chemical Bonding and Molecular Geometry</b><span>Why do atoms stick together, and what shape do they make?</span></td><td class="secs">7.1 Ionic Bonding · 7.2 Covalent Bonding · 7.3 Lewis Symbols and Structures · 7.4 Formal Charges and Resonance · 7.5 Strengths of Ionic and Covalent Bonds · 7.6 Molecular Structure and Polarity</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">8</td><td class="ti"><b>Advanced Theories of Covalent Bonding</b><span>What does a bond look like up close?</span></td><td class="secs">8.1 Valence Bond Theory · 8.2 Hybrid Atomic Orbitals · 8.3 Multiple Bonds · 8.4 Molecular Orbital Theory</td><td><span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">9</td><td class="ti"><b>Gases</b><span>How do pressure, volume and temperature push on each other?</span></td><td class="secs">9.1 Gas Pressure · 9.2 Relating Pressure, Volume, Amount, and Temperature: The Ideal Gas Law · 9.3 Stoichiometry of Gaseous Substances, Mixtures, and Reactions · 9.4 Effusion and Diffusion of Gases · 9.5 The Kinetic-Molecular Theory · 9.6 Non-Ideal Gas Behavior</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">10</td><td class="ti"><b>Liquids and Solids</b><span>What holds liquids and solids together?</span></td><td class="secs">10.1 Intermolecular Forces · 10.2 Properties of Liquids · 10.3 Phase Transitions · 10.4 Phase Diagrams · 10.5 The Solid State of Matter · 10.6 Lattice Structures in Crystalline Solids</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">11</td><td class="ti"><b>Solutions and Colloids</b><span>What happens when something dissolves?</span></td><td class="secs">11.1 The Dissolution Process · 11.2 Electrolytes · 11.3 Solubility · 11.4 Colligative Properties · 11.5 Colloids</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span></td></tr>
-        <tr><td class="n">13</td><td class="ti"><b>Fundamental Equilibrium Concepts</b><span>Why do some reactions stop partway? (1A: a first look at 13.1–13.3)</span></td><td class="secs">13.1 Chemical Equilibria · 13.2 Equilibrium Constants · 13.3 Shifting Equilibria: Le Chatelier’s Principle · 13.4 Equilibrium Calculations</td><td><span class="tag a1">Chem 1A · first look</span> <span class="tag b1">Chem 1B</span></td></tr>
-        <tr><td class="n">20</td><td class="ti"><b>Organic Chemistry</b><span>What can carbon build? (1A: a first look)</span></td><td class="secs">20.1 Hydrocarbons · 20.2 Alcohols and Ethers · 20.3 Aldehydes, Ketones, Carboxylic Acids, and Esters · 20.4 Amines and Amides</td><td><span class="tag a1">Chem 1A · first look</span></td></tr>
-        <tr class="later"><td class="n">12</td><td class="ti"><b>Kinetics</b><span>How fast does a reaction go, and why?</span></td><td class="secs">12.1–12.7 (7 sections)</td><td><span class="tag b1">Chem 1B</span></td></tr>
-        <tr class="later"><td class="n">14–19</td><td class="ti"><b>Acid–Base Equilibria · Other Equilibria · Thermodynamics · Electrochemistry · Representative Elements · Transition Metals</b><span>The second semester</span></td><td class="secs">14.1–14.7 · 15.1–15.3 · 16.1–16.4 · 17.1–17.7 · 18.1–18.12 · 19.1–19.3</td><td><span class="tag b1">Chem 1B</span></td></tr>
-        <tr class="later"><td class="n">21</td><td class="ti"><b>Nuclear Chemistry</b><span>What happens inside the nucleus?</span></td><td class="secs">21.1–21.6 (6 sections)</td><td><span class="tag b1">Chem 1B</span></td></tr>
+        <tr><td class="n">0</td><td class="ti"><b>Maths for Chemistry</b><span>Can you read 7 × 10<sup>21</sup> and work with it?</span></td><td class="secs">0.1 Powers of Ten · 0.2 Ratios, Rates and Percent · 0.3 Rearranging a Formula · 0.4 Units Travel With Numbers · 0.5 Logarithms · 0.6 Solving a Quadratic · 0.7 Straight-Line Graphs</td><td class="secs">Appendix I, parts of 1.8–1.9</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">1</td><td class="ti"><b>Matter and Measurement</b><span>What is stuff made of, and how do we measure it honestly?</span></td><td class="secs">1.1 What Chemistry Looks At · 1.2 Sorting Matter · 1.3 Changes and Properties · 1.4 Energy, a First Look · 1.5 Units and Prefixes · 1.6 Density · 1.7 How Sure Is a Number? · 1.8 Converting Units Step by Step · 1.9 Reading Data</td><td class="secs">ch. 1</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">2</td><td class="ti"><b>Atoms and Elements</b><span>What is everything made of, and how do we know?</span></td><td class="secs">2.1 Atoms Are Real · 2.2 The Laws That Pointed to Atoms · 2.3 Inside the Atom · 2.4 Protons, Neutrons and Electrons · 2.5 The Periodic Table, a First Map · 2.6 Atomic Mass</td><td class="secs">2.1–2.8</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">3</td><td class="ti"><b>Compounds: Formulas and Names</b><span>How do atoms join up, and how do we write and name what they make?</span></td><td class="secs">3.1 Bonds, a First Look · 3.2 Writing Formulas and Models · 3.3 Naming Ionic Compounds · 3.4 Naming Molecular Compounds and Acids · 3.5 Carbon Compounds, a First Look</td><td class="secs">3.1–3.7, 3.11</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">4</td><td class="ti"><b>Counting by Weighing: the Mole</b><span>Atoms are too small to count, so how do chemists count them?</span></td><td class="secs">4.1 The Mole and Molar Mass · 4.2 Percent Composition · 4.3 Finding a Formula From Masses</td><td class="secs">2.9, 3.8–3.10</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">5</td><td class="ti"><b>Reactions and How Much</b><span>How much do you get from how much you use?</span></td><td class="secs">5.1 Writing and Balancing Equations · 5.2 Reaction Stoichiometry · 5.3 Limiting Reactant and Yield · 5.4 Three Reactions to Know</td><td class="secs">ch. 4</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">6</td><td class="ti"><b>Reactions in Water</b><span>What happens when you mix two clear liquids and something appears?</span></td><td class="secs">6.1 Molarity and Dilution · 6.2 Solution Stoichiometry · 6.3 What Dissolves · 6.4 Precipitation Reactions · 6.5 Molecular, Ionic and Net Ionic Equations · 6.6 Acid–Base Reactions and Titrations · 6.7 pH, a First Look · 6.8 Gas-Evolution Reactions · 6.9 Oxidation and Reduction</td><td class="secs">ch. 5, 17.5 (first look)</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">7</td><td class="ti"><b>Gases</b><span>Why does a sealed bag of chips puff up on a mountain?</span></td><td class="secs">7.1 Pressure · 7.2 The Simple Gas Laws · 7.3 The Ideal Gas Law · 7.4 Molar Volume, Density and Molar Mass of a Gas · 7.5 Gas Mixtures and Partial Pressures · 7.6 Gases in Reactions · 7.7 Why Gases Behave This Way · 7.8 Diffusion and Effusion · 7.9 Real Gases</td><td class="secs">ch. 6</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">8</td><td class="ti"><b>Energy in Reactions</b><span>Why does a hand warmer get hot?</span></td><td class="secs">8.1 Energy, Heat and Work · 8.2 The First Law · 8.3 Heat and Temperature · 8.4 Calorimetry · 8.5 Enthalpy · 8.6 Working With ΔH · 8.7 ΔH From Formation Enthalpies · 8.8 Energy and the Environment</td><td class="secs">ch. 7</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">9</td><td class="ti"><b>Bonds and Shapes</b><span>Why is water bent and carbon dioxide straight?</span></td><td class="secs">9.1 Valence Electrons and Lewis Dots · 9.2 Lewis Structures · 9.3 Electronegativity and Polar Bonds · 9.4 Resonance and Formal Charge · 9.5 Breaking the Octet Rule · 9.6 Molecular Shapes (VSEPR) · 9.7 Shape and Polarity</td><td class="secs">10.1–10.3, 10.5–10.9, 11.1–11.5</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">10</td><td class="ti"><b>Light and the Electron</b><span>Why do fireworks glow in different colours?</span></td><td class="secs">10.1 Light: Wave and Particle · 10.2 Atomic Spectra and the Bohr Model · 10.3 Electrons as Waves · 10.4 Quantum Numbers and Orbitals · 10.5 Orbital Shapes</td><td class="secs">ch. 8</td><td><span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">11</td><td class="ti"><b>The Periodic Table Explained</b><span>Why does the table have the shape it has?</span></td><td class="secs">11.1 Electron Configurations · 11.2 Configurations and the Table's Shape · 11.3 Atomic Size · 11.4 Ions and Ionization Energy · 11.5 Electron Affinity and Metallic Character</td><td class="secs">ch. 9</td><td><span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">12</td><td class="ti"><b>Why Bonds Form</b><span>What really holds atoms together, and how strongly?</span></td><td class="secs">12.1 Ionic Bonds and Lattice Energy · 12.2 Bond Energies and Bond Lengths · 12.3 Bonding in Metals · 12.4 Bonds as Overlapping Orbitals · 12.5 Hybridization · 12.6 Molecular Orbitals</td><td class="secs">10.4, 10.10, 10.11, 11.6–11.8</td><td><span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">13</td><td class="ti"><b>Liquids, Solids and the Forces Between Molecules</b><span>Why does water boil at 100 °C but methane at −162 °C?</span></td><td class="secs">13.1 Solids, Liquids and Gases Compared · 13.2 Intermolecular Forces · 13.3 Forces at Work · 13.4 Evaporation and Vapor Pressure · 13.5 Melting, Freezing and the Heating Curve · 13.6 Phase Diagrams · 13.7 Water, an Unusual Liquid</td><td class="secs">ch. 12</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">14</td><td class="ti"><b>Solutions</b><span>Why shouldn't you drink seawater?</span></td><td class="secs">14.1 Why Things Dissolve · 14.2 The Energy of Dissolving · 14.3 Solubility, Heat and Pressure · 14.4 More Ways to Say Concentration · 14.5 Colligative Properties · 14.6 Ionic Solutions Count Double · 14.7 Colloids</td><td class="secs">ch. 14</td><td><span class="tag intro">Intro</span> <span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">15</td><td class="ti"><b>Solids and Materials</b><span>Why is diamond hard and graphite soft, when both are pure carbon?</span></td><td class="secs">15.1 Seeing Inside Crystals · 15.2 Unit Cells · 15.3 Kinds of Crystalline Solids · 15.4 Network Solids: Carbon and Silicates · 15.5 Ceramics, Cement and Glass · 15.6 Semiconductors · 15.7 Polymers and Plastics</td><td class="secs">ch. 13</td><td><span class="tag a1">Chem 1A</span> <span class="tag ap">AP</span></td></tr>
+        <tr><td class="n">16</td><td class="ti"><b>Carbon Compounds</b><span>Why can carbon build millions of compounds?</span></td><td class="secs">16.1 Why Carbon Is Special · 16.2 Hydrocarbons and How to Draw Them · 16.3 Alkanes and Their Names · 16.4 Alkenes and Alkynes · 16.5 Reactions of Hydrocarbons · 16.6 Aromatic Rings · 16.7 Functional Groups</td><td class="secs">ch. 22</td><td><span class="tag a1">Chem 1A</span></td></tr>
+        <tr class="later"><td class="n">17</td><td class="ti"><b>How Fast: Kinetics</b><span>Why does milk sour faster on the counter than in the fridge?</span></td><td class="secs">17.1 Reaction Rates · 17.2 Rate Laws · 17.3 Rate Over Time and Half-Life · 17.4 Temperature and Activation Energy · 17.5 Reaction Mechanisms · 17.6 Catalysts</td><td class="secs">ch. 15</td><td><span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr class="later"><td class="n">18</td><td class="ti"><b>Equilibrium</b><span>Why do some reactions stop halfway?</span></td><td class="secs">18.1 Dynamic Equilibrium · 18.2 The Equilibrium Constant · 18.3 K for Gases, Solids and Liquids · 18.4 Calculating K · 18.5 Q: Which Way Will It Go? · 18.6 Finding Equilibrium Amounts · 18.7 Le Châtelier's Principle</td><td class="secs">ch. 16</td><td><span class="tag a1">Chem 1A</span> <span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr class="later"><td class="n">19</td><td class="ti"><b>Acids and Bases</b><span>Why does an antacid calm heartburn?</span></td><td class="secs">19.1 What Acids and Bases Are · 19.2 Acid Strength and K<sub>a</sub> · 19.3 Water, pH and pOH · 19.4 pH of Strong and Weak Acids · 19.5 Bases · 19.6 Salts That Are Acidic or Basic · 19.7 Polyprotic Acids · 19.8 Acid Strength and Structure · 19.9 Lewis Acids and Bases</td><td class="secs">ch. 17</td><td><span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr class="later"><td class="n">20</td><td class="ti"><b>Buffers, Titrations and Solubility</b><span>How does your blood keep its pH steady?</span></td><td class="secs">20.1 Buffers · 20.2 Buffer Range and Capacity · 20.3 Titration Curves · 20.4 Solubility and K<sub>sp</sub> · 20.5 Will It Precipitate? · 20.6 Qualitative Analysis · 20.7 Complex Ions</td><td class="secs">ch. 18</td><td><span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr class="later"><td class="n">21</td><td class="ti"><b>Entropy and Free Energy</b><span>Why does ice melt on its own at room temperature, but not in the freezer?</span></td><td class="secs">21.1 Changes That Happen on Their Own · 21.2 Entropy and the Second Law · 21.3 Entropy and Changes of State · 21.4 The Surroundings Count Too · 21.5 Gibbs Free Energy · 21.6 ΔS° for Reactions · 21.7 ΔG° for Reactions · 21.8 ΔG Away From Standard Conditions · 21.9 ΔG° and K</td><td class="secs">ch. 19</td><td><span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr class="later"><td class="n">22</td><td class="ti"><b>Electrochemistry</b><span>How does a battery push electrons?</span></td><td class="secs">22.1 Balancing Redox Equations · 22.2 Voltaic Cells · 22.3 Standard Electrode Potentials · 22.4 Cell Potential, ΔG and K · 22.5 Concentration and Cell Potential · 22.6 Batteries · 22.7 Electrolysis · 22.8 Corrosion</td><td class="secs">ch. 20</td><td><span class="tag b1">Chem 1B</span> <span class="tag ap">AP</span></td></tr>
+        <tr class="later"><td class="n">23</td><td class="ti"><b>Nuclear Chemistry</b><span>How does a doctor see inside you with a radioactive tracer?</span></td><td class="secs">23.1 Radioactivity and Its Kinds · 23.2 Which Nuclei Decay? · 23.3 Detecting Radiation · 23.4 Half-Life and Dating · 23.5 Fission and Nuclear Power · 23.6 Mass Defect and Binding Energy · 23.7 Fusion · 23.8 Making New Elements · 23.9 Radiation, Life and Medicine</td><td class="secs">ch. 21 (not in the current AP course)</td><td><span class="tag b1">Chem 1B</span></td></tr>
+        <tr class="later"><td class="n">24</td><td class="ti"><b>Elements Up Close: Nonmetals and Metals</b><span>Where do the elements we use come from, and what are they like?</span></td><td class="secs">24.1 Main-Group Bonding and Properties · 24.2 Silicon, Boron and Carbon · 24.3 Nitrogen, Phosphorus, Oxygen and Sulfur · 24.4 The Halogens · 24.5 Metals: Properties and Sources · 24.6 From Ore to Metal · 24.7 Metal Structures and Alloys</td><td class="secs">ch. 24, 25.1–25.4</td><td><span class="tag b1">Chem 1B</span></td></tr>
+        <tr class="later"><td class="n">25</td><td class="ti"><b>Transition Metals and Coordination Compounds</b><span>Why are rubies red and emeralds green?</span></td><td class="secs">25.1 Transition Metals · 25.2 Coordination Compounds and Their Names · 25.3 Structure and Isomers · 25.4 Bonding and Colour · 25.5 Uses of Coordination Compounds</td><td class="secs">25.5, ch. 26</td><td><span class="tag b1">Chem 1B</span></td></tr>
       </tbody>
     </table>
-    <p class="src">Course tags from the <a href="https://curriculum.pasadena.edu/course-descriptions/chem/chem.pdf">PCC chemistry catalog</a> (CHEM 022 → 001A → 001B) and the C-ID descriptors <a href="https://data-c-idsystem.org/descriptors/final/show/432">CHEM 101</a> and <a href="https://data-c-idsystem.org/descriptors/final/show/297">CHEM 110</a>. Section titles are OpenStax <i>Chemistry 2e</i>’s, each checked against its openstax.org page; all wording in BYE Chem is our own. The Intro tag marks chapters a first course touches at a gentler level; within a section, Simple stays at that level. Chapter 5 is tagged for 1A from PCC’s calorimetry lab work; C-ID CHEM 110 itself doesn’t list thermochemistry.</p>
+    <p class="src">Order and sections from <b>docs/chapter-map.md</b>. Every section of Tro, <i>Chemistry: A Molecular Approach</i>, 6th ed. (the class book) is placed in a chapter here, except Biochemistry (Tro ch. 23), which no target course covers yet. Course tags from the <a href="https://curriculum.pasadena.edu/course-descriptions/chem/chem.pdf">PCC chemistry catalog</a> (CHEM 022 → 001A → 001B) and the C-ID descriptors <a href="https://data-c-idsystem.org/descriptors/final/show/432">CHEM 101</a> and <a href="https://data-c-idsystem.org/descriptors/final/show/297">CHEM 110</a>. AP tags are ours, by unit of the <a href="https://apcentral.collegeboard.org/courses/ap-chemistry">AP Chemistry course</a> (2024 units); the book has no AP mapping. The Intro tag marks sections a first course touches at a gentler level; within a section, Simple stays at that level.</p>
   </div>
 </section>
 
@@ -707,7 +748,7 @@
     document.getElementById('el' + e[0]).classList.add('pick');
     card.innerHTML = `<div class="row"><span class="sym">${e[1]}</span><div><div class="nm">${e[2]}</div><div class="small">Atomic number ${e[0]} · ${FAMILY[e[6]]}</div></div></div>
       <dl><dt>Molar mass</dt><dd>${e[3]} g/mol</dd><dt>Electrons</dt><dd>${config(e[0])}</dd><dt>Row, group</dt><dd>Period ${e[5]}, group ${e[4]}</dd></dl>
-      <p class="small" style="margin-top:10px">Electron configurations are taught in <span class="g">§6.4</span>; the table itself in <span class="g">§2.5</span>.</p>`;
+      <p class="small" style="margin-top:10px">Electron configurations are taught in <span class="g">§11.1</span>; the table itself in <span class="g">§2.5</span>.</p>`;
   }
   EL.forEach(e => {
     const b = document.createElement('button');

@@ -4,12 +4,15 @@ A chemistry learning app and website for everyone, from complete beginners and r
 
 ## Status (keep this current)
 - **No app code yet.** This repo holds the research, design guide, mockups and rules. The Expo app gets scaffolded here only when the user says go.
-- **On hold:** the user is collecting chem students' feedback (from the demo site's five questions) on what would help them. **Build nothing new, in the app or in BYE Chem Engine, until the user brings that feedback and says go.**
+- **Content base (2026-11-07):** the friend's class book, Tro, *Chemistry: A Molecular Approach*, AP Edition, 6th ed., used for references only (see Content). BYE Chem follows **our own beginner order** in `docs/chapter-map.md`, with the matching Tro sections on every chapter and section. The user chose this order over Tro's.
+- **Waiting on the user:** they review `docs/chapter-map.md` and the updated `design/chem-chapters.html`. **Build no app code, and change nothing in BYE Chem Engine, until the user says go.**
 - **Demo site:** live at https://bye-chem-preview.byelabs.workers.dev (own Worker `bye-chem-preview`). It is still built from BYE-Math_app's `chem-sample` worktree (`npm run build:chem-preview`, then `npm run deploy:chem-preview` only on the user's go), because `/lab-demo` runs inside the BYE Math app. It moves here once this app exists.
 - **Engine:** `../BYE-Chem_engine`. Piece 1 (the `molecule3d` viewer) is built; an independent review's fixes wait for the go. See its AGENTS.md.
 - **One piece at a time:** the user reviews each piece before the next starts.
 
 ## Where things are
+- `docs/chapter-map.md`: **the chapter map**, our order. Each chapter and section has its question, Tro sections, level tags (Intro / 1A / 1B / AP), "Ready? You need" prerequisites, and Lab links. It also has the class-order table for *I'm taking Chem 1A*. Edit the map first; the mockup's map table is generated from it.
+- `docs/research/M-tro-6e-contents.md`: Tro 6e's 26 chapters and 229 sections (titles and pages only).
 - `docs/research/`: sourced research. Start with `README.md` (summary in `summary.html`). `L-lessons-from-bye-math.md` explains why each rule below exists. `first-pass.md` is the earliest overview.
 - `docs/design-guide.md` and `design/chem-design-guide.html`: the look, notation and figure rules.
 - `design/`: the HTML mockups. `chem-app-flow.html` has the liked topic page and flat particle diagram. `chem-chapters.html` has chapters, Lab and Tools. `chem-render-styles.html` and `chem-technical-styles.html` hold the 3D looks; Drafting table was chosen.
@@ -22,6 +25,7 @@ Before the first step of any task, sort its steps into this table and say in one
 | Work | Who | Model · effort |
 |---|---|---|
 | Builds, serving a build, step-throughs, content checks, typecheck, lint, benchmarks, screenshots | `runner` subagent | Haiku · low |
+| Reading textbook pages and listing their topics in our own words | `textbook-scan` subagent | Haiku · low |
 | Applying an already-decided change across many files, then running the checks | `pattern-editor` subagent | Sonnet · medium |
 | Writing Learn reads or problems in the house style from a written pattern | fresh session, **two at a time at most** | Sonnet · medium |
 | Design choices, chemistry correctness, debugging, anything surprising, reviewing a subagent's result, merges, deploys, pushes | main session | main model |
@@ -64,7 +68,14 @@ Install packages with `npx expo install <package>`, never npm/yarn add. Use Expo
 - **Notation spec first:** the chemistry notation spec and its example test file come **before** any content. It covers formulas, charges, oxidation states, states of matter, reaction arrows, units, significant figures, isotopes and electron configurations.
 
 ## Content
-- **All original:** every problem and read is written by us. OpenStax Chemistry 2e is used for chapter numbering and topic order only. Never paste OpenStax text into prompts or agents (it is CC BY-NC-SA).
+- **All original:** every problem, read and figure is written by us.
+- **The textbook:** Tro, *Chemistry: A Molecular Approach*, AP Edition, 6th ed. (Pearson, all rights reserved). It is used only for section references, coverage and topic lists.
+  - Never copy its wording, worked examples, exercises or figures.
+  - Never paste its pages into prompts for agents that write content.
+  - The PDF lives outside the repo, at `../resources/`; never commit it.
+  - It is a phone scan with no text layer. Render the pages you need with `pdftoppm -r 150 -f <first> -l <last> -png` into the scratchpad and read the images. PDF page = printed page + 32 in chapter 1 (check near the page you need).
+  - The `textbook-scan` agent does this and reports in its own words.
+- **OpenStax Chemistry 2e** (CC BY-NC-SA) was the earlier reference. Don't paste its text into prompts either.
 - **Automatic checks fail on:** leaked markup, figures that don't validate, overlapping labels, and chemistry that code can check (unbalanced equations, wrong atom counts, molar masses, units).
 - **The default look:**
   - The topic page: a one-line promise, then "What this lets you do" with a particle picture, then "Ready? You need" with a review link, then numbered lessons.
