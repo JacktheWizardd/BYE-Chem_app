@@ -15,7 +15,7 @@ A chemistry learning app and website for everyone, from complete beginners and r
 - `docs/chapter-map.md`: **the chapter map**, our order. Each chapter and section has its question, Tro sections, level tags (Intro / 1A / 1B / AP), "Ready? You need" prerequisites, and Lab links. It also has the class-order table for *I'm taking Chem 1A*. Edit the map first; the mockup's map table is generated from it.
 - `docs/practice-layer.md`: **how learners practise**, ten rules backed by the research: answer first, "Check yourself" with unit-aware feedback, fading that follows the learner, spaced mixed review, a skill-based gap check, recall mode, and linked views. Every new page follows it.
 - `reports/` and `research_notes/`: research reports and the sourced notes behind them.
-- `docs/research/M-tro-6e-contents.md`: Tro 6e's 26 chapters and 229 sections (titles and pages only).
+- `docs/research/M-tro-6e-contents.md`: Tro 6e's 26 chapters and 229 sections, **as numbers and pages only**. This repo is public, so never commit the book's titles or text.
 - `docs/research/`: sourced research. Start with `README.md` (summary in `summary.html`). `L-lessons-from-bye-math.md` explains why each rule below exists. `first-pass.md` is the earliest overview.
 - `docs/design-guide.md` and `design/chem-design-guide.html`: the look, notation and figure rules.
 - `design/`: the HTML mockups. `chem-app-flow.html` has the liked topic page and flat particle diagram. `chem-chapters.html` has chapters, Lab and Tools. `chem-render-styles.html` and `chem-technical-styles.html` hold the 3D looks; Drafting table was chosen.
@@ -98,5 +98,5 @@ Install packages with `npx expo install <package>`, never npm/yarn add. Use Expo
 - **Check before stating:** check memory and the repo before saying what state something is in.
 
 ## Git
-- **Local commits only.** This repo has no remote yet; ask before pushing or creating one.
+- **GitHub:** `origin` is https://github.com/JacktheWizardd/BYE-Chem_app (public). Ask before pushing, and push only `main` after the checks pass.
 - **Stage files by path.** Write commit messages in plain words, describing what changed for the user.
