@@ -26,7 +26,16 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: BYE-Chem_app/package-lock.json
+          cache-dependency-path: |
+            BYE-Chem_app/package-lock.json
+            BYE-Chem_engine/package-lock.json
+            BYE-Math_engine/package-lock.json
+      # The engines are linked as TypeScript source, so they need their own packages installed too
+      # (exactly as on a developer's machine); Metro still bundles one React, from the app.
+      - run: npm ci
+        working-directory: BYE-Math_engine
+      - run: npm ci
+        working-directory: BYE-Chem_engine
       - run: npm ci
         working-directory: BYE-Chem_app
       - run: npm run check
