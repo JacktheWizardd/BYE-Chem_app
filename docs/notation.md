@@ -238,8 +238,8 @@ These are the characters, used in this page's examples or in `src/content`, that
 
 | Font | Missing |
 |---|---|
-| STIX Two Text | `→ ⇌` |
+| STIX Two Text | `→ ⇌ √` |
 | Zen Kaku Gothic New | `Δ ‡ ⇌` |
 | Shippori Mincho | `Δ ⇌` |
 
-So today ⇌ is in none of the three fonts, and STIX Two Text, the formula font, has no arrows at all. The resonance arrow ↔ is missing from all three as well; it is not in this table because it is used only in figures. Filling these gaps (for example with a small symbol font) is a design choice for the user. When a gap is filled, remove it from this table.
+So today ⇌ is in none of the three fonts, and STIX Two Text, the formula font, has no arrows at all. The square-root sign √ (U+221A, the quadratic formula in Section 0.6) is missing from STIX Two Text too, but Zen Kaku Gothic New has it. The resonance arrow ↔ is missing from all three as well; it is not in this table because it is used only in figures. Filling these gaps (for example with a small symbol font) is a design choice for the user. When a gap is filled, remove it from this table.
