@@ -1,9 +1,10 @@
+import { router } from 'expo-router';
 // Tool · Periodic table, periods 1–4: every tile carries its symbol, and the card names the family in words.
 import { ELEMENTS, type Element } from 'bye-chem-engine/chem';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Rich } from '@/components/Rich';
-import { Back, Plain, Screen, Small, Title } from '@/components/ui';
+import { BackButton, Page, Plain, Small, Title } from '@/components/ui';
 import { configuration, position } from '@/practice/table';
 import { color, font } from '@/theme';
 
@@ -19,8 +20,8 @@ const TILES = Object.values(ELEMENTS).filter((e) => e.z <= 36).map((e) => ({ e, 
 export default function PeriodicTable() {
   const [pick, setPick] = useState<Element>(ELEMENTS.C!);
   return (
-    <Screen>
-      <Back href="/?tab=tools" label="Tools" />
+    <Page>
+      <BackButton label="Tools" onPress={() => router.push('/?tab=tools')} />
       <Title size={30}>Periodic table</Title>
       <Plain>Tap an element. Swipe sideways across the table; periods 1–4 shown.</Plain>
       <ScrollView horizontal style={{ marginTop: 14 }} contentContainerStyle={{ width: 18 * (CELL + GAP), height: 4 * (CELL + 4 + GAP) }} accessibilityLabel="Periodic table, periods 1 to 4">
@@ -50,7 +51,7 @@ export default function PeriodicTable() {
         <Info k="Electrons" v={configuration(pick.z)} />
       </View>
       <Small style={{ marginTop: 12 }}>Electron configurations follow the filling order, with chromium and copper’s exceptions. Taught in Chapters 2 and 11.</Small>
-    </Screen>
+    </Page>
   );
 }
 

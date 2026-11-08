@@ -1,144 +1,367 @@
-// Shared pieces in the BYE look (design/chem-chapters.html).
-import { Link, type Href } from 'expo-router';
-import type { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Shared pieces. The press styles, Tabs, ListRow and buttons are BYE Math's (@ b49d14a,
+// src/components/ui.tsx); see docs/ui-guide.md §2. BYE Chem adds Page, Tags and the text styles.
+import { useEffect, useState, type ReactNode } from 'react';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
 import type { Level } from '@/content/types';
-import { color, font, MAX_WIDTH, PAD, TAP } from '@/theme';
+import { tap } from '@/components/feedback';
+import { enterFrom, SPRING } from '@/components/motion';
+import { usePage, useLayout } from '@/layout';
+import { color, font, space } from '@/theme';
 import { Rich } from './Rich';
 
-export function Screen({ children }: { children: ReactNode }) {
-  const inset = useSafeAreaInsets();
+export function Eyebrow({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+  return <Text style={[styles.eyebrow, style]}>{children}</Text>;
+}
+
+type PressProps = Omit<PressableProps, 'style' | 'children'> & {
+  style?: StyleProp<ViewStyle>;
+  children?: ReactNode;
+  /** The vibration on tap; null for none. */
+  haptic?: 'select' | 'press' | null;
+};
+
+/** Runs the tap's vibration, then the action. Fired on release, so starting a scroll on a row never buzzes. */
+const withTap = (onPress: PressableProps['onPress'], haptic: PressProps['haptic']): PressableProps['onPress'] =>
+  onPress &&
+  ((e) => {
+    if (haptic) tap(haptic);
+    onPress(e);
+  });
+
+/** A button that gives way as soon as a finger lands on it (4% smaller) and springs back on release. */
+export function PressScale({ style, children, onPress, haptic = 'press', ...rest }: PressProps) {
+  const scale = useSharedValue(1);
+  const anim = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   return (
-    <ScrollView style={s.scroll} contentContainerStyle={[s.content, { paddingTop: inset.top + 8, paddingBottom: inset.bottom + 48 }]} keyboardShouldPersistTaps="handled">
-      <View style={s.column}>{children}</View>
+    <Pressable
+      {...rest}
+      onPress={withTap(onPress, haptic)}
+      onPressIn={() => scale.set(withTiming(0.96, { duration: 90, easing: Easing.out(Easing.quad) }))}
+      onPressOut={() => scale.set(withSpring(1, SPRING))}
+    >
+      <Animated.View style={[style, anim]}>{children}</Animated.View>
+    </Pressable>
+  );
+}
+
+/** A row that tints the moment it's touched and fades back after. With a mouse it tints lightly on hover too. */
+export function PressTint({ style, children, onPress, haptic = 'press', ...rest }: PressProps) {
+  const tint = useSharedValue(0);
+  const hover = useSharedValue(0);
+  const anim = useAnimatedStyle(() => ({ opacity: Math.max(tint.get(), hover.get() * 0.7) }));
+  const live = !!onPress && !rest.disabled;
+  return (
+    <Pressable
+      {...rest}
+      onPress={withTap(onPress, haptic)}
+      onPressIn={() => tint.set(withTiming(1, { duration: 60 }))}
+      onPressOut={() => tint.set(withTiming(0, { duration: 260 }))}
+      onHoverIn={() => live && hover.set(withTiming(1, { duration: 90 }))}
+      onHoverOut={() => hover.set(withTiming(0, { duration: 160 }))}
+      style={style}
+    >
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.tint, anim]} />
+      {children}
+    </Pressable>
+  );
+}
+
+/** A quiet control (back, a link) that dims while held. */
+export function PressFade({ style, children, onPress, haptic = 'press', ...rest }: PressProps) {
+  const dim = useSharedValue(1);
+  const anim = useAnimatedStyle(() => ({ opacity: dim.get() }));
+  return (
+    <Pressable
+      {...rest}
+      onPress={withTap(onPress, haptic)}
+      onPressIn={() => dim.set(withTiming(0.5, { duration: 60 }))}
+      onPressOut={() => dim.set(withTiming(1, { duration: 200 }))}
+      onHoverIn={() => dim.set(withTiming(0.7, { duration: 90 }))}
+      onHoverOut={() => dim.set(withTiming(1, { duration: 160 }))}
+    >
+      <Animated.View style={[style, anim]}>{children}</Animated.View>
+    </Pressable>
+  );
+}
+
+/** Back to the parent page. On desktop the open sidebar does this job, so it isn't shown there. */
+export function BackButton({ label, onPress }: { label: string; onPress: () => void }) {
+  const { sidebar } = useLayout();
+  if (sidebar === 'open') return null;
+  return (
+    <PressFade onPress={onPress} accessibilityRole="button" accessibilityLabel={`Back to ${label}`} hitSlop={8} style={styles.back}>
+      <Svg width={20} height={14} viewBox="0 0 20 14" fill="none" stroke={color.ink2} strokeWidth={1.8} strokeLinecap="round">
+        <Path d="M19 7H2M7 1L1 7l6 6" />
+      </Svg>
+      <Text style={styles.backText}>{label}</Text>
+    </PressFade>
+  );
+}
+
+export function Chevron({ size = 16, stroke = color.ink }: { size?: number; stroke?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={2} strokeLinecap="round">
+      <Path d="M9 18l6-6-6-6" />
+    </Svg>
+  );
+}
+
+export function ArrowDown() {
+  return (
+    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={color.onInk} strokeWidth={2.4} strokeLinecap="round">
+      <Path d="M12 5v14M6 13l6 6 6-6" />
+    </Svg>
+  );
+}
+
+export interface TabItem {
+  key: string;
+  label: string;
+}
+
+/** Web: toggle buttons, because Safari on iPhone holds a tap on role "tab" for ~33 ms. The apps keep real tabs. */
+const WEB = Platform.OS === 'web';
+
+/** Text tabs: the active one in ink with a coral underline that slides between tabs, the rest in axis grey. */
+export function Tabs({
+  items,
+  active,
+  onChange,
+  size = 16,
+  gap = 26,
+  label,
+  hairline = true,
+  style,
+}: {
+  items: TabItem[];
+  active: string;
+  onChange: (key: string) => void;
+  size?: number;
+  gap?: number;
+  label: string;
+  hairline?: boolean;
+  style?: StyleProp<ViewStyle>;
+}) {
+  const [boxes, setBoxes] = useState<Record<string, { x: number; w: number }>>({});
+  const x = useSharedValue(0);
+  const w = useSharedValue(0);
+  const placed = useSharedValue(0);
+  const box = boxes[active];
+  const bx = box?.x;
+  const bw = box?.w;
+  useEffect(() => {
+    if (bx == null || bw == null) return;
+    if (placed.get() === 0) {
+      x.set(bx);
+      w.set(bw);
+      placed.set(1);
+    } else {
+      x.set(withSpring(bx, SPRING));
+      w.set(withSpring(bw, SPRING));
+    }
+  }, [bx, bw, x, w, placed]);
+  const underline = useAnimatedStyle(() => ({ opacity: placed.get(), width: w.get(), transform: [{ translateX: x.get() }] }));
+
+  return (
+    <View role={WEB ? 'group' : 'tablist'} accessibilityLabel={label} style={[styles.tabs, { gap }, hairline && styles.tabsLine, style]}>
+      {items.map((t) => {
+        const on = t.key === active;
+        return (
+          <Pressable
+            key={t.key}
+            role={WEB ? 'button' : 'tab'}
+            accessibilityState={WEB ? undefined : { selected: on }}
+            aria-pressed={WEB ? on : undefined}
+            onPress={() => {
+              if (on) return;
+              tap('select');
+              onChange(t.key);
+            }}
+            onLayout={(e) => {
+              const { x: lx, width } = e.nativeEvent.layout;
+              setBoxes((b) => (b[t.key]?.x === lx && b[t.key]?.w === width ? b : { ...b, [t.key]: { x: lx, w: width } }));
+            }}
+            style={styles.tab}
+          >
+            <Animated.Text
+              style={{
+                fontFamily: font.sansMedium,
+                fontSize: size,
+                lineHeight: size + 7,
+                color: on ? color.ink : color.axis,
+                transitionProperty: 'color',
+                transitionDuration: 180,
+              }}
+            >
+              {t.label}
+            </Animated.Text>
+          </Pressable>
+        );
+      })}
+      <Animated.View pointerEvents="none" style={[styles.underline, underline]} />
+    </View>
+  );
+}
+
+/** What a set of tabs shows. When the tab changes, the new content comes in from the side of the tab you went to. */
+export function TabPanel({ tab, order, children }: { tab: string; order: readonly string[]; children: ReactNode }) {
+  const [shown, setShown] = useState(tab);
+  const [dir, setDir] = useState(0);
+  if (tab !== shown) {
+    setShown(tab);
+    setDir(Math.sign(order.indexOf(tab) - order.indexOf(shown)) || 1);
+  }
+  return (
+    <Animated.View key={tab} entering={dir ? enterFrom(dir) : undefined}>
+      {children}
+    </Animated.View>
+  );
+}
+
+/** A list row: serif numeral, title, meta. Rows that aren't written yet are greyed and inert. */
+export function ListRow({
+  n,
+  numeralWidth = 30,
+  minHeight = 60,
+  enabled,
+  onPress,
+  children,
+  meta,
+  last,
+}: {
+  n: string;
+  numeralWidth?: number;
+  minHeight?: number;
+  enabled: boolean;
+  onPress?: () => void;
+  children: ReactNode;
+  meta?: string;
+  last?: boolean;
+}) {
+  return (
+    <PressTint
+      onPress={enabled ? onPress : undefined}
+      disabled={!enabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !enabled }}
+      style={[styles.row, { minHeight }, last && { borderBottomWidth: 0 }]}
+    >
+      <Text style={[styles.numeral, { width: numeralWidth }, !enabled && { color: color.axis }]}>{n}</Text>
+      <View style={styles.rowBody}>{children}</View>
+      {meta != null && <Text style={[styles.meta, { color: enabled ? color.ink2 : color.axis }]}>{meta}</Text>}
+    </PressTint>
+  );
+}
+
+export function RowTitle({ enabled, children }: { enabled: boolean; children: string }) {
+  return <Rich style={{ fontFamily: enabled ? font.sansMedium : font.sans, fontSize: 16, lineHeight: 22, color: enabled ? color.ink : color.axis }}>{children}</Rich>;
+}
+
+/** The one-line question or gist under a row title. */
+export function RowSub({ children }: { children: string }) {
+  return <Rich style={styles.rowSub}>{children}</Rich>;
+}
+
+export function PrimaryButton({ label, onPress, icon }: { label: string; onPress: () => void; icon?: ReactNode }) {
+  return (
+    <PressScale onPress={onPress} accessibilityRole="button" style={styles.primary}>
+      <Text style={styles.primaryText}>{label}</Text>
+      {icon}
+    </PressScale>
+  );
+}
+
+export function SecondaryButton({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <PressScale onPress={onPress} accessibilityRole="button" style={styles.secondary}>
+      <Text style={styles.secondaryText}>{label}</Text>
+    </PressScale>
+  );
+}
+
+/** A scrolling page with the layout's padding (wide margins on desktop, so text stays READ_MAX wide). */
+export function Page({ children }: { children: ReactNode }) {
+  const P = usePage();
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={{ paddingHorizontal: P.pageX, paddingTop: P.top, paddingBottom: P.bottom }} keyboardShouldPersistTaps="handled">
+      {children}
     </ScrollView>
   );
 }
 
-export function Back({ href, label }: { href: Href; label: string }) {
-  return (
-    <Link href={href} asChild>
-      <Pressable style={s.back} accessibilityRole="link" accessibilityLabel={`Back to ${label}`} hitSlop={8}>
-        <View style={s.backChev} />
-        <Text style={s.backText}>{label}</Text>
-      </Pressable>
-    </Link>
-  );
+/** One part of a page, edge to edge. Every other part sits on a lighter band (BYE Math's learn/Band). */
+export function Band({ tint, children, style }: { tint?: boolean; children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  const { pageX } = usePage();
+  return <View style={[styles.band, { marginHorizontal: -pageX, paddingHorizontal: pageX }, tint && styles.bandTint, style]}>{children}</View>;
 }
 
-export const Eyebrow = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Text style={[s.eyebrow, style]}>{children.toUpperCase()}</Text>;
-
-export function Head({ eyebrow, meta, right }: { eyebrow: string; meta?: string; right?: ReactNode }) {
+/** An Eyebrow with something on its right (a count, "tap to link"). */
+export function Head({ eyebrow, meta, style }: { eyebrow: string; meta?: string; style?: StyleProp<ViewStyle> }) {
   return (
-    <View style={s.head}>
+    <View style={[styles.head, style]}>
       <Eyebrow>{eyebrow}</Eyebrow>
-      {right ?? (meta ? <Text style={s.meta}>{meta}</Text> : null)}
+      {meta ? <Text style={styles.meta}>{meta}</Text> : null}
     </View>
   );
 }
 
 export const Title = ({ children, size = 34 }: { children: string; size?: number }) => (
-  <Text style={[s.title, { fontSize: size, lineHeight: Math.round(size * 1.24) }]} accessibilityRole="header">{children}</Text>
+  <Rich style={[styles.title, { fontSize: size, lineHeight: Math.round(size * 1.2) }]} header>
+    {children}
+  </Rich>
 );
-
-export const Plain = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Rich style={[s.plain, style]}>{children}</Rich>;
-export const Para = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Rich style={[s.para, style]}>{children}</Rich>;
-export const Small = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Rich style={[s.small, style]}>{children}</Rich>;
+export const Plain = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Rich style={[styles.plain, style]}>{children}</Rich>;
+export const Para = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Rich style={[styles.para, style]}>{children}</Rich>;
+export const Small = ({ children, style }: { children: string; style?: StyleProp<TextStyle> }) => <Rich style={[styles.small, style]}>{children}</Rich>;
 
 const LEVEL_LABEL: Record<Level, string> = { Intro: 'Intro', '1A': 'Chem 1A', '1B': 'Chem 1B', AP: 'AP' };
-export function Tags({ levels, tro }: { levels: Level[]; tro?: string }) {
+/** Course tags (words, not just colour), and an optional note such as "Tro ch. 4". */
+export function Tags({ levels, note }: { levels: Level[]; note?: string }) {
   return (
-    <View style={s.tags}>
+    <View style={styles.tags}>
       {levels.map((l) => (
-        <Text key={l} style={[s.tag, l === 'Intro' && s.tagIntro, l === '1A' && s.tag1A, l === 'AP' && s.tagAP, l === '1B' && s.tag1B]}>{LEVEL_LABEL[l]}</Text>
+        <Text key={l} style={[styles.tag, l === 'Intro' && styles.tagIntro, l === '1A' && styles.tag1A, l === 'AP' && styles.tagAP, l === '1B' && styles.tag1B]}>
+          {LEVEL_LABEL[l]}
+        </Text>
       ))}
-      {tro ? <Text style={s.tro}>{tro}</Text> : null}
+      {note ? <Text style={styles.tagNote}>{note}</Text> : null}
     </View>
   );
 }
 
-export function Band({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  return <View style={[s.band, style]}>{children}</View>;
-}
-
-/** A tappable list row with a chevron (or a quiet "soon" row when there is no href). */
-export function Row({ href, num, title, sub, children, muted }: { href?: Href; num?: string; title: string; sub?: string; children?: ReactNode; muted?: boolean }) {
-  const body = (
-    <View style={s.row}>
-      {num !== undefined ? <Text style={[s.rowNum, muted && s.mutedText]}>{num}</Text> : null}
-      <View style={{ flex: 1 }}>
-        <Rich style={[s.rowTitle, muted && s.mutedText]}>{title}</Rich>
-        {sub ? <Rich style={s.rowSub}>{sub}</Rich> : null}
-        {children}
-      </View>
-      {href ? <View style={s.chev} /> : null}
-    </View>
-  );
-  if (!href) return body;
-  return (
-    <Link href={href} asChild>
-      <Pressable accessibilityRole="link" style={({ pressed }) => [pressed && { opacity: 0.6 }]}>{body}</Pressable>
-    </Link>
-  );
-}
-
-export function Button({ label, onPress, href, ghost }: { label: string; onPress?: () => void; href?: Href; ghost?: boolean }) {
-  const btn = (
-    <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [s.btn, ghost && s.btnGhost, pressed && { opacity: 0.75 }]}>
-      <Text style={[s.btnText, ghost && { color: color.ink }]}>{label}</Text>
-    </Pressable>
-  );
-  return href ? <Link href={href} asChild>{btn}</Link> : btn;
-}
-
-/** Underlined tabs (Home's Learn · Lab · Tools, a section's Learn · Simple · Medium · Hard). */
-export function Tabs<T extends string>({ tabs, value, onChange, labels }: { tabs: readonly T[]; value: T; onChange(t: T): void; labels?: Partial<Record<T, string>> }) {
-  return (
-    <View style={s.tabs} accessibilityRole="tablist">
-      {tabs.map((t) => (
-        <Pressable key={t} onPress={() => onChange(t)} accessibilityRole="tab" accessibilityState={{ selected: t === value }} style={[s.tab, t === value && s.tabOn]} hitSlop={6}>
-          <Text style={[s.tabText, t === value && s.tabTextOn]}>{labels?.[t] ?? t}</Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
-export const s = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: color.ground },
-  content: { paddingHorizontal: PAD, alignItems: 'center' },
-  column: { width: '100%', maxWidth: MAX_WIDTH },
-  back: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: TAP, alignSelf: 'flex-start' },
-  backChev: { width: 8, height: 8, borderLeftWidth: 1.5, borderBottomWidth: 1.5, borderColor: color.ink2, transform: [{ rotate: '45deg' }] },
+export const styles = StyleSheet.create({
+  eyebrow: { fontFamily: font.sans, fontSize: 12, lineHeight: 16, letterSpacing: 2.2, textTransform: 'uppercase', color: color.ink2 },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, alignSelf: 'flex-start' },
   backText: { fontFamily: font.sans, fontSize: 15, color: color.ink2 },
-  eyebrow: { fontFamily: font.sans, fontSize: 12, lineHeight: 16, letterSpacing: 2.2, color: color.ink2 },
-  head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 24, marginBottom: 4, gap: 12 },
+  tabs: { flexDirection: 'row' },
+  tabsLine: { borderBottomWidth: 1, borderBottomColor: color.line },
+  tab: { paddingBottom: 10, borderBottomWidth: 2, borderBottomColor: 'transparent', marginBottom: -1, minHeight: 44, justifyContent: 'flex-end' },
+  underline: { position: 'absolute', left: 0, bottom: -1, height: 2, backgroundColor: color.coral },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: color.line },
+  tint: { backgroundColor: color.note },
+  rowBody: { flex: 1 },
+  rowSub: { fontFamily: font.sans, fontSize: 13.5, lineHeight: 19, color: color.ink2, marginTop: 2 },
+  numeral: { fontFamily: font.serif, fontSize: 17, color: color.ink2, alignSelf: 'flex-start', lineHeight: 22 },
   meta: { fontFamily: font.sans, fontSize: 13, color: color.ink2 },
+  primary: { minHeight: 52, paddingHorizontal: 24, borderRadius: 26, backgroundColor: color.ink, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm },
+  primaryText: { fontFamily: font.sansMedium, fontSize: 16, color: color.onInk },
+  secondary: { minHeight: 52, paddingHorizontal: 22, borderRadius: 26, borderWidth: 1, borderColor: color.line, backgroundColor: color.ground, justifyContent: 'center' },
+  secondaryText: { fontFamily: font.sans, fontSize: 16, color: color.ink },
+  scroll: { flex: 1, backgroundColor: color.ground },
+  band: { paddingVertical: 26 },
+  bandTint: { backgroundColor: color.band, borderTopWidth: 1, borderBottomWidth: 1, borderColor: color.line },
+  head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, marginBottom: 6 },
   title: { fontFamily: font.serif, color: color.ink, marginTop: 6, marginBottom: 6 },
   plain: { fontFamily: font.sans, fontSize: 16, lineHeight: 26, color: color.ink2 },
-  para: { fontFamily: font.sans, fontSize: 15.5, lineHeight: 25, color: color.ink, marginTop: 10 },
+  para: { fontFamily: font.sans, fontSize: 16, lineHeight: 27, color: color.ink, marginTop: 14 },
   small: { fontFamily: font.sans, fontSize: 13, lineHeight: 20, color: color.ink2 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 5, marginTop: 6 },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 5, marginTop: 8 },
   tag: { fontFamily: font.sans, fontSize: 11, lineHeight: 16, letterSpacing: 0.4, paddingHorizontal: 7, borderRadius: 8, borderWidth: 1, borderColor: color.line, color: color.ink2, backgroundColor: color.band, overflow: 'hidden' },
-  tagIntro: { borderColor: '#c9d6e6', color: color.mass },
-  tag1A: { borderColor: '#bfd3c6', color: color.mol },
+  tagIntro: { borderColor: '#c9d6e6', color: color.ai },
+  tag1A: { borderColor: '#bfd3c6', color: color.matsu },
   tag1B: { color: color.muted },
   tagAP: { borderColor: color.axis, color: color.ink },
-  tro: { fontFamily: font.sans, fontSize: 11.5, lineHeight: 16, color: color.muted, marginLeft: 2 },
-  band: { marginHorizontal: -PAD, paddingHorizontal: PAD, paddingVertical: 18, marginTop: 20, backgroundColor: color.band, borderTopWidth: 1, borderBottomWidth: 1, borderColor: color.line },
-  row: { flexDirection: 'row', gap: 14, paddingVertical: 12, borderBottomWidth: 1, borderColor: color.line, alignItems: 'flex-start', minHeight: TAP },
-  rowNum: { width: 34, fontFamily: font.serif, fontSize: 18, lineHeight: 22, color: color.ink2 },
-  rowTitle: { fontFamily: font.sansMedium, fontSize: 16, lineHeight: 21, color: color.ink },
-  rowSub: { fontFamily: font.sans, fontSize: 13.5, lineHeight: 19, color: color.ink2, marginTop: 2 },
-  mutedText: { color: color.muted },
-  chev: { alignSelf: 'center', width: 7, height: 7, borderRightWidth: 1.5, borderTopWidth: 1.5, borderColor: color.axis, transform: [{ rotate: '45deg' }], marginRight: 3 },
-  btn: { alignSelf: 'center', minHeight: 50, paddingHorizontal: 24, borderRadius: 25, backgroundColor: color.ink, justifyContent: 'center', marginTop: 22 },
-  btnGhost: { backgroundColor: 'transparent', borderWidth: 1, borderColor: color.line },
-  btnText: { fontFamily: font.sansMedium, fontSize: 16, color: color.onInk },
-  tabs: { flexDirection: 'row', gap: 24, marginTop: 20, borderBottomWidth: 1, borderColor: color.line },
-  tab: { paddingBottom: 10, minHeight: TAP, justifyContent: 'flex-end', borderBottomWidth: 2, borderColor: 'transparent', marginBottom: -1 },
-  tabOn: { borderColor: color.coral },
-  tabText: { fontFamily: font.sans, fontSize: 16, color: color.muted },
-  tabTextOn: { color: color.ink },
+  tagNote: { fontFamily: font.sans, fontSize: 12, lineHeight: 16, color: color.muted, marginLeft: 2 },
 });

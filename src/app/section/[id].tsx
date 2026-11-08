@@ -1,131 +1,144 @@
-// Section page: Learn · Simple · Medium · Hard. Learn ends with "Check yourself"; Simple fades.
-import { useLocalSearchParams, type Href } from 'expo-router';
-import { useState } from 'react';
+// Section page (docs/ui-guide.md §4, docs/learn-template.md): intro, Understand it (the reads),
+// the recap, worked examples, you need first, where it shows up. A textbook: no level tabs.
+import { router, useLocalSearchParams, type Href } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import { chapterOf, isBuilt, mapChapter, mapSection, sectionContent } from '@/content';
-import { AnswerCheck, FadingSteps, LinkedViews } from '@/components/practice';
+import { chapterOf, mapChapter, mapSection, useSection } from '@/content';
+import type { MapSection, SectionContent } from '@/content/types';
+import { Frames, Mistakes, SectionLink, ShowsUp, SpotIt } from '@/components/learn/Recap';
+import { Loading, NotFound } from '@/components/Loading';
 import { Rich } from '@/components/Rich';
-import { Back, Band, Button, Eyebrow, Head, Para, Plain, Row, Screen, Small, Tabs, Title } from '@/components/ui';
-import type { Verdict } from '@/practice/checks';
-import { useProgress } from '@/store/progress';
+import { BackButton, Band, Eyebrow, Head, ListRow, Page, Plain, PrimaryButton, RowSub, RowTitle, Title } from '@/components/ui';
 import { color, font } from '@/theme';
-import NotFound from '../+not-found';
 
-const TABS = ['learn', 'simple', 'medium', 'hard'] as const;
-type Tab = (typeof TABS)[number];
-const LABELS: Record<Tab, string> = { learn: 'Learn', simple: 'Simple', medium: 'Medium', hard: 'Hard' };
+export { LoadFailed as ErrorBoundary } from '@/components/Loading';
 
-export default function Section() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const map = mapSection(id);
-  const c = sectionContent(id);
-  const n = chapterOf(id);
-  const [tab, setTab] = useState<Tab>('learn');
-  const { markDone, p } = useProgress();
-  const [results, setResults] = useState<Record<string, Verdict>>({});
-  if (!map) return <NotFound />;
-
-  const header = (
-    <>
-      <Back href={`/chapter/${n}` as Href} label={`Chapter ${n}`} />
-      <Eyebrow style={{ marginTop: 8 }}>{`Chapter ${n} · §${id}`}</Eyebrow>
-      <Title size={30}>{map.title}</Title>
-      <Text style={ss.tro}>{`In your book: Tro ${map.tro.join(', ')}`}</Text>
-    </>
-  );
-
-  if (!c) {
-    return (
-      <Screen>
-        {header}
-        <Plain style={{ marginTop: 12 }}>{map.question}</Plain>
-        <Band><Para style={{ marginTop: 0 }}>This section is coming soon.</Para><Button label={`Back to ${mapChapter(n)?.title ?? `Chapter ${n}`}`} href={`/chapter/${n}` as Href} /></Band>
-      </Screen>
-    );
-  }
-
-  const answered = c.check.filter((q) => results[q.id] === 'ok' || results[q.id] === 'part').length;
-  const done = p.done.includes(id);
-
+export default function SectionRoute() {
   return (
-    <Screen>
-      {header}
-      <Tabs<Tab> tabs={TABS} value={tab} labels={LABELS} onChange={setTab} />
-
-      {tab === 'learn' ? (
-        <View>
-          <Rich style={ss.intro}>{c.intro}</Rich>
-          {c.tool ? (<><Head eyebrow="The tool" /><Rich style={ss.tool}>{c.tool}</Rich></>) : null}
-
-          <Head eyebrow="Key ideas" meta={String(c.ideas.length)} />
-          {c.ideas.map((idea, i) => (
-            <View key={i} style={ss.idea}>
-              <Text style={ss.ideaN}>{i + 1}</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={ss.ideaT}>{idea.title}</Text>
-                <Rich style={ss.ideaD}>{idea.body}</Rich>
-              </View>
-            </View>
-          ))}
-
-          {c.views ? (<><Head eyebrow={c.views.title} meta="tap to link" /><LinkedViews views={c.views} /></>) : null}
-
-          {c.lab ? (
-            <>
-              <Head eyebrow="In the lab" meta="2 minutes" />
-              <View style={ss.lab}>
-                <Rich style={ss.try}>{c.lab.challenge}</Rich>
-                <Text style={ss.labT}>{c.lab.title}</Text>
-                <Small>{c.lab.body}</Small>
-              </View>
-            </>
-          ) : null}
-
-          <Head eyebrow="Check yourself" meta={`${c.check.length} questions`} />
-          {c.check.map((q, i) => (
-            <AnswerCheck key={q.id} q={q} label={`${i + 1} of ${c.check.length}`} onResult={(r) => {
-              const next = { ...results, [q.id]: r.verdict };
-              setResults(next);
-              if (c.check.every((x) => next[x.id] === 'ok' || next[x.id] === 'part')) markDone(id);
-            }} />
-          ))}
-          {done || answered === c.check.length ? (
-            <View style={ss.done}><Text style={ss.doneText}>{`§${id} done. It will come back in Today’s review.`}</Text>{c.simple ? <Button label="Practise: Simple" onPress={() => setTab('simple')} /> : null}</View>
-          ) : null}
-
-          {c.showsUp?.length ? (
-            <>
-              <Head eyebrow="Where it shows up" />
-              {c.showsUp.map((u) => {
-                const s = mapSection(u.id);
-                return <Row key={u.id} href={isBuilt(u.id) ? (`/section/${u.id}` as Href) : undefined} num={u.id} title={s?.title ?? u.id} sub={u.note} />;
-              })}
-            </>
-          ) : null}
-        </View>
-      ) : tab === 'simple' && c.simple ? (
-        <View>
-          <Small style={{ marginTop: 12 }}>Problems start fully worked. Each right answer hides one more step, from the end; a miss brings the step back.</Small>
-          <FadingSteps sectionId={id} problems={c.simple} />
-        </View>
-      ) : (
-        <Band><Para style={{ marginTop: 0 }}>{`${LABELS[tab]} problems for §${id} are coming soon. They start partly worked and mix in earlier sections.`}</Para></Band>
-      )}
-    </Screen>
+    <Loading>
+      <LoadSection />
+    </Loading>
   );
 }
 
-const ss = StyleSheet.create({
+function LoadSection() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const map = mapSection(id);
+  const content = useSection(id);
+  if (!map) return <NotFound />;
+  return content ? <SectionPage map={map} c={content} /> : <NotWritten map={map} />;
+}
+
+function Header({ map }: { map: MapSection }) {
+  const n = chapterOf(map.id);
+  return (
+    <>
+      <BackButton label={`Chapter ${n}`} onPress={() => router.push(`/chapter/${n}` as Href)} />
+      <Eyebrow style={{ marginTop: 8 }}>{`Chapter ${n} · Section ${map.id}`}</Eyebrow>
+      <Title size={34}>{map.title}</Title>
+      <Text style={st.tro}>{`In your book: Tro ${map.tro.join(', ')}`}</Text>
+    </>
+  );
+}
+
+function NotWritten({ map }: { map: MapSection }) {
+  const n = chapterOf(map.id);
+  return (
+    <Page>
+      <Header map={map} />
+      <Plain style={{ marginTop: 14 }}>{map.question}</Plain>
+      <Band tint style={{ marginTop: 22 }}>
+        <Plain>This section is being written.</Plain>
+        <View style={{ marginTop: 18, alignItems: 'flex-start' }}>
+          <PrimaryButton label={`Back to ${mapChapter(n)?.title ?? `Chapter ${n}`}`} onPress={() => router.push(`/chapter/${n}` as Href)} />
+        </View>
+      </Band>
+    </Page>
+  );
+}
+
+function SectionPage({ map, c }: { map: MapSection; c: SectionContent }) {
+  const minutes = c.reads.reduce((m, r) => m + r.minutes, 0);
+  return (
+    <Page>
+      <Header map={map} />
+      <Rich style={st.intro}>{c.intro}</Rich>
+
+      <Band tint style={{ marginTop: 22 }}>
+        <Head eyebrow="Understand it" meta={`${c.reads.length} short reads · ${minutes} min`} />
+        {c.reads.map((r, i) => (
+          <ListRow key={r.id} n={String(i + 1)} enabled meta={`${r.minutes} min`} onPress={() => router.push(`/learn/${c.id}/${r.id}` as Href)} last={i === c.reads.length - 1}>
+            <RowTitle enabled>{r.title}</RowTitle>
+            <RowSub>{r.gist}</RowSub>
+          </ListRow>
+        ))}
+      </Band>
+
+      <View style={{ marginTop: 28 }}>
+        <Eyebrow>The recap</Eyebrow>
+        {c.tool && (
+          <>
+            <Rich style={st.tool}>{c.tool}</Rich>
+            {c.toolNote && <Rich style={st.toolNote}>{c.toolNote}</Rich>}
+          </>
+        )}
+        <Eyebrow style={{ marginTop: 26 }}>Key ideas</Eyebrow>
+        {c.ideas.map((idea, i) => (
+          <View key={idea.title} style={st.idea}>
+            <Text style={st.ideaN}>{i + 1}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={st.ideaT}>{idea.title}</Text>
+              <Rich style={st.ideaD}>{idea.body}</Rich>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      <Band tint style={{ marginTop: 28 }}>
+        <Frames frames={c.why} flush />
+      </Band>
+
+      <SpotIt clues={c.spot.clues} lookAlikes={c.spot.lookAlikes} />
+      <Mistakes mistakes={c.mistakes} />
+
+      {c.examples.length > 0 && (
+        <Band tint style={{ marginTop: 28 }}>
+          <Head eyebrow="Worked examples" meta={`${c.examples.length} · read-only`} />
+          {c.examples.map((e, i) => (
+            <ListRow key={e.id} n={String(i + 1)} enabled meta={`${e.steps.length} steps`} onPress={() => router.push(`/example/${e.id}` as Href)} last={i === c.examples.length - 1}>
+              <Rich style={st.exQ}>{e.question}</Rich>
+              <RowSub>{e.level}</RowSub>
+            </ListRow>
+          ))}
+        </Band>
+      )}
+
+      {map.needs.length > 0 && (
+        <View style={{ marginTop: 28 }}>
+          <Eyebrow>You need first</Eyebrow>
+          {map.needs.map((id) => (
+            <SectionLink key={id} id={id} />
+          ))}
+        </View>
+      )}
+
+      <ShowsUp uses={c.realUses} next={c.next} />
+
+      <View style={st.start}>
+        <PrimaryButton label="Start with read 1  →" onPress={() => router.push(`/learn/${c.id}/${c.reads[0]!.id}` as Href)} />
+      </View>
+    </Page>
+  );
+}
+
+const st = StyleSheet.create({
   tro: { fontFamily: font.sans, fontSize: 12, color: color.muted },
-  intro: { fontFamily: font.sans, fontSize: 16.5, lineHeight: 27, color: color.ink, marginTop: 16 },
-  tool: { fontFamily: font.chem, fontSize: 22, lineHeight: 30, color: color.ink, textAlign: 'center', paddingVertical: 12, borderBottomWidth: 1, borderColor: color.line },
+  intro: { fontFamily: font.sans, fontSize: 16, lineHeight: 27, color: color.ink, marginTop: 14 },
+  tool: { marginTop: 10, paddingVertical: 14, borderTopWidth: 1, borderBottomWidth: 1, borderColor: color.line, fontFamily: font.chem, fontSize: 23, lineHeight: 32, color: color.ink, textAlign: 'center' },
+  toolNote: { marginTop: 8, fontFamily: font.sans, fontSize: 13.5, lineHeight: 20, color: color.ink2, textAlign: 'center' },
   idea: { flexDirection: 'row', gap: 14, paddingVertical: 12, borderBottomWidth: 1, borderColor: color.line },
   ideaN: { width: 22, fontFamily: font.serif, fontSize: 17, color: color.ink2 },
   ideaT: { fontFamily: font.sansMedium, fontSize: 15.5, color: color.ink },
   ideaD: { fontFamily: font.sans, fontSize: 14, lineHeight: 21, color: color.ink2, marginTop: 2 },
-  lab: { borderWidth: 1, borderColor: color.line, borderRadius: 14, padding: 12, backgroundColor: color.band, marginTop: 8 },
-  try: { fontFamily: font.sans, fontSize: 13.5, lineHeight: 20, color: color.shu, marginBottom: 4 },
-  labT: { fontFamily: font.sansMedium, fontSize: 16, color: color.ink },
-  done: { marginTop: 14, padding: 12, borderRadius: 14, backgroundColor: color.molSoft },
-  doneText: { fontFamily: font.sansMedium, fontSize: 15, color: color.mol, textAlign: 'center' },
+  exQ: { fontFamily: font.chem, fontSize: 17, lineHeight: 24, color: color.ink },
+  start: { alignItems: 'center', marginTop: 32 },
 });

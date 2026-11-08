@@ -1,9 +1,10 @@
+import { router } from 'expo-router';
 // Tool · Molar mass: every atom added up, then grams to moles. Uses the engine's formula parser and CIAAW weights.
 import { element, parseFormula } from 'bye-chem-engine/chem';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Rich } from '@/components/Rich';
-import { Back, Head, Plain, Screen, Small, Title } from '@/components/ui';
+import { BackButton, Head, Page, Plain, Small, Title } from '@/components/ui';
 import { formulaRich, readQuantity, sigFig } from '@/practice/quantity';
 import { color, font, TAP } from '@/theme';
 
@@ -25,8 +26,8 @@ export default function MolarMass() {
   const sig = g ? Math.max(1, Math.min(g.sig, 6)) : 3;
 
   return (
-    <Screen>
-      <Back href="/?tab=tools" label="Tools" />
+    <Page>
+      <BackButton label="Tools" onPress={() => router.push('/?tab=tools')} />
       <Title size={30}>Molar mass</Title>
       <Plain>Type a formula. Brackets and hydrates work.</Plain>
       <Text style={t.label}>FORMULA</Text>
@@ -68,7 +69,7 @@ export default function MolarMass() {
         </>
       )}
       <Small style={{ marginTop: 16 }}>Standard atomic weights (CIAAW), as used in most textbooks. Your class table may differ in the last digit.</Small>
-    </Screen>
+    </Page>
   );
 }
 

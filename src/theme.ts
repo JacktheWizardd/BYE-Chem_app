@@ -1,32 +1,39 @@
-// The BYE look: paper ground, hairlines, one meaning per colour (docs/design-guide.md).
+// BYE Chem design tokens (light theme only). From BYE Math @ b49d14a (src/theme.ts), with chemistry
+// meanings; see docs/ui-guide.md. Every colour has one meaning.
 export const color = {
-  canvas: '#e7e1d5',
-  ground: '#f6f3ec',
-  band: '#fcfaf5',
+  ground: '#f6f3ec', // page background; everything sits directly on it
   card: '#fffdf8',
-  line: '#e3dccf',
-  axis: '#8a8378',
-  /** Secondary text that still reads at 4.5:1. */
-  muted: '#6b655b',
+  band: '#fcfaf5', // every other part of a page, so parts don't blend together
+  note: '#efeadf', // press tint, key-fact box
+  track: '#ece6da',
+  grid: '#ece6da',
+  line: '#e3dccf', // 1px hairlines: the main structuring device
+  axis: '#8a8378', // disabled / "Soon" rows, inactive tabs, hints
+  muted: '#6b655b', // small secondary text that must still read at 4.5:1
   ink: '#1e1c19',
   ink2: '#5a554d',
   onInk: '#f6f3ec',
-  /** "Where you are". */
-  coral: '#d9846a',
-  coralSoft: '#fbefe9',
-  /** BYE's dot. */
-  too: '#f3b63f',
-  /** A measured or highlighted value; also "not yet". */
-  shu: '#b5462a',
-  /** Grams. */
-  mass: '#2f4b7c',
-  /** Moles; also "right". */
-  mol: '#2f6b4a',
-  molSoft: '#e6efe8',
+  coral: '#d9846a', // where you are: active tab, current step, current sidebar row
+  coralSoft: '#fbefe9', // the picked tile behind a coral edge (periodic table)
+  too: '#f3b63f', // the dot in BYE. and nothing else
+  ai: '#2f4b7c', // grams / mass; links
+  matsu: '#2f6b4a', // moles / amount; the new part on a frame
+  shu: '#b5462a', // a measured, plugged-in or carried value; the operation in the margin
+  wrongTint: '#f6e7e1', // behind a common mistake's wrong line
+  rightTint: '#e6efe8', // behind its right line
+  // Chemistry figures (docs/design-guide.md)
   elH: '#fffdf8',
   elO: '#c4553a',
+  elC: '#2c2a27',
+  elN: '#3b5ea8',
+  elCl: '#3f8a5a',
+  elNa: '#7b6aa8',
   water: '#9fc0e3',
 } as const;
+
+/** Chemistry meaning aliases, so content code reads as chemistry. */
+export const mass = color.ai;
+export const mol = color.matsu;
 
 export const font = {
   sans: 'ZenKakuGothicNew_400Regular',
@@ -38,8 +45,23 @@ export const font = {
   grotesk: 'SchibstedGrotesk_700Bold',
 } as const;
 
-/** The app column on wide screens. */
+export const space = { xs: 6, sm: 10, md: 14, lg: 22, pageX: 26, section: 34 } as const;
+
+/** The app is a phone-width column; on tablets and laptops it sits centred with the page colour around it. */
 export const MAX_WIDTH = 520;
-export const PAD = 24;
+
+/** Desktop mode: from DESKTOP_MIN wide the column becomes a sidebar for the book plus wider pages. */
+export const DESKTOP_MIN = 900;
+export const SIDEBAR_W = 280;
+export const SIDEBAR_W_SMALL = 256;
+/** On a worked example the sidebar folds to this rail, so the two panes get the width. */
+export const RAIL_W = 60;
+/** Reading pages keep their text to this width. */
+export const READ_MAX = 680;
+/** Figures never grow past this. */
+export const FIGURE_MAX = 560;
+/** The widest the two-pane worked example gets. */
+export const PROBLEM_MAX = 1180;
+
 /** Smallest comfortable tap target. */
 export const TAP = 44;

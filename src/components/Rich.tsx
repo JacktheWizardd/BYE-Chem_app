@@ -9,13 +9,17 @@ type Node = string | { tag: Tag; kids: Node[] };
 
 const TOKEN = /<(\/?)(sub|sup|b|i|g|m)>/g;
 
+/** Characters iOS draws as emoji (↔ becomes a blue tile) unless a text-style selector (U+FE0E) follows. */
+const EMOJI_PRONE = /([\u2194-\u2199\u21A9\u21AA\u2122\u2139\u00A9\u00AE\u203C\u2049\u25B6\u25C0\u2934\u2935])(?!\uFE0E)/g;
+export const asText = (s: string) => s.replace(EMOJI_PRONE, '$1\uFE0E');
+
 export function parseRich(src: string): Node[] {
   const root: Node[] = [];
   const stack: { tag: Tag; kids: Node[] }[] = [];
   const top = () => (stack.length ? stack[stack.length - 1]!.kids : root);
   let last = 0;
   for (const m of src.matchAll(TOKEN)) {
-    if (m.index! > last) top().push(src.slice(last, m.index));
+    if (m.index! > last) top().push(asText(src.slice(last, m.index)));
     const [, close, tag] = m as unknown as [string, string, Tag];
     if (close) {
       const node = stack.pop();
@@ -23,7 +27,7 @@ export function parseRich(src: string): Node[] {
     } else stack.push({ tag, kids: [] });
     last = m.index! + m[0].length;
   }
-  if (last < src.length) top().push(src.slice(last));
+  if (last < src.length) top().push(asText(src.slice(last)));
   while (stack.length) top().push(stack.pop()!);
   return root;
 }
@@ -59,21 +63,21 @@ function render(nodes: Node[], size: number, base: StyleProp<TextStyle>): ReactN
       case 'i':
         return <Text key={i} style={{ fontStyle: 'italic' }}>{kids}</Text>;
       case 'g':
-        return <Text key={i} style={{ color: color.mass }}>{kids}</Text>;
+        return <Text key={i} style={{ color: color.ai }}>{kids}</Text>;
       case 'm':
-        return <Text key={i} style={{ color: color.mol }}>{kids}</Text>;
+        return <Text key={i} style={{ color: color.matsu }}>{kids}</Text>;
     }
     return null;
   });
 }
 
-export function Rich({ children, style, numberOfLines }: { children: string; style?: StyleProp<TextStyle>; numberOfLines?: number }) {
+export function Rich({ children, style, numberOfLines, header }: { children: string; style?: StyleProp<TextStyle>; numberOfLines?: number; header?: boolean }) {
   const flat = (Array.isArray(style) ? Object.assign({}, ...style.filter(Boolean)) : style ?? {}) as TextStyle;
   const size = flat.fontSize ?? 16;
   // Children inherit colour and family from the outer Text; the script pieces need them passed explicitly.
   const base: TextStyle = { color: flat.color ?? color.ink, fontFamily: flat.fontFamily ?? font.sans };
   return (
-    <Text style={style} numberOfLines={numberOfLines} accessibilityLabel={plainRich(children)}>
+    <Text style={style} numberOfLines={numberOfLines} accessibilityLabel={plainRich(children)} accessibilityRole={header ? 'header' : undefined}>
       {render(parseRich(children), size, base)}
     </Text>
   );

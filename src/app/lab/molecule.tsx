@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 // Lab · Molecule viewer: BYE Chem Engine's molecule3d, as is (the engine is on hold; no changes to it).
 // SF6 and PCl5 are left out until the engine's angle-mark fix is approved.
 import { namedMolecule } from 'bye-chem-engine/chem';
@@ -6,7 +7,7 @@ import type { Molecule3dInput } from 'bye-chem-engine/spec';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { Rich } from '@/components/Rich';
-import { Back, Head, Plain, Screen, Small, Title } from '@/components/ui';
+import { BackButton, Head, Page, Plain, Small, Title } from '@/components/ui';
 import { formulaRich } from '@/practice/quantity';
 import { color, font, TAP } from '@/theme';
 
@@ -33,8 +34,8 @@ export default function MoleculeLab() {
     dimensions: { ...(showDims && bond ? {} : { bond: false }), ...(showDims && angle ? {} : { angle: false }) },
   };
   return (
-    <Screen>
-      <Back href="/?tab=lab" label="Lab" />
+    <Page>
+      <BackButton label="Lab" onPress={() => router.push('/?tab=lab')} />
       <Title size={30}>Molecule viewer</Title>
       <Plain>Drag to turn it. Every length and angle is measured, from NIST’s tables.</Plain>
       <Text style={m.try}>Try this: find the molecule whose angle is exactly 180°.</Text>
@@ -64,7 +65,7 @@ export default function MoleculeLab() {
           <Toggle label="Bond angle" value={angle} onChange={setAngle} />
         </>
       ) : <Small style={{ marginTop: 10 }}>Real size shows how much room each atom takes up, so the measuring lines are off.</Small>}
-    </Screen>
+    </Page>
   );
 }
 
