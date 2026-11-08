@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem textbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&amp;family=STIX+Two+Text:ital@0;1&amp;family=Schibsted+Grotesk:wght@700&amp;family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+  /* Tokens from docs/ui-guide.md (BYE Math @ b49d14a, adapted). Light only. */
+  :root {
+    color-scheme: light;
+    --ground:#f6f3ec; --card:#fffdf8; --band:#fcfaf5; --note:#efeadf; --track:#ece6da; --line:#e3dccf;
+    --axis:#8a8378; --muted:#6b655b; --ink:#1e1c19; --ink2:#5a554d; --onInk:#f6f3ec;
+    --coral:#d9846a; --too:#f3b63f; --ai:#2f4b7c; --matsu:#2f6b4a; --shu:#b5462a; --wrong:#f6e7e1; --right:#e6efe8;
+    --elH:#fffdf8; --elO:#c4553a; --elC:#2c2a27; --canvas:#e7e1d5;
+    --sans:'Zen Kaku Gothic New',system-ui,sans-serif; --serif:'Shippori Mincho',Georgia,serif; --chem:'STIX Two Text','Times New Roman',serif; --grotesk:'Schibsted Grotesk',system-ui,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--canvas); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  sub { font-size:.72em; vertical-align:-.26em; line-height:0; } sup { font-size:.7em; vertical-align:.5em; line-height:0; }
+  :focus-visible { outline:2px solid var(--coral); outline-offset:2px; }
+  button { font:inherit; color:inherit; }
+
+  .top { max-width:1290px; margin:0 auto; padding:36px 24px 6px; }
+  .top h1 { font-family:var(--serif); font-weight:400; font-size:32px; line-height:1.25; margin:0 0 10px; }
+  .top p { margin:0 0 10px; max-width:76ch; color:var(--ink2); line-height:1.65; font-size:15px; }
+  .rowhead { max-width:1290px; margin:26px auto 0; padding:18px 24px 0; display:flex; align-items:baseline; gap:14px; border-top:1px solid #d6cfc1; flex-wrap:wrap; }
+  .rowhead h2 { font-family:var(--serif); font-weight:400; font-size:23px; margin:0; } .rowhead span { font-size:14px; color:var(--ink2); }
+  .boards { max-width:1290px; margin:0 auto; padding:18px 24px 8px; display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+  .board { width:390px; max-width:100%; } .board.wide { width:1180px; }
+  .label { font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--ink2); margin:0 0 10px 4px; }
+  .phone { position:relative; background:var(--ground); border-radius:34px; overflow:hidden; box-shadow:0 1px 0 var(--line),0 18px 40px rgba(30,28,25,.10); padding:20px 26px 30px; }
+  .notes { margin:14px 4px 0; font-size:14px; line-height:1.6; color:var(--ink2); } .notes b { color:var(--ink); font-weight:500; }
+  .why { display:inline-block; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--matsu); border:1px solid #bfd3c6; border-radius:10px; padding:1px 8px; margin:0 4px 4px 0; }
+
+  /* App pieces */
+  .eyebrow { font-size:12px; line-height:16px; letter-spacing:2.2px; text-transform:uppercase; color:var(--ink2); }
+  .back { display:inline-flex; align-items:center; gap:10px; min-height:44px; font-size:15px; color:var(--ink2); }
+  .back svg { flex:none; }
+  .t-chap { font-family:var(--serif); font-size:40px; line-height:48px; margin:6px 0 6px; font-weight:400; }
+  .t-sec { font-family:var(--serif); font-size:34px; line-height:42px; margin:6px 0 4px; font-weight:400; }
+  .t-read { font-family:var(--serif); font-size:32px; line-height:40px; margin:6px 0 6px; font-weight:400; }
+  .plain { font-size:16px; line-height:26px; color:var(--ink2); margin:0; }
+  .p { font-size:16px; line-height:27px; margin:14px 0 0; }
+  .small { font-size:13px; line-height:20px; color:var(--ink2); }
+  .meta { font-size:13px; color:var(--ink2); }
+  .tro { font-size:12px; color:var(--muted); }
+  .band { margin:22px -26px 0; padding:26px 26px; }
+  .band.lt { background:var(--band); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .head { display:flex; justify-content:space-between; align-items:baseline; margin:0 0 6px; }
+  .f { font-family:var(--chem); } .g { color:var(--ai); } .m { color:var(--matsu); } .s { color:var(--shu); }
+  .tags { display:flex; gap:5px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+  .tag { font-size:11px; line-height:16px; padding:0 7px; border-radius:8px; border:1px solid var(--line); color:var(--ink2); background:var(--band); }
+  .tag.i { border-color:#c9d6e6; color:var(--ai); } .tag.a { border-color:#bfd3c6; color:var(--matsu); } .tag.ap { border-color:var(--axis); color:var(--ink); }
+  .row { display:flex; gap:14px; align-items:center; min-height:60px; padding:10px 0; border-bottom:1px solid var(--line); cursor:pointer; transition:background .26s; }
+  .row:hover { background:rgba(239,234,223,.7); } .row:active { background:var(--note); transition-duration:.06s; }
+  .row .n { width:30px; flex:none; font-family:var(--serif); font-size:17px; color:var(--ink2); align-self:flex-start; line-height:22px; padding-top:1px; }
+  .row .b { flex:1; } .row .t { font-weight:500; font-size:16px; line-height:22px; } .row .q { font-size:13.5px; line-height:19px; color:var(--ink2); margin-top:2px; }
+  .row .r { font-size:13px; color:var(--ink2); white-space:nowrap; }
+  .row.soon { cursor:default; } .row.soon .t,.row.soon .n { color:var(--axis); font-weight:400; } .row.soon:hover { background:none; }
+  .chev { width:7px; height:7px; border-right:1.5px solid var(--axis); border-top:1.5px solid var(--axis); transform:rotate(45deg); margin-right:3px; flex:none; }
+  .btn { display:flex; justify-content:center; margin-top:26px; }
+  .pill { min-height:52px; padding:0 26px; border-radius:26px; background:var(--ink); color:var(--onInk); font-weight:500; font-size:16px; display:inline-flex; align-items:center; gap:8px; border:0; cursor:pointer; transition:transform .09s cubic-bezier(.5,1,.89,1); }
+  .pill:active { transform:scale(.96); } .pill.sec { background:var(--ground); color:var(--ink); border:1px solid var(--line); }
+  /* Tabs with one sliding coral underline */
+  .tabs { position:relative; display:flex; gap:26px; margin-top:30px; border-bottom:1px solid var(--line); }
+  .tabs button { background:none; border:0; padding:0 0 10px; font-size:16px; color:var(--axis); cursor:pointer; transition:color .18s; min-height:44px; display:flex; align-items:flex-end; }
+  .tabs button[aria-pressed=true] { color:var(--ink); }
+  .tabs .ul { position:absolute; bottom:-1px; height:2px; background:var(--coral); transition:left .28s cubic-bezier(.2,.9,.25,1),width .28s cubic-bezier(.2,.9,.25,1); }
+  /* Home */
+  .brand { display:flex; align-items:center; gap:14px; } .wm { font-family:var(--grotesk); font-size:30px; letter-spacing:-.8px; } .wm i { font-style:normal; color:var(--too); }
+  .rule { width:1px; height:34px; background:var(--line); } .bs { font-size:15px; line-height:17px; color:var(--ink2); }
+  .hero { margin:30px 0 10px; font-family:var(--serif); font-size:40px; line-height:48px; letter-spacing:-.5px; }
+  .start { display:flex; gap:14px; padding:13px 0; border-bottom:1px solid var(--line); min-height:60px; align-items:flex-start; cursor:pointer; }
+  .start .ic { width:28px; flex:none; font-family:var(--chem); font-size:19px; color:var(--coral); text-align:center; line-height:22px; }
+  .sw { display:flex; align-items:center; justify-content:space-between; margin-top:26px; font-size:13px; color:var(--ink2); }
+  .switch { width:44px; height:26px; border-radius:13px; background:var(--line); position:relative; } .switch::after { content:''; position:absolute; left:3px; top:3px; width:20px; height:20px; border-radius:10px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); }
+  /* Chapter / section pieces */
+  .group { font-size:14px; font-weight:500; margin-top:18px; }
+  .stop { display:flex; gap:14px; padding:11px 0; border-bottom:1px solid var(--line); align-items:center; min-height:52px; }
+  .dot { width:26px; height:26px; flex:none; border-radius:13px; border:1.5px solid var(--line); display:grid; place-items:center; font-size:12px; color:var(--axis); }
+  .stop .t { font-weight:500; font-size:15px; } .stop .s2 { font-size:13px; color:var(--ink2); } .stop .lk { margin-left:auto; font-size:13px; color:var(--ai); text-decoration:underline; text-underline-offset:3px; }
+  .tool { text-align:center; font-family:var(--chem); font-size:23px; padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-top:8px; }
+  .toolnote { font-size:13.5px; color:var(--ink2); text-align:center; margin-top:8px; }
+  .idea { display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); } .idea .n { width:22px; flex:none; font-family:var(--serif); font-size:17px; color:var(--ink2); } .idea .t { font-weight:500; font-size:15.5px; } .idea .d { font-size:14px; line-height:21px; color:var(--ink2); margin-top:2px; }
+  .frames { display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:12px; color:var(--axis); }
+  .fdots { display:flex; gap:4px; } .fdots button { width:22px; height:32px; border:0; background:none; cursor:pointer; display:grid; place-items:center; padding:0; } .fdots i { width:7px; height:7px; border-radius:4px; background:var(--line); display:block; } .fdots button[aria-pressed=true] i { background:var(--ink2); }
+  .cap { font-size:14px; line-height:21px; margin-top:8px; min-height:42px; }
+  .clue { padding:10px 0; border-bottom:1px solid var(--line); display:flex; gap:12px; } .clue .n { font-family:var(--serif); color:var(--axis); width:18px; } .clue .ex { border-left:2px solid var(--line); padding-left:10px; margin-top:6px; font-family:var(--chem); font-size:17px; } .clue .nt { font-size:12px; color:var(--shu); margin-top:3px; font-family:var(--sans); }
+  .mis { margin-top:12px; } .mis .w,.mis .r { font-family:var(--chem); font-size:17px; padding:8px 12px; border-radius:8px; } .mis .w { background:var(--wrong); border-left:3px solid var(--shu); } .mis .r { background:var(--right); border-left:3px solid var(--matsu); margin-top:4px; } .mis .y { font-size:13.5px; color:var(--ink2); margin-top:5px; }
+  .mis .k { font-family:var(--sans); font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--ink2); margin-right:8px; }
+  .use { padding:12px 0; border-bottom:1px solid var(--line); } .use .w { font-weight:500; font-size:15px; } .use .x { font-size:14px; line-height:21px; color:var(--ink2); margin:3px 0 4px; } .use .e { font-family:var(--chem); font-size:17px; }
+  .glance { padding:12px 0; border-bottom:1px solid var(--line); } .glance .e { font-family:var(--chem); font-size:20px; } .glance .nt { font-size:13.5px; color:var(--ink2); margin-top:2px; } .glance .fr { font-size:12.5px; color:var(--ai); margin-top:3px; }
+  .key { background:var(--note); border-radius:10px; padding:14px 16px; margin-top:16px; font-size:15.5px; line-height:24px; }
+  .work { margin-top:12px; } .work .l { display:grid; grid-template-columns:1fr auto; gap:10px; padding:7px 0; border-bottom:1px solid var(--line); font-family:var(--chem); font-size:18px; } .work .l span:last-child { font-family:var(--sans); font-size:12px; color:var(--shu); align-self:center; }
+  .nav { margin-top:22px; } .nav .row .k { font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--ink2); }
+  .pic { display:flex; justify-content:center; padding:8px 0 2px; }
+  /* Example screen */
+  .ex-head { margin:0 -26px; padding:0 26px 14px; border-bottom:1px solid var(--line); }
+  .ex-q { font-family:var(--chem); font-size:22px; line-height:30px; margin-top:6px; }
+  .mbar { display:flex; gap:4px; margin-top:14px; } .mbar div { flex:1; } .mbar i { display:block; height:3px; border-radius:2px; background:var(--line); transition:background .26s; } .mbar span { display:block; font-size:11px; color:var(--axis); margin-top:5px; transition:color .26s; }
+  .mbar .done i { background:var(--ink); } .mbar .done span { color:var(--ink2); } .mbar .now i { background:var(--coral); } .mbar .now span { color:var(--ink); font-weight:700; }
+  .wrk { margin-top:10px; } .wl { display:grid; grid-template-columns:minmax(22px,auto) 16px 1fr 66px; column-gap:6px; align-items:baseline; min-height:58px; padding:12px 0; border-bottom:1px solid var(--line); font-family:var(--chem); font-size:19px; line-height:27px; }
+  /* Lines break only between terms, never right after an operator (BYE Math's MathLine rule). */
+  .wl .lhs { text-align:right; } .wl .eqs { text-align:center; } .wl .op { font-family:var(--sans); font-size:11px; color:var(--shu); text-align:right; line-height:16px; } .wl .op em { display:block; font-style:normal; color:var(--ink2); font-size:11px; }
+  .wl.focus .op em { color:var(--coral); font-weight:700; }
+  .wl.new { animation:rise .45s cubic-bezier(.22,1,.36,1); } @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .detail { margin-top:18px; animation:fade .2s ease-out; } @keyframes fade { from { opacity:0; } }
+  .detail .st { font-family:var(--serif); font-size:26px; line-height:31px; margin:4px 0 6px; } .detail .say { font-size:16px; line-height:26px; }
+  .acc { margin-top:14px; border-top:1px solid var(--line); } .acc .qq { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line); font-weight:500; font-size:15px; cursor:pointer; } .acc .aa { font-size:14px; line-height:22px; color:var(--ink2); padding:8px 0 12px; border-bottom:1px solid var(--line); }
+  .bottom { position:relative; margin:22px -26px -30px; padding:0 26px 26px; background:linear-gradient(rgba(246,243,236,0), var(--ground) 46px); }
+  .bottom .prev { text-align:center; font-size:13px; color:var(--ink2); padding-top:30px; }
+  /* Desktop board */
+  .desk { display:grid; grid-template-columns:256px 1fr; background:var(--ground); border-radius:16px; overflow:hidden; box-shadow:0 1px 0 var(--line),0 18px 40px rgba(30,28,25,.10); min-height:720px; }
+  .side { border-right:1px solid var(--line); padding:22px 0; font-size:14px; }
+  .side .wm { font-size:22px; padding:0 22px; } .side .tabs { margin:16px 22px 0; gap:18px; } .side .tabs button { font-size:14px; }
+  .side .gh { font-size:11px; letter-spacing:1.4px; text-transform:uppercase; color:var(--axis); padding:18px 22px 6px; }
+  .side .it { padding:8px 22px 8px 19px; border-left:3px solid transparent; color:var(--ink2); display:flex; gap:10px; } .side .it .nn { width:22px; font-family:var(--serif); color:var(--axis); }
+  .side .it.cur { border-left-color:var(--coral); color:var(--ink); background:rgba(239,234,223,.6); } .side .it.sub { padding-left:51px; font-size:13px; } .side .it.sub2 { padding-left:61px; font-size:13px; }
+  .page { padding:36px 0 60px; } .page .col { max-width:680px; margin:0 auto; padding:0 40px; }
+  @media (max-width:1240px) { .board.wide { width:100%; } }
+  @media (max-width:760px) { .desk { grid-template-columns:1fr; } .side { display:none; } }
+  @media (max-width:360px) { .boards { padding-left:12px; padding-right:12px; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="H2O" viewBox="0 0 38 30"><circle cx="8" cy="9" r="6.5" fill="var(--elH)" stroke="#8a8378" stroke-width="1.2"/><circle cx="30" cy="9" r="6.5" fill="var(--elH)" stroke="#8a8378" stroke-width="1.2"/><circle cx="19" cy="18" r="10" fill="var(--elO)" stroke="#f6f3ec" stroke-width="1"/></symbol>
+  <symbol id="back" viewBox="0 0 20 14"><path d="M19 7H2M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="#5a554d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="top">
+  <h1>BYE Chem as a textbook, in BYE Math’s design</h1>
+  <p>For review before the app changes. The look, the motion and the page structure come from BYE Math’s current guideline (<code>docs/ui-guide.md</code>, from BYE Math @ b49d14a). It keeps BYE Chem’s liked topic-page top and flat particle pictures, and drops all testing: sections are <b>short reads, a recap, and read-only worked examples</b> (<code>docs/learn-template.md</code>).</p>
+  <p>Working here: the Learn · Lab · Tools tabs (sliding underline), the “Why it works” frames, and the worked example: tap <b>Next</b> to reveal the working line by line.</p>
+</header>
+
+<!-- ───────── Row 1: Home, chapter, section ───────── -->
+<div class="rowhead"><h2>1 · Home, chapter, section</h2><span>Phone width (375 px boards)</span></div>
+<section class="boards">
+
+  <div class="board">
+    <div class="label">Home · Learn</div>
+    <div class="phone">
+      <div class="brand"><div class="wm">BYE<i>.</i></div><div class="rule"></div><div><div class="bs">Chem</div><div class="bs" style="font-size:14px">一歩ずつ</div></div></div>
+      <div class="tabs" data-tabs><button aria-pressed="true">Learn</button><button aria-pressed="false">Lab</button><button aria-pressed="false">Tools</button><span class="ul"></span></div>
+      <div class="hero">Chemistry, one step at a time.</div>
+      <p class="plain">A textbook from zero to Chem 1A, 1B and AP. Every word is explained the first time it shows up.</p>
+      <div class="eyebrow" style="margin-top:28px">Start here</div>
+      <div class="start"><span class="ic">→</span><div><div class="t" style="font-weight:500">Learn from zero</div><div class="q small">Never studied chemistry, or it’s been years? Start at Chapter 0 and read in order.</div></div></div>
+      <div class="start"><span class="ic">1A</span><div><div class="t" style="font-weight:500">I’m taking Chem 1A</div><div class="q small">The same chapters in your book’s order (Tro).</div></div></div>
+      <div class="eyebrow" style="margin-top:28px;display:flex;justify-content:space-between">Chapters<span style="letter-spacing:0;text-transform:none">our order · Tro 6e refs</span></div>
+      <div class="row"><span class="n">0</span><div class="b"><div class="t">Maths for Chemistry</div><div class="q">Can you read 7 × 10<sup>21</sup> and work with it?</div><div class="tags"><span class="tag i">Intro</span><span class="tag a">Chem 1A</span><span class="tag ap">AP</span><span class="tro">7 sections</span></div></div><span class="chev"></span></div>
+      <div class="row"><span class="n">1</span><div class="b"><div class="t">Matter and Measurement</div><div class="q">What is stuff made of, and how do we measure it honestly?</div><div class="tags"><span class="tag i">Intro</span><span class="tag a">Chem 1A</span><span class="tro">Tro ch. 1</span></div></div><span class="chev"></span></div>
+      <div class="row"><span class="n">4</span><div class="b"><div class="t">Counting by Weighing: the Mole</div><div class="q">Atoms are too small to count, so how do chemists count them?</div><div class="tags"><span class="tag i">Intro</span><span class="tag a">Chem 1A</span><span class="tro">Tro 2.9, 3.8–3.10</span></div></div><span class="chev"></span></div>
+      <div class="sw"><span>Sounds</span><span class="switch" role="switch" aria-checked="false"></span></div>
+    </div>
+    <div class="notes"><span class="why">from BYE Math</span><br><b>Same hub as BYE Math.</b> The wordmark row, the tabs with one sliding coral underline, a serif hero, then 60 px chapter rows with serif numerals, and a Sounds switch at the foot (off by default). <b>Gone:</b> Find your gaps and Today’s review (no testing).</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Chapter 4</div>
+    <div class="phone">
+      <div class="back"><svg width="20" height="14"><use href="#back"/></svg>Chemistry</div>
+      <div class="eyebrow" style="margin-top:6px">Chapter 4</div>
+      <div class="t-chap">Counting by Weighing: the Mole</div>
+      <p class="plain">Count atoms you can’t see, by weighing them.</p>
+      <div class="tags"><span class="tag i">Intro</span><span class="tag a">Chem 1A</span><span class="tag ap">AP</span><span class="tro">In your book: Tro 2.9, 3.8–3.10</span></div>
+      <div class="band lt">
+        <div class="eyebrow">What this lets you do</div>
+        <p class="p" style="margin-top:8px">Weigh 36 g of water and say how many molecules are in it, without counting a single one.</p>
+        <div class="pic" style="gap:12px;align-items:flex-end"><div style="text-align:center"><svg width="26" height="32" viewBox="0 0 24 30"><path d="M12 2C12 2 3 13 3 19.5a9 9 0 0 0 18 0C21 13 12 2 12 2z" fill="#9fc0e3"/></svg><div class="f g">18.02 g</div></div><div class="f" style="font-size:20px;color:var(--ink2);padding-bottom:22px">=</div><div style="text-align:center"><div style="display:flex;align-items:center;gap:6px"><svg width="38" height="30"><use href="#H2O"/></svg><span class="f">× 6.022 × 10<sup>23</sup></span></div><div class="f m">1 mol H<sub>2</sub>O</div></div></div>
+      </div>
+      <div class="eyebrow" style="margin-top:24px">Ready? You need</div>
+      <div class="stop"><div><div class="t">Powers of Ten</div><div class="s2">0.1 · huge and tiny numbers</div></div><span class="lk">Review</span></div>
+      <div class="stop"><div><div class="t">Writing Formulas and Models</div><div class="s2">3.2 · what H<sub>2</sub>O tells you</div></div><span class="lk">Review</span></div>
+      <div class="stop"><div><div class="t">Atomic Mass</div><div class="s2">2.6 · why chlorine is 35.45</div></div><span class="lk">Review</span></div>
+      <div class="eyebrow" style="margin-top:24px">The story</div>
+      <p class="p">Atoms are far too small to count, so chemists count them by weighing, the way a bank weighs a bag of coins (4.1). The same counting tells you how much of a compound is each element (4.2), and turns the masses from an experiment into a formula (4.3).</p>
+      <div class="band lt">
+        <div class="eyebrow" style="display:flex;justify-content:space-between">The road map<span style="letter-spacing:0;text-transform:none">3 sections</span></div>
+        <div class="group">Counting by weighing</div>
+        <div class="row"><span class="n">4.1</span><div class="b"><div class="t">The Mole and Molar Mass</div><div class="q">How do you count particles by weighing them?</div></div><span class="r">12 min</span><span class="chev"></span></div>
+        <div class="group">Reading a compound</div>
+        <div class="row"><span class="n">4.2</span><div class="b"><div class="t">Percent Composition</div><div class="q">How much of a compound is each element, by mass?</div></div><span class="r">9 min</span><span class="chev"></span></div>
+        <div class="row" style="border:0"><span class="n">4.3</span><div class="b"><div class="t">Finding a Formula From Masses</div><div class="q">Given the masses in a compound, what is its formula?</div></div><span class="r">11 min</span><span class="chev"></span></div>
+      </div>
+      <div class="btn"><button class="pill">Start with Section 4.1&nbsp;&nbsp;→</button></div>
+      <div class="band lt">
+        <div class="eyebrow">The chapter at a glance</div>
+        <div class="glance"><div class="e"><span class="m">moles</span> = <span class="g">grams</span> ÷ molar mass</div><div class="nt">Molar mass is grams per mole.</div><div class="fr">Section 4.1</div></div>
+        <div class="glance" style="border:0"><div class="e">% by mass = part ÷ whole × 100</div><div class="nt">An element’s grams in one mole, over the molar mass.</div><div class="fr">Section 4.2</div></div>
+      </div>
+    </div>
+    <div class="notes"><span class="why">both</span><br><b>BYE Chem’s liked top, BYE Math’s bands below.</b> The promise, “What this lets you do” with the particle picture, and “Ready? You need” as <b>plain links</b> (no quiz) come first. Then BYE Math’s story, a grouped road map with reading times, Start, and the chapter at a glance.</div>
+  </div>
+
+  <div class="board">
+    <div class="label">Section 4.1 · Learn</div>
+    <div class="phone">
+      <div class="back"><svg width="20" height="14"><use href="#back"/></svg>Chapter 4</div>
+      <div class="eyebrow" style="margin-top:6px">Chapter 4 · Section 4.1</div>
+      <div class="t-sec">The Mole and Molar Mass</div>
+      <div class="tro">In your book: Tro 2.9, 3.8</div>
+      <p class="p">You can’t count atoms one by one, so you count them by weighing. One mole of anything is 6.022 × 10<sup>23</sup> of it, the way one dozen is 12.</p>
+      <div class="band lt">
+        <div class="head"><span class="eyebrow">Understand it</span><span class="meta">5 short reads · 12 min</span></div>
+        <div class="row"><span class="n">1</span><div class="b"><div class="t">Counting by weighing</div><div class="q">Why chemists weigh things to count atoms they can never see.</div></div><span class="r">2 min</span></div>
+        <div class="row"><span class="n">2</span><div class="b"><div class="t">The mole is a count</div><div class="q">A mole is a number, like a dozen, only far bigger.</div></div><span class="r">2 min</span></div>
+        <div class="row"><span class="n">3</span><div class="b"><div class="t">Molar mass</div><div class="q">How heavy one mole of a substance is, from its formula.</div></div><span class="r">3 min</span></div>
+        <div class="row"><span class="n">4</span><div class="b"><div class="t">Grams ↔ moles ↔ particles</div><div class="q">Every trip goes through moles.</div></div><span class="r">3 min</span></div>
+        <div class="row" style="border:0"><span class="n">5</span><div class="b"><div class="t">Using it well</div><div class="q">When to use it, and the moves in Example 1.</div></div><span class="r">2 min</span></div>
+      </div>
+      <div class="eyebrow" style="margin-top:26px">The recap</div>
+      <div class="tool"><span class="m">moles</span> = <span class="g">grams</span> ÷ molar mass</div>
+      <div class="toolnote">Molar mass is grams per mole: add up the atoms in the formula.</div>
+      <div class="eyebrow" style="margin-top:22px">Key ideas</div>
+      <div class="idea"><span class="n">1</span><div><div class="t">The mole is a count</div><div class="d">6.022 × 10<sup>23</sup> particles of whatever you name.</div></div></div>
+      <div class="idea"><span class="n">2</span><div><div class="t">Molar mass from the formula</div><div class="d">H<sub>2</sub>O: 2 × 1.008 + 15.999 = 18.02 g/mol.</div></div></div>
+      <div class="band lt">
+        <div class="eyebrow">Why it works</div>
+        <div class="pic" id="whyPic" style="min-height:92px;align-items:center;gap:6px"></div>
+        <div class="cap" id="whyCap"></div>
+        <div class="frames"><span>tap ‹ left · right › or swipe</span><span class="fdots" id="whyDots"></span></div>
+      </div>
+      <div class="eyebrow" style="margin-top:26px">How to spot it</div>
+      <div class="clue"><span class="n">1</span><div><div style="font-size:15px">Grams given, moles wanted</div><div class="ex">9.01 g H<sub>2</sub>O → ? mol<div class="nt">divide by the molar mass</div></div></div></div>
+      <div class="clue"><span class="n">2</span><div><div style="font-size:15px">A count of particles</div><div class="ex">how many molecules in 5.00 g?<div class="nt">grams → moles → × 6.022 × 10<sup>23</sup></div></div></div></div>
+      <div class="eyebrow" style="margin-top:26px">Common mistakes</div>
+      <div class="mis"><div class="w"><span class="k">Not</span>n = 18.02 g/mol ÷ 9.01 g</div><div class="r"><span class="k">But</span>n = 9.01 g ÷ 18.02 g/mol</div><div class="y">Grams on top: grams ÷ grams per mole leaves moles.</div></div>
+      <div class="mis"><div class="w"><span class="k">Not</span>M(O<sub>2</sub>) = 16.00 g/mol</div><div class="r"><span class="k">But</span>M(O<sub>2</sub>) = 32.00 g/mol</div><div class="y">The 2 means two O atoms in every molecule.</div></div>
+      <div class="band lt">
+        <div class="head"><span class="eyebrow">Worked examples</span><span class="meta">3 · read-only</span></div>
+        <div class="row"><span class="n">1</span><div class="b"><div class="t" style="font-family:var(--chem);font-weight:400">Moles in 9.01 g of water</div><div class="q">easy · 2 steps</div></div><span class="chev"></span></div>
+        <div class="row"><span class="n">2</span><div class="b"><div class="t" style="font-family:var(--chem);font-weight:400">Moles in 11.0 g of CO<sub>2</sub></div><div class="q">typical · 2 steps</div></div><span class="chev"></span></div>
+        <div class="row" style="border:0"><span class="n">3</span><div class="b"><div class="t" style="font-family:var(--chem);font-weight:400">Molecules in 5.00 g of sugar</div><div class="q">harder · 3 steps</div></div><span class="chev"></span></div>
+      </div>
+      <div class="btn"><button class="pill">Start with read 1&nbsp;&nbsp;→</button></div>
+    </div>
+    <div class="notes"><span class="why">from BYE Math</span><br><b>BYE Math’s Learn tab, as a textbook.</b> “Understand it” lists the short reads with times. The recap follows: the tool, key ideas, why it works (frames), how to spot it, common mistakes (red and green), then worked examples to step through. <b>No level tabs and no Check yourself.</b></div>
+  </div>
+</section>
+
+<!-- ───────── Row 2: a read and a worked example ───────── -->
+<div class="rowhead"><h2>2 · A read, and a worked example</h2><span>The worked example is live: tap Next</span></div>
+<section class="boards">
+
+  <div class="board">
+    <div class="label">Read · 2 of 5</div>
+    <div class="phone">
+      <div class="back"><svg width="20" height="14"><use href="#back"/></svg>Section 4.1</div>
+      <div class="eyebrow" style="margin-top:6px">Section 4.1 · 2 of 5</div>
+      <div class="t-read">The mole is a count</div>
+      <p class="plain">A mole is a number, like a dozen, only far bigger.</p>
+      <p class="p">A dozen eggs is 12 eggs, whatever size the eggs are. A <b>mole</b> works the same way: one mole of anything is 6.022 × 10<sup>23</sup> of it. That number is chosen so the mass of one mole, in grams, matches the formula mass you already know.</p>
+      <div class="band lt">
+        <div class="eyebrow">Picture it · particles</div>
+        <div class="pic" style="flex-wrap:wrap;gap:6px;max-width:240px;margin:8px auto 0">
+          <svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg>
+          <svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg><svg width="38" height="30"><use href="#H2O"/></svg>
+        </div>
+        <p class="small" style="text-align:center;margin-top:10px">A dozen water molecules: 12 H<sub>2</sub>O. A mole is the same idea with 6.022 × 10<sup>23</sup> of them.</p>
+      </div>
+      <div class="key">One mole = 6.022 × 10<sup>23</sup> particles, of whatever you name: atoms, molecules or ions.</div>
+      <div class="work">
+        <div class="l"><span>2.000 mol H<sub>2</sub>O = 2.000 × 6.022 × 10<sup>23</sup></span><span>× 6.022 × 10<sup>23</sup></span></div>
+        <div class="l"><span>= 1.204 × 10<sup>24</sup> molecules</span><span>the running example</span></div>
+      </div>
+      <div class="nav">
+        <div class="row"><div class="b"><div class="k">Before</div><div class="t">Counting by weighing</div></div></div>
+        <div class="row" style="border:0"><div class="b"><div class="k">Next</div><div class="t">Molar mass</div></div><span class="chev"></span></div>
+      </div>
+    </div>
+    <div class="notes"><span class="why">from BYE Math</span><br><b>One screen of reading and a picture.</b> The gist sits under the title. The idea comes in words, then a particle picture labelled with its level (“particles”), then the key fact boxed, then the running example (36.04 g of water = 2.000 mol). Before / Next rows end the page. <b>No check at the end.</b></div>
+  </div>
+
+  <div class="board">
+    <div class="label">Worked example 4.1-3 (live)</div>
+    <div class="phone" id="ex">
+      <div class="ex-head">
+        <div class="back"><svg width="20" height="14"><use href="#back"/></svg>Section 4.1</div>
+        <div class="eyebrow" id="exStep">Step 1 of 3</div>
+        <div class="ex-q">How many molecules are in 5.00 g of sugar, C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>?</div>
+      </div>
+      <div class="mbar" id="mbar"></div>
+      <div class="wrk" id="wrk"></div>
+      <div id="detail"></div>
+      <div class="bottom">
+        <div class="prev" id="prev"></div>
+        <div class="btn" style="margin-top:10px" id="exBtns"></div>
+      </div>
+    </div>
+    <div class="notes"><span class="why">from BYE Math</span><br><b>BYE Math’s problem screen, watch-only.</b> The method bar shows done in ink, now in coral, the rest in grey. Each tap reveals one line: the = signs line up, the operation sits in the red margin with the move’s name under it, and the new line fades in rising 8 px. The step’s explanation sits below with “Common questions”. <b>The bottom bar always says what comes next.</b> Nothing to type.</div>
+  </div>
+</section>
+
+<!-- ───────── Row 3: desktop ───────── -->
+<div class="rowhead"><h2>3 · Desktop (≥ 900 px)</h2><span>BYE Math’s desktop mode: the book down the side, text kept to 680 px</span></div>
+<section class="boards">
+  <div class="board wide">
+    <div class="label">Desktop · a read</div>
+    <div class="desk">
+      <aside class="side">
+        <div class="wm">BYE<i>.</i> <span style="font-family:var(--sans);font-size:14px;letter-spacing:0;color:var(--ink2)">Chem</span></div>
+        <div class="tabs" data-tabs><button aria-pressed="true">Learn</button><button aria-pressed="false">Lab</button><button aria-pressed="false">Tools</button><span class="ul"></span></div>
+        <div class="gh">Chapters</div>
+        <div class="it"><span class="nn">0</span>Maths for Chemistry</div>
+        <div class="it"><span class="nn">1</span>Matter and Measurement</div>
+        <div class="it"><span class="nn">2</span>Atoms and Elements</div>
+        <div class="it"><span class="nn">3</span>Compounds</div>
+        <div class="it" style="color:var(--ink)"><span class="nn">4</span>Counting by Weighing</div>
+        <div class="it sub" style="color:var(--ink)">4.1 The Mole and Molar Mass</div>
+        <div class="it sub2">1 Counting by weighing</div>
+        <div class="it sub2 cur">2 The mole is a count</div>
+        <div class="it sub2">3 Molar mass</div>
+        <div class="it sub2">4 Grams ↔ moles ↔ particles</div>
+        <div class="it sub2">5 Using it well</div>
+        <div class="it sub2">Recap · Examples</div>
+        <div class="it sub">4.2 Percent Composition</div>
+        <div class="it sub">4.3 Finding a Formula</div>
+        <div class="it"><span class="nn">5</span>Reactions and How Much</div>
+      </aside>
+      <main class="page"><div class="col">
+        <div class="eyebrow">Section 4.1 · 2 of 5</div>
+        <div class="t-read" style="font-size:40px;line-height:48px">The mole is a count</div>
+        <p class="plain">A mole is a number, like a dozen, only far bigger.</p>
+        <p class="p">A dozen eggs is 12 eggs, whatever size the eggs are. A <b>mole</b> works the same way: one mole of anything is 6.022 × 10<sup>23</sup> of it. That number is chosen so the mass of one mole, in grams, matches the formula mass you already know.</p>
+        <div class="key">One mole = 6.022 × 10<sup>23</sup> particles, of whatever you name: atoms, molecules or ions.</div>
+        <p class="small" style="margin-top:24px">The sidebar keeps the whole book in view, with a coral bar on the current read. The Back button hides while it is open. On a worked example the sidebar folds to a 60 px rail, and the working and its explanation sit side by side (up to 1180 px), with → / Space for the next line.</p>
+      </div></main>
+    </div>
+    <div class="notes"><span class="why">from BYE Math</span><br><b>Desktop mode from 900 px:</b> a 256–280 px sidebar, reading kept to 680 px, figures to 560 px. Rows tint on hover. Phones never see it.</div>
+  </div>
+</section>
+
+<script>
+  // Tabs: one coral underline that slides (SPRING-like ease), toggle buttons as on BYE Math's web build.
+  document.querySelectorAll('[data-tabs]').forEach((tabs) => {
+    const ul = tabs.querySelector('.ul');
+    const place = (b, animate) => { if (!animate) ul.style.transition = 'none'; ul.style.left = b.offsetLeft + 'px'; ul.style.width = b.offsetWidth + 'px'; if (!animate) requestAnimationFrame(() => (ul.style.transition = '')); };
+    const btns = [...tabs.querySelectorAll('button')];
+    btns.forEach((b) => b.addEventListener('click', () => { btns.forEach((x) => x.setAttribute('aria-pressed', x === b)); place(b, true); }));
+    document.fonts.ready.then(() => place(btns.find((b) => b.getAttribute('aria-pressed') === 'true'), false));
+  });
+
+  // Why it works: three frames; pictures only add.
+  (function () {
+    const w = '<svg width="38" height="30"><use href="#H2O"/></svg>';
+    const frames = [
+      { pic: `<div style="text-align:center"><svg width="26" height="32" viewBox="0 0 24 30"><path d="M12 2C12 2 3 13 3 19.5a9 9 0 0 0 18 0C21 13 12 2 12 2z" fill="#9fc0e3"/></svg><div class="f g" style="font-size:15px">18.02 g</div></div>`, cap: 'You can weigh water, but you can’t count its molecules.' },
+      { pic: `<div style="text-align:center"><svg width="26" height="32" viewBox="0 0 24 30"><path d="M12 2C12 2 3 13 3 19.5a9 9 0 0 0 18 0C21 13 12 2 12 2z" fill="#9fc0e3"/></svg><div class="f g" style="font-size:15px">18.02 g</div></div><div class="f" style="color:var(--ink2)">=</div><div style="text-align:center">${w}<div class="f m" style="font-size:15px">1 mol</div></div>`, cap: 'Every water molecule weighs the same, so 18.02 g is always the same count: one mole.' },
+      { pic: `<div style="text-align:center"><svg width="26" height="32" viewBox="0 0 24 30"><path d="M12 2C12 2 3 13 3 19.5a9 9 0 0 0 18 0C21 13 12 2 12 2z" fill="#9fc0e3"/></svg><div class="f g" style="font-size:15px">36.04 g</div></div><div class="f" style="color:var(--ink2)">=</div><div style="text-align:center">${w}${w}<div class="f m" style="font-size:15px">2.000 mol</div></div>`, cap: 'Twice the grams is twice the moles: weighing is counting.' },
+    ];
+    const pic = document.getElementById('whyPic'), cap = document.getElementById('whyCap'), dots = document.getElementById('whyDots');
+    let i = 0;
+    const show = (k) => { i = k; pic.innerHTML = frames[k].pic; cap.textContent = frames[k].cap; [...dots.children].forEach((d, j) => d.setAttribute('aria-pressed', j === k)); };
+    frames.forEach((_, k) => { const b = document.createElement('button'); b.setAttribute('aria-label', `Frame ${k + 1}`); b.innerHTML = '<i></i>'; b.onclick = () => show(k); dots.appendChild(b); });
+    pic.parentElement.addEventListener('click', (e) => { if (e.target.closest('.fdots')) return; const r = pic.parentElement.getBoundingClientRect(); show(e.clientX < r.left + r.width / 4 ? Math.max(0, i - 1) : Math.min(frames.length - 1, i + 1)); });
+    show(0);
+  })();
+
+  // Worked example 4.1-3, watch-only: one line per tap. Numbers: M = 342.30 g/mol; 5.00/342.30 = 0.0146 mol; × 6.022e23 = 8.80 × 10^21.
+  (function () {
+    const steps = [
+      { move: 'Molar mass', say: 'Add up every atom in the formula: 12 C, 22 H and 11 O.', q: [['Why not just 12 + 22 + 11?', 'Those are counts of atoms, not masses. Each count is multiplied by that atom’s mass: carbon 12.011, hydrogen 1.008, oxygen 15.999.']],
+        lines: [{ l: 'M', r: '12&nbsp;×&nbsp;12.011 + 22&nbsp;×&nbsp;1.008 + 11&nbsp;×&nbsp;15.999' }, { r: '342.30&nbsp;g/mol', op: '' }] },
+      { move: 'Grams → moles', say: 'Divide the grams by the molar mass. Grams ÷ grams per mole leaves moles. Keep one extra figure until the last step.', q: [['Why divide, not multiply?', 'Molar mass is grams per mole. Dividing grams by it cancels the grams and leaves moles.'], ['Why keep an extra figure?', 'Rounding in the middle can shift the last digit of the answer. Keep one more figure than you need, and round once at the end.']],
+        lines: [{ l: 'n', r: '5.00&nbsp;g ÷&nbsp;342.30&nbsp;g/mol', op: '÷ M' }, { r: '0.01461&nbsp;mol' }] },
+      { move: 'Moles → molecules', say: 'Multiply by Avogadro’s number, then round to 3 significant figures, as in 5.00 g.', q: [['Why 3 figures?', 'The least precise number given is 5.00 g, with 3 significant figures, so the answer keeps 3.']],
+        lines: [{ l: 'N', r: '0.01461&nbsp;mol ×&nbsp;6.022&nbsp;×&nbsp;10<sup>23</sup>', op: '× N<sub>A</sub>' }, { r: '8.80&nbsp;×&nbsp;10<sup>21</sup> molecules' }] },
+    ];
+    const order = steps.flatMap((s, si) => s.lines.map((_, li) => [si, li]));
+    let shown = 1;
+    const mbar = document.getElementById('mbar'), wrk = document.getElementById('wrk'), detail = document.getElementById('detail'), prev = document.getElementById('prev'), btns = document.getElementById('exBtns'), lab = document.getElementById('exStep');
+    function render(isNew) {
+      const [cs, cl] = order[shown - 1];
+      lab.textContent = `Step ${cs + 1} of ${steps.length}`;
+      mbar.innerHTML = steps.map((s, i) => `<div class="${i < cs ? 'done' : i === cs ? 'now' : ''}"><i></i><span>${s.move}</span></div>`).join('');
+      wrk.innerHTML = order.slice(0, shown).map(([si, li], k) => { const L = steps[si].lines[li]; const isFocus = si === cs; return `<div class="wl ${isFocus ? 'focus' : ''} ${isNew && k === shown - 1 ? 'new' : ''}"><span class="lhs">${L.l ?? ''}</span><span class="eqs">=</span><span>${L.r}</span><span class="op">${L.op ?? ''}${li === 0 ? `<em>${steps[si].move}</em>` : ''}</span></div>`; }).join('');
+      const s = steps[cs];
+      if (cl === 0 || !isNew) detail.innerHTML = `<div class="detail"><div class="eyebrow">Step ${cs + 1} · ${s.move}</div><div class="st">${s.move}</div><div class="say">${s.say}</div><div class="acc">${s.q.map(([q, a]) => `<div class="qq" data-acc>${q}<span>+</span></div><div class="aa" hidden>${a}</div>`).join('')}</div></div>`;
+      detail.querySelectorAll('[data-acc]').forEach((q) => (q.onclick = () => { const a = q.nextElementSibling; a.hidden = !a.hidden; q.lastChild.textContent = a.hidden ? '+' : '−'; }));
+      if (shown < order.length) {
+        const [ns, nl] = order[shown];
+        const nextLabel = ns !== cs ? `Next: ${steps[ns].move}` : 'Next line';
+        prev.innerHTML = ns !== cs ? steps[ns].say : `Line ${nl + 1} of ${steps[ns].lines.length} in this step`;
+        btns.innerHTML = `<button class="pill" id="go">${nextLabel}&nbsp;&nbsp;↓</button>`;
+        document.getElementById('go').onclick = () => { shown++; render(true); };
+      } else {
+        prev.innerHTML = 'That’s the answer: 8.80 × 10<sup>21</sup> molecules of sugar in 5.00 g.';
+        btns.innerHTML = '<button class="pill sec" id="again" style="margin-right:8px">From step 1</button><button class="pill">Back to the section&nbsp;&nbsp;→</button>';
+        document.getElementById('again').onclick = () => { shown = 1; render(true); };
+      }
+    }
+    render(false);
+  })();
+</script>
+</body>
+</html>
