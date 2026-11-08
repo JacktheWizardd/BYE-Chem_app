@@ -6,13 +6,35 @@
     "scheme": "byechem",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "ios": { "supportsTablet": true },
-    "web": { "output": "single", "bundler": "metro" },
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "output": "single",
+      "bundler": "metro"
+    },
     "plugins": [
-      ["expo-router", { "asyncRoutes": { "web": false } }],
+      [
+        "expo-router",
+        {
+          "asyncRoutes": {
+            "web": false
+          }
+        }
+      ],
       "expo-font",
-      ["expo-splash-screen", { "backgroundColor": "#f6f3ec", "imageWidth": 76 }]
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f6f3ec",
+          "imageWidth": 76
+        }
+      ],
+      "expo-audio",
+      "expo-asset"
     ],
-    "experiments": { "typedRoutes": true }
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }

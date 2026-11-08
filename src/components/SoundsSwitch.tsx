@@ -1,22 +1,31 @@
-// The Sounds switch (BYE Math @ b49d14a). Hidden until BYE Chem's own chemistry sound set is chosen
-// (src/sound.ts SOUNDS_READY); off by default.
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { setSoundsOn, useSoundsOn } from '@/components/feedback';
-import { SOUNDS_READY } from '@/sound';
+import { PressFade } from '@/components/ui';
 import { color, font } from '@/theme';
 
+/** Tap sounds, off until the student turns them on. Turning them on plays one, so it's heard. */
 export function SoundsSwitch() {
   const on = useSoundsOn();
-  if (!SOUNDS_READY) return null;
   return (
-    <View style={styles.row}>
-      <Text style={styles.label}>Sounds</Text>
-      <Switch value={on} onValueChange={setSoundsOn} trackColor={{ true: color.ink, false: color.line }} accessibilityLabel="Sounds" />
-    </View>
+    <PressFade
+      onPress={() => setSoundsOn(!on)}
+      haptic="select"
+      accessibilityRole="switch"
+      accessibilityLabel="Sounds"
+      accessibilityState={{ checked: on }}
+      aria-checked={on}
+      hitSlop={8}
+      style={styles.sounds}
+    >
+      <Text style={styles.soundsText}>
+        Sounds <Text style={[styles.soundsState, on && { color: color.ink }]}>{on ? 'On' : 'Off'}</Text>
+      </Text>
+    </PressFade>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 26, minHeight: 44 },
-  label: { fontFamily: font.sans, fontSize: 13, color: color.ink2 },
+  sounds: { minHeight: 32, justifyContent: 'center', alignSelf: 'flex-start' },
+  soundsText: { fontFamily: font.sans, fontSize: 13, color: color.ink2 },
+  soundsState: { fontFamily: font.sansMedium, color: color.axis },
 });

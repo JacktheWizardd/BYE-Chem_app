@@ -133,7 +133,7 @@ How the app looks, moves and reads. It is BYE Math's current guideline adapted t
 - **Sound:**
   - optional, **off by default** (the Sounds switch on Home);
   - it plays *before* the vibration;
-  - BYE Chem has its own **chemistry sound set**, chosen by the user (candidates in `design/sounds/`, credits in `assets/sounds/CREDITS.md`): a `tap`, a `select`, and a `done` when an example's last line appears.
+  - the sounds are **BYE Math's own** (the user's choice, 2026-11-07, over three recorded lab sets): `assets/sounds/tap.wav` for buttons and rows, `tap-select.wav` for tabs and choices, and `done.wav` when an example's last line appears. They are synthesized by `scripts/make-sounds.mjs`, copied from BYE Math @ b49d14a with `src/sound.ts` (expo-audio), `src/sound.web.ts` (Web Audio) and the Sounds switch, at volume 0.07.
 - **Launch intro:** none yet. A chemistry intro comes later, from its own mockup.
 
 ## 4. Page anatomies
@@ -208,5 +208,4 @@ How the app looks, moves and reads. It is BYE Math's current guideline adapted t
 | Graphs everywhere | Particle pictures first (flat, the liked style), graphs where they help, the 3D viewer as the deeper view |
 | Practice levels Simple / Medium / Hard with tutored problems | Textbook: read-only worked examples, no levels, no answers to type |
 | Subject tabs Calculus / Algebra | Learn · Lab · Tools |
-| Wooden soroban / wood-block sounds | Its own chemistry sound set |
 | Launch intro | Later |
