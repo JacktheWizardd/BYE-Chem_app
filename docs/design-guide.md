@@ -1,5 +1,7 @@
 # BYE Chem visual design guide
 
+> The app UI (tokens, type, components, motion, page anatomies) is in `docs/ui-guide.md`; how a section is written is in `docs/learn-template.md`; notation is in `docs/notation.md`. This guide covers chemistry figures and lab reading.
+
 *2026-11-06, revised the same day after checking it against real chemistry tools and research (§11). How BYE Chem draws chemistry, independent of which engine ends up drawing it. The look is **図 Drafting table**, with three technical layers (engineering drawing, instrument readout, cut-away). Graphs are drawn by **BYE Math Engine**, so a chemistry graph looks exactly like a math graph. The 3D chemistry engine is **not decided**; this guide is what any engine must meet.*
 
 Live reference: `design/chem-design-guide.html` (every rule drawn). The style concepts are in `design/chem-technical-styles.html`. The comparisons behind §11: `docs/research/I-tools-vs-guide.md` (real tools and standards) and `docs/research/J-research-vs-guide.md` (research).

@@ -1,4 +1,6 @@
-# The practice layer
+# The practice layer (superseded)
+
+> **Superseded on 2026-11-08.** The user decided BYE Chem is a textbook: no quizzes, answer boxes, fading or review. Reads, a recap and read-only worked examples follow `docs/learn-template.md` and `docs/ui-guide.md`. This file is kept for history and for a possible practice mode later.
 
 How BYE Chem makes learners practise, not only read. It comes from the structure research (`reports/BYE Chem structure vs research.md`). The techniques with the strongest evidence are recalling answers, spaced review, mixing problem types, and feedback on answers (Dunlosky et al. 2013; Brunmair & Richter 2019; Alfieri et al. 2011). The mockup boards are in `design/chem-chapters.html`, row 1.
 

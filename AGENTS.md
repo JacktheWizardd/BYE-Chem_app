@@ -24,7 +24,9 @@ A chemistry learning app and website for everyone, from complete beginners and r
   - The engines resolve through the symlinks `.claude/worktrees/BYE-Chem_engine` and `BYE-Math_engine`.
   - `npm run check` runs the map check, types, lint and tests. CI runs the same in `.github/workflows/check.yml`.
 - `docs/chapter-map.md`: **the chapter map**, our order. Each chapter and section has its question, Tro sections, level tags (Intro / 1A / 1B / AP), "Ready? You need" prerequisites, and Lab links. It also has the class-order table for *I'm taking Chem 1A*. Edit the map first; the mockup's map table is generated from it.
-- `docs/practice-layer.md`: **how learners practise**, ten rules backed by the research: answer first, "Check yourself" with unit-aware feedback, fading that follows the learner, spaced mixed review, a skill-based gap check, recall mode, and linked views. Every new page follows it.
+- `docs/ui-guide.md`: **how the app looks, moves and reads**: BYE Math's current guideline (`BYE-Math_app@b49d14a`), adapted. It covers tokens, type, spacing, components, motion, sound, page anatomies and desktop mode.
+- `docs/learn-template.md`: **how a section is written**: reads, recap and read-only worked examples (a textbook: no quizzes). Pattern sections are §4.1, §0.1, §9.6 and §1.2.
+- `docs/practice-layer.md`: superseded (2026-11-08). BYE Chem is a textbook now.
 - `reports/` and `research_notes/`: research reports and the sourced notes behind them.
 - `docs/research/M-tro-6e-contents.md`: Tro 6e's 26 chapters and 229 sections, **as numbers and pages only**. This repo is public, so never commit the book's titles or text.
 - `docs/research/`: sourced research. Start with `README.md` (summary in `summary.html`). `L-lessons-from-bye-math.md` explains why each rule below exists. `first-pass.md` is the earliest overview.
@@ -54,6 +56,7 @@ Read the `expo` major version in `package.json`. Then fetch `https://docs.expo.d
 Install packages with `npx expo install <package>`, never npm/yarn add. Use Expo Router; routes live in `src/app/`. Never hand-edit `ios/` or `android/`.
 
 ## Shipping (one live site, many sessions)
+- **GitHub `main` is the truth.** Sessions commit and merge on their own, so a local checkout is often behind. Before any work: `git fetch origin`, read `origin/main`, and branch from it. Never judge the state of BYE Chem, BYE Math or the engines from a local `main`.
 - **One worktree per task.** Every task works on its own branch in its own worktree (`.claude/worktrees/`). Never commit in the main folder.
 - **Deploy only what's on `origin/main`.** The live site must always equal `origin/main`. To ship:
   1. `git fetch origin`, then merge `origin/main` into the branch.
