@@ -9,7 +9,8 @@ import { Rich } from '@/components/Rich';
 import { formulaRich } from '@/practice/quantity';
 import { color, font } from '@/theme';
 
-type Atom = { el: string; x: number; y: number };
+/** `back`: drawn behind the central atom (a bond pointing away from you). */
+type Atom = { el: string; x: number; y: number; back?: boolean };
 
 const FILL: Record<string, string> = { H: color.elH, O: color.elO, C: color.elC, N: color.elN, Cl: color.elCl, Na: color.elNa, S: '#d8b23a', F: '#7fae5a', He: '#d9cfe8', Ne: '#d9cfe8', Ar: '#d9cfe8' };
 const radius = (el: string) => (el === 'H' ? 6.5 : el === 'Cl' || el === 'Na' || el === 'S' ? 11 : 10);
@@ -17,7 +18,7 @@ const touch = (a: string, b: string) => radius(a) + radius(b) - 1.5;
 
 /** Atom positions for the molecules the textbook draws; anything else becomes a touching row. */
 export function layout(formula: string): Atom[] {
-  const at = (el: string, x: number, y: number): Atom => ({ el, x, y });
+  const at = (el: string, x: number, y: number, back?: boolean): Atom => ({ el, x, y, back });
   const ring = (center: string, outer: string, n: number, start: number, spread: number) => {
     const d = touch(center, outer);
     return [at(center, 0, 0), ...Array.from({ length: n }, (_, i) => {
@@ -29,7 +30,8 @@ export function layout(formula: string): Atom[] {
     case 'H2O': return ring('O', 'H', 2, -142, 104).map((a) => (a.el === 'O' ? { ...a } : a));
     case 'SO2': return ring('S', 'O', 2, -150, 120);
     case 'CO2': return [at('O', -touch('C', 'O'), 0), at('C', 0, 0), at('O', touch('C', 'O'), 0)];
-    case 'CH4': return ring('C', 'H', 4, 0, 270);
+    // A tetrahedron in perspective, never a flat cross (Section 9.6): one H up, one toward you, two behind.
+    case 'CH4': return [at('H', -12.2, 5, true), at('H', 12.2, 5, true), at('C', 0, 0), at('H', 0, -touch('C', 'H')), at('H', 0, 9)];
     case 'NH3': return ring('N', 'H', 3, 30, 120);
     case 'NaCl': return [at('Na', 0, 0), at('Cl', touch('Na', 'Cl'), 0)];
   }
@@ -54,8 +56,9 @@ function Molecule({ p }: { p: Particle }) {
   const minX = Math.min(...xs) - pad, minY = Math.min(...ys) - pad;
   const w = Math.max(...xs) - minX + pad, h = Math.max(...ys) - minY + pad;
   const ringR = Math.max(w, h) / 2 + 4;
-  // Draw H last so its ring sits on top of the atom it touches, as in the liked picture.
-  const order = [...atoms].sort((a, b) => (a.el === 'H' ? 1 : 0) - (b.el === 'H' ? 1 : 0));
+  // Back atoms first; then H last, so its ring sits on top of the atom it touches, as in the liked picture.
+  const depth = (a: Atom) => (a.back ? -1 : a.el === 'H' ? 1 : 0);
+  const order = [...atoms].sort((a, b) => depth(a) - depth(b));
   return (
     <View style={[styles.mol, p.faded && { opacity: 0.35 }]}>
       <Svg width={p.ring ? ringR * 2 : w} height={p.ring ? ringR * 2 : h} viewBox={p.ring ? `${minX + w / 2 - ringR} ${minY + h / 2 - ringR} ${ringR * 2} ${ringR * 2}` : `${minX} ${minY} ${w} ${h}`}>

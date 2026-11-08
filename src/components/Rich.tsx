@@ -50,9 +50,15 @@ function Script({ kind, size, style, children }: { kind: 'sub' | 'sup'; size: nu
   );
 }
 
+/** Zen Kaku Gothic's ° is a wide (Japanese) glyph that leaves a gap after it; in sans text, ° comes from STIX. */
+function degrees(text: string, base: StyleProp<TextStyle>): ReactNode {
+  if (!text.includes('°') || !String((base as TextStyle).fontFamily ?? '').startsWith('ZenKaku')) return text;
+  return text.split('°').flatMap((part, j) => (j ? [<Text key={j} style={{ fontFamily: font.chem }}>°</Text>, part] : [part]));
+}
+
 function render(nodes: Node[], size: number, base: StyleProp<TextStyle>): ReactNode[] {
   return nodes.map((n, i) => {
-    if (typeof n === 'string') return <Fragment key={i}>{n}</Fragment>;
+    if (typeof n === 'string') return <Fragment key={i}>{degrees(n, base)}</Fragment>;
     const kids = render(n.kids, n.tag === 'sub' || n.tag === 'sup' ? size * 0.7 : size, base);
     switch (n.tag) {
       case 'sub':

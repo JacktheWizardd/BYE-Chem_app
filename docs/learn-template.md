@@ -20,6 +20,7 @@ Every section is written to this template, so each one is written once and they 
 - **Show three levels, one at a time:** what you see, the particles, the symbols. Label which one a picture shows.
 - **One running example through all the reads.** §4.1 uses 36.04 g of water: 2.000 mol, then 1.204 × 10<sup>24</sup> molecules. A new idea gets its own small example only when the running one can't show it. The recap reuses the same example.
 - Notation: `docs/notation.md` (real `<sub>` and `<sup>`, units upright, × not x).
+- Long numbers group digits in threes: a narrow no-break space (U+202F) inside a short number, a thin space (U+2009) in one long enough to need to wrap on a phone. The content test reads both.
 
 ## What a section page shows, in order
 
@@ -75,7 +76,7 @@ A good read runs: a question or a picture → the idea in words → the picture 
 ## Pictures
 
 - **Particle pictures are the default.** Flat circles with no shading or grid. H is a white ring with a grey edge, O terracotta, C near-black, N blue, as in `docs/design-guide.md`. Each molecule's atoms touch, and the formula sits under it with real subscripts.
-  - A `ParticleScene` is a list of molecules (`formula`, `at`, optional `label`) and boxes. Atoms are laid out from the formula's shape (`H2O` bent, `CO2` linear, `CH4` tetrahedral seen flat).
+  - A `ParticleScene` is a list of molecules (`formula`, `at`, optional `label`) and boxes. Atoms are laid out from the formula's shape (`H2O` bent, `CO2` linear, `NH3` a low pyramid, `CH4` a tetrahedron in perspective: never a flat 90° cross, which Section 9.6 calls a mistake).
 - **Every picture needs `describe`** **(checked)**: its accessibility text.
 - **Colours keep their meaning:** grams `ai` blue, moles `matsu` green, a measured or highlighted value `shu` (a ring, never recolouring an atom), "where you are" coral.
 - **Pictures only add** (frames): each frame keeps what was there. Earlier parts stay, or fade to grey with `fade: n`. Prefer `fade` over `until`. Captions are 1–2 sentences on what's new, with the relation in `eq`, not in the caption.
@@ -86,7 +87,7 @@ A good read runs: a question or a picture → the idea in words → the picture 
 - **Why it works** (`why`): 2–4 frames, the whole section's reason in short.
 - **How to spot it** (`spot`): clues with an `example` of what it looks like on the page (Rich) and a short `note`; look-alikes that need a different section, with a link.
 - **Common mistakes** (`mistakes`): `wrong` and `right` are the same line, done wrong and done right (shown on `wrongTint` and `rightTint`). `why` is one line. Use real student errors: mass vs moles, subscripts vs coefficients, upside-down factors, forgetting the 2 in O<sub>2</sub>.
-- **Where it shows up** (`realUses`): 4–6, each with a worked `eq` such as `0.500 g ÷ 176.12 g/mol = 0.00284 mol`. Every number in it is recomputed by the content test.
+- **Where it shows up** (`realUses`): 4–6, each with a worked `eq` such as `0.500 g ÷ 176.12 g/mol = 0.00284 mol`. Every number in it is recomputed by the content test. An `eq` with “=” must compute; one without “=” is a statement, for descriptive sections (`sea water → water + salt (distilling)`).
 
 ## Worked examples (read-only)
 
