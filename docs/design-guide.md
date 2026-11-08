@@ -51,7 +51,7 @@ Oxygen (clay) and chlorine (sage) can look alike with red-green colour blindness
 
 ## 3. Notation (how chemists write)
 
-Rules follow IUPAC’s *Quantities, Units and Symbols in Physical Chemistry* (the “Green Book”, 3rd ed., 2007, [doi:10.1039/9781847557889](https://doi.org/10.1039/9781847557889)). Where BYE Chem deliberately follows the classroom form instead, it says so.
+Rules follow IUPAC’s *Quantities, Units and Symbols in Physical Chemistry* (the “Green Book”, 3rd ed., 2007, [doi:10.1039/9781847557889](https://doi.org/10.1039/9781847557889)). Where BYE Chem deliberately follows the classroom form instead, it says so. The exact `Rich` markup for each rule, and the checks that enforce it, are in [notation.md](notation.md).
 
 - **Quantity symbols italic, units upright:** *p* = 101.3 kPa, *T* = 298 K, *V* = 25.0 mL. Element symbols upright.
 - **A space between number and unit**, including °C: 25 °C, 0.100 mol L⁻¹. No degree sign with K: 298 K.

@@ -95,7 +95,7 @@ export const CHAPTER_MAP: MapChapter[] = [
       {
         "id": "0.6",
         "title": "Solving a Quadratic",
-        "question": "How do you solve x² + bx + c = 0 when you can't factor it?",
+        "question": "How do you solve x<sup>2</sup> + bx + c = 0 when you can't factor it?",
         "tro": [
           "App. I"
         ],
