@@ -37,7 +37,7 @@ Our own beginner order (decided by the user, 2026-11-07). Every section names th
 | 0.3 | Rearranging a Formula | How do you get the letter you want on its own? | App. I | Intro 1A AP | none |
 | 0.4 | Units Travel With Numbers | Why do units multiply, divide and cancel like numbers? | 1.8 | Intro 1A AP | 0.2 |
 | 0.5 | Logarithms | What does log mean, and why does pH use it? | App. I | Intro 1A 1B AP | 0.1 |
-| 0.6 | Solving a Quadratic | How do you solve x² + bx + c = 0 when you can't factor it? | App. I | 1B AP | 0.3 |
+| 0.6 | Solving a Quadratic | How do you solve x<sup>2</sup> + bx + c = 0 when you can't factor it? | App. I | 1B AP | 0.3 |
 | 0.7 | Straight-Line Graphs | What do the slope and intercept of a data line tell you? | 1.9 | 1A 1B AP | 0.3 |
 
 ## Chapter 1 · Matter and Measurement
