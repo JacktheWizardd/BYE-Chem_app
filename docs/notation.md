@@ -98,7 +98,7 @@ Example: hydrogen burns in oxygen to give water: 2 H<sub>2</sub>(g) + O<sub>2</s
 
 **Caught:** `2 H<sub>2</sub> + O<sub>2</sub> -> 2 H<sub>2</sub>O` (ascii-arrow), `N<sub>2</sub> + 3 H<sub>2</sub> <=> 2 NH<sub>3</sub>` (ascii-arrow)
 
-Do not use ⇄ (U+21C4) for equilibrium. IUPAC uses it for "a reaction going both ways", but Chem 1A uses ⇌, and so do we. (Chapter 0 uses ⇄ once, as a maths "rearranges to"; that is not a chemistry arrow.)
+Do not use ⇄ (U+21C4) for equilibrium. IUPAC uses it for "a reaction going both ways", but Chem 1A uses ⇌, and so do we.
 
 ### Conditions over the arrow: the plain-words convention
 
@@ -238,8 +238,8 @@ These are the characters, used in this page's examples or in `src/content`, that
 
 | Font | Missing |
 |---|---|
-| STIX Two Text | `→ ⇄ ⇌` |
+| STIX Two Text | `→ ⇌` |
 | Zen Kaku Gothic New | `Δ ‡ ⇌` |
 | Shippori Mincho | `Δ ⇌` |
 
-So today ⇌ is in none of the three fonts, and STIX Two Text, the formula font, has no arrows at all (⇄ is Chapter 0's maths arrow). The resonance arrow ↔ is missing from all three as well; it is not in this table because it is used only in figures. Filling these gaps (for example with a small symbol font) is a design choice for the user. When a gap is filled, remove it from this table.
+So today ⇌ is in none of the three fonts, and STIX Two Text, the formula font, has no arrows at all. The resonance arrow ↔ is missing from all three as well; it is not in this table because it is used only in figures. Filling these gaps (for example with a small symbol font) is a design choice for the user. When a gap is filled, remove it from this table.
