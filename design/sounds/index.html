@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BYE Chem sounds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&amp;family=Zen+Kaku+Gothic+New:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #f6f3ec; --band: #fcfaf5; --line: #e3dccf;
+    --ink: #1e1c19; --ink2: #5a554d; --onInk: #f6f3ec; --coral: #d9846a;
+    --sans: 'Zen Kaku Gothic New', 'Hiragino Sans', system-ui, sans-serif;
+    --serif: 'Shippori Mincho', 'Hiragino Mincho ProN', Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+  .eyebrow { font-size: 12px; letter-spacing: 2.2px; text-transform: uppercase; color: var(--ink2); }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 42px; margin: 10px 0 10px; }
+  p { font-size: 15px; line-height: 1.65; color: var(--ink2); margin: 0 0 10px; max-width: 64ch; }
+  .level { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 30px; align-items: center; font-size: 14px; color: var(--ink2); }
+  .level button { font: inherit; min-height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; }
+  .level button[aria-pressed="true"] { background: var(--ink); color: var(--onInk); border-color: var(--ink); }
+  section { background: var(--band); border: 1px solid var(--line); border-radius: 14px; padding: 20px 20px 8px; margin: 0 0 18px; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 24px; margin: 0; }
+  .all { font: inherit; font-weight: 500; font-size: 15px; min-height: 44px; padding: 0 20px; border-radius: 22px; border: 0; background: var(--ink); color: var(--onInk); cursor: pointer; }
+  .sub { margin: 6px 0 12px; font-size: 14px; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .play { flex: none; width: 44px; height: 44px; border-radius: 22px; border: 1px solid var(--line); background: var(--ground); cursor: pointer; display: grid; place-items: center; }
+  .play::before { content: ''; margin-left: 3px; border-style: solid; border-width: 7px 0 7px 11px; border-color: transparent transparent transparent var(--ink); }
+  .play.on { border-color: var(--coral); }
+  .role { font-weight: 500; font-size: 15px; min-width: 56px; }
+  .what { font-size: 14px; line-height: 1.5; color: var(--ink2); }
+  footer { margin-top: 28px; font-size: 13px; line-height: 1.6; color: var(--ink2); }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">BYE Chem · sound candidates</div>
+  <h1>Pick a sound set</h1>
+  <p>Three sets of real lab recordings. Each set has <b>tap</b> (buttons and rows), <b>select</b> (tabs, choosing an item) and <b>done</b> (the end of a worked example). They have the same length and loudness as BYE Math's sounds.</p>
+  <p>In the app, sounds play at 7 % volume and only after the learner turns Sounds on. Full volume is easier for comparing.</p>
+  <div class="level" role="group" aria-label="Playback level">
+    <span>Play at</span>
+    <button type="button" data-vol="1" aria-pressed="true">Full volume</button>
+    <button type="button" data-vol="0.07" aria-pressed="false">App level (7 %)</button>
+  </div>
+
+  <section data-set="glass">
+    <div class="head"><h2>Glass</h2><button class="all" type="button">Play the set</button></div>
+    <p class="sub">Test tube, pint glass, wine glass.</p>
+    <ul>
+      <li><button class="play" data-src="candidates/glass/tap.wav" aria-label="Play glass tap"></button><span class="role">tap</span><span class="what">A test tube plucked with a finger.</span></li>
+      <li><button class="play" data-src="candidates/glass/select.wav" aria-label="Play glass select"></button><span class="role">select</span><span class="what">A single tap on a pint glass.</span></li>
+      <li><button class="play" data-src="candidates/glass/done.wav" aria-label="Play glass done"></button><span class="role">done</span><span class="what">Two clinks of a knife on a wine glass.</span></li>
+    </ul>
+  </section>
+
+  <section data-set="water">
+    <div class="head"><h2>Water</h2><button class="all" type="button">Play the set</button></div>
+    <p class="sub">Pipette, drop, bubbles.</p>
+    <ul>
+      <li><button class="play" data-src="candidates/water/tap.wav" aria-label="Play water tap"></button><span class="role">tap</span><span class="what">A pipette dripping into a small jar of water.</span></li>
+      <li><button class="play" data-src="candidates/water/select.wav" aria-label="Play water select"></button><span class="role">select</span><span class="what">A single water drop.</span></li>
+      <li><button class="play" data-src="candidates/water/done.wav" aria-label="Play water done"></button><span class="role">done</span><span class="what">A few bubbles blown through a straw into a teacup.</span></li>
+    </ul>
+  </section>
+
+  <section data-set="ceramic">
+    <div class="head"><h2>Ceramic</h2><button class="all" type="button">Play the set</button></div>
+    <p class="sub">Mug, teacup, spoon on a cup.</p>
+    <ul>
+      <li><button class="play" data-src="candidates/ceramic/tap.wav" aria-label="Play ceramic tap"></button><span class="role">tap</span><span class="what">A ceramic mug set down on a wooden desk.</span></li>
+      <li><button class="play" data-src="candidates/ceramic/select.wav" aria-label="Play ceramic select"></button><span class="role">select</span><span class="what">Cutlery clinking on a teacup, pitched down.</span></li>
+      <li><button class="play" data-src="candidates/ceramic/done.wav" aria-label="Play ceramic done"></button><span class="role">done</span><span class="what">Two knocks of a spoon on a cup, pitched down.</span></li>
+    </ul>
+  </section>
+
+  <footer>All recordings are CC0 (public domain) from Freesound. Sources and edits are in <a href="CREDITS.md">CREDITS.md</a>.</footer>
+</main>
+<script>
+  let volume = 1;
+  const cache = {};
+  function play(src, btn) {
+    const a = (cache[src] ||= new Audio(src));
+    a.volume = volume;
+    a.currentTime = 0;
+    a.play().catch(() => {});
+    if (btn) { btn.classList.add('on'); setTimeout(() => btn.classList.remove('on'), 500); }
+  }
+  document.querySelectorAll('.play').forEach((b) => b.addEventListener('click', () => play(b.dataset.src, b)));
+  document.querySelectorAll('section').forEach((s) => {
+    s.querySelector('.all').addEventListener('click', () => {
+      const btns = [...s.querySelectorAll('.play')];
+      [0, 450, 900].forEach((t, i) => setTimeout(() => play(btns[i].dataset.src, btns[i]), t));
+    });
+  });
+  document.querySelectorAll('.level button').forEach((b) => b.addEventListener('click', () => {
+    volume = Number(b.dataset.vol);
+    document.querySelectorAll('.level button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+</script>
+</body>
+</html>
